@@ -14,7 +14,6 @@
         // Skrip ini berjalan segera untuk melindungi halaman sebelum dirender.
         if (sessionStorage.getItem('isLoggedIn') !== 'true') {
             // Jika belum login, paksa alihkan ke halaman login.
-            // Ganti 'login.html' jika nama file login Anda berbeda.
             window.location.replace('login.html');
         }
     </script>
@@ -530,20 +529,102 @@
     </style>
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
+</head>
+
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>DPMD</h3>
+            <p>Kab. Kepulauan Tanimbar</p>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home menu-icon icon-color-1"></i> <span>Beranda</span></a>
+                </li>
+                <li><a href="datapegawai.html"><i class="fas fa-users menu-icon icon-color-2"></i> <span>Data
+                            Pegawai</span></a></li>
+                <li class="menu-item-has-children">
+                    <a href="#" class="dropdown-toggle">
+                        <div><i class="fas fa-envelope-open-text menu-icon icon-color-3"></i> <span>Surat</span></div>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="suratmasuk.html">Surat Masuk</a></li>
+                        <li><a href="#">Surat Keluar</a></li>
+                        <li><a href="#">Rekapan Data Surat</a></li>
+                        <li><a href="#">Contoh Surat</a></li>
+                    </ul>
+                </li>
+                <li><a href="bezeting.html"><i class="fas fa-file-invoice menu-icon icon-color-4"></i> <span>Bezeting
+                            Pegawai</span></a></li>
+                <li><a href="#"><i class="fas fa-village menu-icon icon-color-5"></i> <span>Data Desa</span></a></li>
+                <li><a href="#"><i class="fas fa-info-circle menu-icon icon-color-6"></i> <span>Informasi</span></a>
+                </li>
+                <li><a href="master.html" class="active"><i class="fas fa-database menu-icon icon-color-7"></i>
+                        <span>Data Master</span></a></li>
+                <li><a href="daftarhadir.html"><i class="fas fa-clipboard-user menu-icon icon-color-8"></i> <span>Daftar
+                            Hadir</span></a></li>
+            </ul>
+        </div>
+        <div class="logout-btn">
+            <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Keluar</span></a>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <header class="header">
+            <div class="header-left">
+                <div class="hamburger-menu" id="hamburgerMenu">
+                    <span></span><span></span><span></span>
+                </div>
+                <h2>Data Master</h2>
+            </div>
+            <!-- Notification & Profile could go here -->
+        </header>
+
+        <div class="master-grid">
+            <!-- Cards will be injected here -->
+        </div>
+    </div>
+
+    <!-- Notification Overlay (Success) -->
+    <div class="popup-overlay" id="notificationOverlay">
+        <div class="popup-content">
+            <div class="checkmark-circle"></div>
+            <div class="checkmark draw"></div>
+            <h3>Berhasil!</h3>
+            <p id="notificationMessage">Pesan notifikasi.</p>
+        </div>
+    </div>
+
+    <!-- Confirmation Overlay (Delete) -->
+    <div class="popup-overlay" id="confirmationOverlay">
+        <div class="popup-content">
+            <h3 style="color: #dc3545;">Konfirmasi</h3>
+            <p id="confirmationMessage">Yakin ingin menghapus?</p>
+            <div class="popup-buttons">
+                <button class="btn btn-cancel" id="confirmCancelBtn">Batal</button>
+                <button class="btn btn-confirm" id="confirmDeleteBtn">Hapus</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', async function () {
             const hamburgerMenu = document.getElementById('hamburgerMenu');
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
 
-            hamburgerMenu.addEventListener('click', () => {
-                if (window.innerWidth <= 992) {
-                    sidebar.classList.toggle('active');
-                } else {
-                    sidebar.classList.toggle('collapsed');
-                    mainContent.classList.toggle('expanded');
-                }
-            });
+            if (hamburgerMenu) {
+                hamburgerMenu.addEventListener('click', () => {
+                    if (window.innerWidth <= 992) {
+                        sidebar.classList.toggle('active');
+                    } else {
+                        sidebar.classList.toggle('collapsed');
+                        mainContent.classList.toggle('expanded');
+                    }
+                });
+            }
 
             document.querySelectorAll('.dropdown-toggle').forEach(item => {
                 item.addEventListener('click', event => {
@@ -611,19 +692,19 @@
                     const card = document.createElement('div');
                     card.className = 'card';
                     const listItems = (masterData[config.key] || []).map((item, index) => `
-                        <li class="master-item">
-                            <span>${item}</span>
-                            <button class="delete-btn" data-key="${config.key}" data-index="${index}"><i class="fas fa-trash"></i></button>
-                        </li>
-                    `).join('');
+                      <li class="master-item">
+                          <span>${item}</span>
+                          <button class="delete-btn" data-key="${config.key}" data-index="${index}"><i class="fas fa-trash"></i></button>
+                      </li>
+                  `).join('');
                     card.innerHTML = `
-                        <h3>${config.title}</h3>
-                        <form class="add-form" data-key="${config.key}">
-                            <input type="text" placeholder="Tambah ${config.title} baru..." required>
-                            <button type="submit">Tambah</button>
-                        </form>
-                        <ul class="master-item-list">${listItems}</ul>
-                    `;
+                      <h3>${config.title}</h3>
+                      <form class="add-form" data-key="${config.key}">
+                          <input type="text" placeholder="Tambah ${config.title} baru..." required>
+                          <button type="submit">Tambah</button>
+                      </form>
+                      <ul class="master-item-list">${listItems}</ul>
+                  `;
                     masterGrid.appendChild(card);
                 });
             }
@@ -713,6 +794,6 @@
             await loadMasterData();
         });
     </script>
-    </body>
+</body>
 
 </html>
