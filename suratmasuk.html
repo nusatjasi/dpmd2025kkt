@@ -4,18 +4,12 @@
 <head>
     <script>
         if (sessionStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.replace('login.html');
+            window.location.replace('<?= getScriptUrl(); ?>?p=login');
         }
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Surat Masuk - DPMD Kab. Kepulauan Tanimbar</title>
-    <script>
-        window.addEventListener('DOMContentLoaded', function () {
-            if (sessionStorage.getItem('isLoggedIn') !== 'true') {
-            }
-        });
-    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,14 +29,6 @@
             --warning-color: #ffc107;
             --danger-color: #dc3545;
             --info-color: #17a2b8;
-            --icon-color-1: #007bff;
-            --icon-color-2: #28a745;
-            --icon-color-3: #ffc107;
-            --icon-color-4: #dc3545;
-            --icon-color-5: #17a2b8;
-            --icon-color-6: #6f42c1;
-            --icon-color-7: #fd7e14;
-            --icon-color-8: #20c997;
         }
 
         * {
@@ -86,13 +72,6 @@
             font-weight: 700;
         }
 
-        .sidebar-header p {
-            font-size: 0.8rem;
-            opacity: 0.7;
-            margin-top: 5px;
-            color: var(--text-secondary);
-        }
-
         .sidebar-menu {
             padding: 20px 0;
             height: calc(100% - 150px);
@@ -124,73 +103,11 @@
             box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
         }
 
-        .sidebar-menu a:hover i,
-        .sidebar-menu a.active i {
-            color: #ffffff !important;
-        }
-
         .sidebar-menu a i.menu-icon {
             margin-right: 15px;
             width: 20px;
             text-align: center;
             font-size: 1.1rem;
-            transition: margin 0.4s ease;
-        }
-
-        .icon-color-1 {
-            color: var(--icon-color-1);
-        }
-
-        .icon-color-2 {
-            color: var(--icon-color-2);
-        }
-
-        .icon-color-3 {
-            color: var(--icon-color-3);
-        }
-
-        .icon-color-4 {
-            color: var(--icon-color-4);
-        }
-
-        .icon-color-5 {
-            color: var(--icon-color-5);
-        }
-
-        .icon-color-6 {
-            color: var(--icon-color-6);
-        }
-
-        .icon-color-7 {
-            color: var(--icon-color-7);
-        }
-
-        .icon-color-8 {
-            color: var(--icon-color-8);
-        }
-
-        .dropdown-toggle {
-            justify-content: space-between;
-        }
-
-        .dropdown-icon {
-            transition: transform 0.3s ease;
-        }
-
-        .menu-item-has-children.open>.dropdown-toggle .dropdown-icon {
-            transform: rotate(180deg);
-        }
-
-        .submenu {
-            list-style: none;
-            padding-left: 20px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-out;
-        }
-
-        .menu-item-has-children.open>.submenu {
-            max-height: 500px;
         }
 
         .logout-btn {
@@ -206,16 +123,10 @@
             align-items: center;
             background-color: var(--primary-accent);
             color: var(--secondary-accent);
-            text-align: center;
             padding: 12px;
             border-radius: 8px;
             text-decoration: none;
             transition: all 0.3s ease;
-        }
-
-        .logout-btn a:hover {
-            background-color: #e53935;
-            color: #ffffff;
         }
 
         .main-content {
@@ -235,31 +146,6 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px var(--shadow-color);
             margin-bottom: 25px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .hamburger-menu {
-            cursor: pointer;
-            padding: 5px;
-            z-index: 1001;
-        }
-
-        .hamburger-menu span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background-color: var(--text-primary);
-            margin: 5px 0;
-            border-radius: 3px;
-        }
-
-        .header h2 {
-            font-weight: 600;
         }
 
         .card {
@@ -286,18 +172,8 @@
             color: #ffffff;
         }
 
-        .btn:hover {
-            opacity: 0.9;
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
         .btn-danger {
             background-color: var(--danger-color);
-        }
-
-        .table-responsive {
-            overflow-x: auto;
         }
 
         table {
@@ -318,24 +194,6 @@
             color: var(--text-secondary);
         }
 
-        .status {
-            padding: 5px 10px;
-            border-radius: 15px;
-            color: white;
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .status-disposisi {
-            background-color: var(--success-color);
-        }
-
-        .status-proses {
-            background-color: var(--info-color);
-        }
-
-        /* Modal Styling */
         .modal {
             display: none;
             position: fixed;
@@ -352,29 +210,10 @@
 
         .modal-content {
             background-color: #fff;
-            margin: auto;
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
             width: 90%;
             max-width: 800px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-        }
-
-        .close-btn {
-            cursor: pointer;
-            font-size: 1.8rem;
-            color: var(--text-secondary);
         }
 
         .form-grid {
@@ -386,992 +225,365 @@
         .form-group {
             display: flex;
             flex-direction: column;
-        }
-
-        .form-group label {
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: var(--text-secondary);
+            margin-top: 15px;
         }
 
         .form-group input,
         .form-group textarea,
         .form-group select {
-            width: 100%;
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
         }
 
-        .modal-footer {
-            text-align: right;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        /* --- Sidebar Toggle Styles --- */
-        .sidebar.collapsed {
-            width: 88px;
-        }
-
-        .sidebar.collapsed .sidebar-header h3,
-        .sidebar.collapsed .sidebar-header p,
-        .sidebar.collapsed .sidebar-menu a span,
-        .sidebar.collapsed .dropdown-icon,
-        .sidebar.collapsed .logout-btn span {
-            display: none;
-        }
-
-        .sidebar.collapsed .sidebar-menu a {
-            justify-content: center;
-        }
-
-        .sidebar.collapsed .sidebar-menu a i.menu-icon {
-            margin-right: 0;
-        }
-
-        .main-content.expanded {
-            margin-left: 88px;
-            width: calc(100% - 88px);
-        }
-
-        /* --- Custom Notification/Alert --- */
-        .custom-alert-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            justify-content: center;
-            align-items: center;
-            z-index: 3000;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .custom-alert-overlay.show {
-            display: flex;
-            opacity: 1;
-        }
-
-        .custom-alert-box {
-            background: var(--bg-secondary);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-            transform: scale(0.7);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-        }
-
-        .custom-alert-overlay.show .custom-alert-box {
-            transform: scale(1);
-            opacity: 1;
-        }
-
-        .custom-alert-icon {
-            font-size: 50px;
-            margin-bottom: 20px;
-        }
-
-        .custom-alert-icon .fa-check-circle {
-            color: var(--success-color);
-        }
-
-        .custom-alert-icon .fa-exclamation-triangle {
-            color: var(--danger-color);
-        }
-
-        .custom-alert-message {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
-        .custom-alert-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        /* --- STYLES FOR DISPOSITION SHEET --- */
+        /* Disposisi Styling */
         .print-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
             border-bottom: 3px solid black;
             padding-bottom: 10px;
-            gap: 20px;
-        }
-
-        .print-header .logo {
-            width: 70px;
-            height: auto;
-        }
-
-        .print-header .header-text {
-            text-align: center;
-            font-family: 'Times New Roman', Times, serif;
-            flex-grow: 1;
-        }
-
-        .print-header h3,
-        .print-header h2,
-        .print-header p {
-            margin: 0;
-            line-height: 1.4;
-            color: #000;
-        }
-
-        .print-header h3 {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .print-header h2 {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .print-header p {
-            font-size: 12px;
+            margin-bottom: 15px;
         }
 
         #disposisi-sheet {
             border: 2px solid #000;
             padding: 15px;
             font-family: 'Times New Roman', Times, serif;
-            color: #000;
-        }
-
-        #disposisi-sheet h4 {
-            text-align: center;
-            text-decoration: underline;
-            font-size: 16px;
-            margin-bottom: 20px;
-            font-weight: bold;
         }
 
         .disposisi-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
             border: 1px solid #000;
         }
 
         .disposisi-table td {
             border: 1px solid #000;
             padding: 8px;
-            vertical-align: top;
-            line-height: 1.5;
         }
 
-        .disposisi-table .value {
-            font-weight: normal;
-        }
-
-        .disposisi-table .full-width {
-            min-height: 80px;
-        }
-
-        .disposisi-table .hal-value {
-            min-height: 60px;
-        }
-
-        .disposisi-table .catatan-value {
-            min-height: 120px;
-            overflow-wrap: break-word;
-        }
-
-        .disposisi-table input[type="checkbox"] {
-            margin-right: 5px;
-            vertical-align: middle;
-        }
-
-        .disposisi-table label {
-            display: block;
-            margin-bottom: 4px;
-            font-weight: normal;
-        }
-
-        .signature-block {
-            float: right;
-            text-align: center;
-            width: 300px;
-            margin-top: 20px;
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 12px;
-        }
-
-        .signature-block p {
-            margin: 0;
-            line-height: 1.5;
-        }
-
-        .signature-block .name {
-            margin-top: 50px;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-
-        @media (max-width: 992px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .main-content.expanded {
-                margin-left: 0;
-            }
-        }
-
-        /* --- PRINT STYLES --- */
         @media print {
             .no-print {
                 display: none !important;
             }
 
             body,
-            body * {
-                visibility: hidden;
-            }
-
-            #disposisiModal,
-            #disposisiModal * {
-                visibility: visible;
-            }
-
-            #disposisiModal {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: auto;
-                overflow: visible;
-                background-color: white;
-            }
-
-            #disposisiModal .modal-content {
-                box-shadow: none;
-                border: none;
+            .main-content {
                 padding: 0;
                 margin: 0;
-                max-width: 100%;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar no-print" id="sidebar">
+    <div class="sidebar no-print">
         <div class="sidebar-header">
             <h3>DPMD</h3>
             <p>Kab. Kepulauan Tanimbar</p>
         </div>
         <div class="sidebar-menu">
             <ul>
-                <li><a href="./index.html"><i class="fas fa-home menu-icon icon-color-1"></i> <span>Beranda</span></a>
-                </li>
-                <li><a href="datapegawai.html"><i class="fas fa-users menu-icon icon-color-2"></i> <span>Data
+                <li><a href="<?= getScriptUrl(); ?>?p=index"><i class="fas fa-home menu-icon"></i>
+                        <span>Dashboard</span></a></li>
+                <li><a href="<?= getScriptUrl(); ?>?p=datapegawai"><i class="fas fa-users menu-icon"></i> <span>Data
                             Pegawai</span></a></li>
-                <li class="menu-item-has-children open">
-                    <a href="#" class="dropdown-toggle">
-                        <div><i class="fas fa-envelope-open-text menu-icon icon-color-3"></i> <span>Surat</span></div>
-                        <i class="fas fa-chevron-down dropdown-icon"></i>
-                    </a>
-                    <ul class="submenu">
-                        <li><a href="suratmasuk.html" class="active">Surat Masuk</a></li>
-                        <li><a href="#">Surat Keluar</a></li>
-                        <li><a href="#">Rekap Data Surat</a></li>
-                        <li><a href="#">Contoh Surat</a></li>
-                    </ul>
-                </li>
-                <li><a href="./bezeting.html"><i class="fas fa-file-invoice menu-icon icon-color-4"></i> <span>Bezeting
+                <li><a href="<?= getScriptUrl(); ?>?p=suratmasuk" class="active"><i
+                            class="fas fa-envelope-open-text menu-icon"></i>
+                        <span>Surat Masuk</span></a></li>
+                <li><a href="<?= getScriptUrl(); ?>?p=bezeting"><i class="fas fa-file-invoice menu-icon"></i>
+                        <span>Bezeting
                             Pegawai</span></a></li>
-                <li><a href="#"><i class="fas fa-village menu-icon icon-color-5"></i> <span>Data Desa</span></a></li>
-                <li><a href="#"><i class="fas fa-info-circle menu-icon icon-color-6"></i> <span>Informasi</span></a>
-                </li>
-                <li><a href="./master.html"><i class="fas fa-database menu-icon icon-color-7"></i> <span>Data
+                <li><a href="<?= getScriptUrl(); ?>?p=master"><i class="fas fa-database menu-icon"></i> <span>Data
                             Master</span></a></li>
                 <li class="menu-item-has-children">
                     <a href="#" class="dropdown-toggle">
-                        <div><i class="fas fa-clipboard-user menu-icon icon-color-8"></i> <span>Daftar Hadir</span>
-                        </div>
-                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                        <i class="fas fa-camera-retro menu-icon"></i> <span>Absen Online</span>
+                        <i class="fas fa-chevron-down dropdown-icon" style="margin-left:auto"></i>
                     </a>
                     <ul class="submenu">
-                        <li><a href="./daftarhadir.html">Apel Senin</a></li>
-                        <li><a href="./daftar_hadir_mingguan.html">Apel Setiap Hari</a></li>
+                        <li><a href="<?= getScriptUrl(); ?>?p=absen_online">Setting Absen</a></li>
+                        <li><a href="<?= getScriptUrl(); ?>?p=rekapan_absen">Rekap Absen</a></li>
                     </ul>
                 </li>
+                <li><a href="<?= getScriptUrl(); ?>?p=daftarhadir"><i class="fas fa-clipboard-user menu-icon"></i>
+                        <span>Daftar
+                            Hadir</span></a></li>
+                <li><a href="<?= getScriptUrl(); ?>?p=daftar_hadir_mingguan"><i
+                            class="fas fa-calendar-check menu-icon"></i> <span>Absen
+                            Harian</span></a></li>
             </ul>
         </div>
-        <div class="logout-btn no-print">
-            <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Keluar</span></a>
+        <div class="logout-btn">
+            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span>Keluar</span></a>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content" id="mainContent">
+    <div class="main-content">
         <header class="header no-print">
-            <div class="header-left">
-                <div class="hamburger-menu" id="hamburgerMenu">
-                    <span></span><span></span><span></span>
-                </div>
-                <h2>Surat Masuk</h2>
-            </div>
-            <button class="btn" id="addSuratBtn"><i class="fas fa-plus"></i> Tambah Surat Masuk</button>
+            <h2>Surat Masuk</h2>
+            <button class="btn" onclick="openModal()"><i class="fas fa-plus"></i> Tambah Surat Masuk</button>
         </header>
 
         <div class="card no-print">
-            <div class="table-responsive">
-                <table id="suratMasukTable">
-                    <thead>
-                        <tr>
-                            <th>No. Agenda</th>
-                            <th>Tujuan</th>
-                            <th>Nomor Surat</th>
-                            <th>Pengirim</th>
-                            <th>Perihal</th>
-                            <th>Status Surat</th>
-                            <th>Hasil Disposisi</th>
-                            <th>File</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="suratMasukTableBody"></tbody>
-                </table>
-            </div>
+            <table id="suratTable">
+                <thead>
+                    <tr>
+                        <th>Agenda</th>
+                        <th>Tujuan</th>
+                        <th>Nomor Surat</th>
+                        <th>Pengirim</th>
+                        <th>Perihal</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="suratTableBody"></tbody>
+            </table>
         </div>
 
-        <!-- Add/Edit Surat Modal -->
+        <!-- Add Modal -->
         <div id="suratModal" class="modal no-print">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h3 id="modalTitle">Tambah Surat Masuk Baru</h3>
-                    <span class="close-btn">&times;</span>
-                </div>
+                <h3 id="modalTitle">Tambah Surat Masuk</h3>
                 <form id="suratForm">
                     <input type="hidden" id="suratId">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="noAgenda">Nomor Agenda</label>
-                            <input type="number" id="noAgenda" readonly style="background-color: #e9ecef;">
+                            <label>No Agenda</label>
+                            <input type="number" id="noAgenda" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="tglTerima">Tanggal Diterima</label>
+                            <label>Tgl Diterima</label>
                             <input type="date" id="tglTerima" required>
                         </div>
                         <div class="form-group">
-                            <label for="sifatSurat">Sifat Surat</label>
+                            <label>No. Surat</label>
+                            <input type="text" id="noSurat" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sifat Surat</label>
                             <select id="sifatSurat">
-                                <option value="Sangat Segera">Sangat Segera</option>
-                                <option value="Segera">Segera</option>
-                                <option value="Penting">Penting</option>
                                 <option value="Biasa">Biasa</option>
+                                <option value="Penting">Penting</option>
+                                <option value="Segera">Segera</option>
+                                <option value="Sangat Segera">Sangat Segera</option>
                                 <option value="Rahasia">Rahasia</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="noSurat">Nomor Surat</label>
-                            <input type="text" id="noSurat" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="tglSurat">Tanggal Surat</label>
-                            <input type="date" id="tglSurat" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="pengirim">Pengirim</label>
+                            <label>Pengirim</label>
                             <input type="text" id="pengirim" required>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-top: 15px;">
-                        <label for="perihal">Perihal</label>
+                    <div class="form-group">
+                        <label>Perihal</label>
                         <textarea id="perihal" rows="3" required></textarea>
                     </div>
-                    <div class="form-group" style="margin-top: 15px;">
-                        <label for="fileSurat">Upload Surat (PDF/Foto)</label>
-                        <input type="file" id="fileSurat" accept="application/pdf,image/*">
-                        <small style="color: #666; font-style: italic;">*Upload file akan otomatis mengisi link di
-                            bawah.</small>
+                    <div class="form-group">
+                        <label>Upload Surat (PDF/Foto)</label>
+                        <input type="file" id="fileSurat">
                     </div>
-                    <div class="form-group" style="margin-top: 5px;">
-                        <label for="linkSurat">Link File (Google Drive)</label>
-                        <input type="url" id="linkSurat" placeholder="URL file akan muncul otomatis setelah upload"
-                            readonly style="background-color: #e9ecef;">
+                    <div class="form-group">
+                        <label>Link File</label>
+                        <input type="text" id="linkSurat" readonly>
                     </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="tujuanSurat">Tujuan Surat</label>
-                            <select id="tujuanSurat" required>
-                                <option value="" disabled selected>Pilih Tujuan</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="nomorWa">Nomor WhatsApp Tujuan</label>
-                            <input type="tel" id="nomorWa" placeholder="Contoh: 6281234567890" required>
-                        </div>
+                    <div class="form-group">
+                        <label>WA Tujuan</label>
+                        <input type="text" id="nomorWa">
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn" style="background-color: var(--success-color);"><i
-                                class="fab fa-whatsapp"></i> Kirim & Simpan</button>
+                    <div style="margin-top:20px; text-align:right;">
+                        <button type="button" class="btn btn-danger" onclick="closeModal()">Batal</button>
+                        <button type="submit" class="btn">Simpan</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Disposisi Modal for Staff -->
+        <!-- Disposisi Modal -->
         <div id="disposisiModal" class="modal">
             <div class="modal-content">
-                <div class="modal-header no-print">
-                    <h3>Detail Disposisi</h3>
-                    <span class="close-btn" id="closeDisposisiBtn">&times;</span>
-                </div>
-                <div id="disposisiContent">
-                    <!-- Content will be loaded here by JS -->
-                </div>
-                <div class="modal-footer no-print">
-                    <button id="printDisposisiBtn" class="btn"><i class="fas fa-print"></i> Cetak Disposisi</button>
+                <div id="disposisiContent"></div>
+                <div class="no-print" style="margin-top:20px; text-align:right;">
+                    <button class="btn btn-danger"
+                        onclick="document.getElementById('disposisiModal').style.display='none'">Tutup</button>
+                    <button class="btn" onclick="window.print()">Cetak</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Custom Notification Alert -->
-    <div id="customAlert" class="custom-alert-overlay no-print">
-        <div class="custom-alert-box">
-            <div class="custom-alert-icon">
-                <i class="fas"></i>
-            </div>
-            <p class="custom-alert-message"></p>
-            <div class="custom-alert-buttons">
-                <button id="alertConfirmBtn" class="btn"></button>
-                <button id="alertCancelBtn" class="btn btn-danger"></button>
-            </div>
-        </div>
-    </div>
-
-    <script src="js/config.js"></script>
-    <script src="js/api.js"></script>
+    <?!= include('config_js'); ?>
+    <?!= include('api_js'); ?>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // --- General UI Logic ---
-            const hamburgerMenu = document.getElementById('hamburgerMenu');
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            hamburgerMenu.addEventListener('click', () => {
-                if (window.innerWidth <= 992) {
-                    sidebar.classList.toggle('active');
-                } else {
-                    sidebar.classList.toggle('collapsed');
-                    mainContent.classList.toggle('expanded');
-                }
-            });
+        let allSurat = [];
+        let currentId = null;
 
-            document.querySelectorAll('.dropdown-toggle').forEach(item => {
-                const parent = item.parentElement;
-                if (parent.classList.contains('open')) {
-                    parent.classList.add('open');
-                }
-                item.addEventListener('click', event => {
-                    event.preventDefault();
-                    if (parent.classList.contains('open')) {
-                        parent.classList.remove('open');
-                    } else {
-                        document.querySelectorAll('.menu-item-has-children.open').forEach(openItem => {
-                            openItem.classList.remove('open');
-                        });
-                        parent.classList.add('open');
-                    }
-                });
-            });
-
-            // --- App Logic ---
-            const addSuratBtn = document.getElementById('addSuratBtn');
-            const suratModal = document.getElementById('suratModal');
-            const disposisiModal = document.getElementById('disposisiModal');
-            const closeBtn = suratModal.querySelector('.close-btn');
-            const closeDisposisiBtn = document.getElementById('closeDisposisiBtn');
-            const suratForm = document.getElementById('suratForm');
-            const suratTableBody = document.getElementById('suratMasukTableBody');
-
-            let suratMasukData = [];
-            let currentEditId = null;
-
-            async function loadData() {
-                try {
-                    const response = await api.getSuratMasuk();
-                    if (response.status === 'success') {
-                        suratMasukData = response.data;
-                        renderSuratTable();
-                    } else {
-                        console.warn(response.message);
-                    }
-                } catch (e) {
-                    console.error('Cant load data:', e);
-                }
+        async function loadData() {
+            const res = await api.getSuratMasuk();
+            if (res.status === 'success') {
+                allSurat = res.data;
+                renderTable();
             }
+        }
 
-            const pimpinanData = [
-                { nama: 'Kepala Dinas' },
-                { nama: 'Sekretaris' },
-                { nama: 'Kabid. Kelembagaan & PMD' },
-                { nama: 'Kabid. Pemberdayaan Ekonomi & TTG' },
-            ];
-
-            const customAlert = document.getElementById('customAlert');
-            const alertMessage = customAlert.querySelector('.custom-alert-message');
-            const alertIcon = customAlert.querySelector('.custom-alert-icon i');
-            const alertConfirmBtn = document.getElementById('alertConfirmBtn');
-            const alertCancelBtn = document.getElementById('alertCancelBtn');
-
-            function showAlert(message, type = 'success', onConfirm = null) {
-                alertMessage.textContent = message;
-                alertIcon.className = 'fas';
-                alertConfirmBtn.onclick = null; // Clean previous handler
-
-                if (type === 'success') {
-                    alertIcon.classList.remove('fa-exclamation-triangle');
-                    alertIcon.classList.add('fa-check-circle');
-                    alertConfirmBtn.textContent = 'OK';
-                    alertConfirmBtn.style.display = 'inline-flex';
-                    alertCancelBtn.style.display = 'none';
-
-                    alertConfirmBtn.onclick = () => {
-                        hideAlert();
-                        if (onConfirm) onConfirm();
-                    };
-                } else if (type === 'delete') {
-                    alertIcon.classList.remove('fa-check-circle');
-                    alertIcon.classList.add('fa-exclamation-triangle');
-                    alertConfirmBtn.textContent = 'Ya, Hapus';
-                    alertConfirmBtn.style.display = 'inline-flex';
-                    alertCancelBtn.textContent = 'Batal';
-                    alertCancelBtn.style.display = 'inline-flex';
-
-                    alertConfirmBtn.onclick = () => {
-                        hideAlert();
-                        if (onConfirm) onConfirm();
-                    };
-                    alertCancelBtn.onclick = () => hideAlert();
-                }
-                customAlert.classList.add('show');
-            }
-
-            function hideAlert() {
-                customAlert.classList.remove('show');
-            }
-
-            function renderSuratTable() {
-                suratTableBody.innerHTML = '';
-                if (suratMasukData.length === 0) {
-                    suratTableBody.innerHTML = `<tr><td colspan="9" style="text-align: center;">Belum ada data surat masuk.</td></tr>`;
-                    return;
-                }
-                // Sort by Agenda (Desc)
-                const sortedData = [...suratMasukData].sort((a, b) => parseInt(b.noAgenda || 0) - parseInt(a.noAgenda || 0));
-
-                sortedData.forEach(surat => {
-                    const row = suratTableBody.insertRow();
-                    row.dataset.id = surat.id;
-                    const hasDisposisi = surat.disposisi && (surat.disposisi.catatan || (surat.disposisi.diteruskan && surat.disposisi.diteruskan.length > 0));
-
-                    row.innerHTML = `
-                        <td>${surat.noAgenda}</td>
-                        <td>${surat.tujuanSurat || '-'}</td>
-                        <td>${surat.noSurat}</td>
-                        <td>${surat.pengirim}</td>
-                        <td>${(surat.perihal || '').substring(0, 25)}${(surat.perihal || '').length > 25 ? '...' : ''}</td>
-                        <td>
-                            ${hasDisposisi ? '<span class="status status-disposisi">Sudah Didisposisi</span>' : '<span class="status status-proses">Menunggu Disposisi</span>'}
-                        </td>
-                        <td style="text-align: center;">
-                            ${hasDisposisi ?
-                            `<button class="btn" onclick="openDisposisiModal('${surat.id}')" title="Lihat Hasil Disposisi" style="padding: 8px 12px; font-size: 0.9rem; background-color: #6f42c1; gap: 0;">
-                                    <i class="fas fa-eye"></i>
-                                </button>`
-                            :
-                            '<span style="color: var(--text-secondary);">-</span>'
-                        }
-                        </td>
-                        <td style="text-align: center;">
-                            ${surat.linkSurat ?
-                            `<a href="${surat.linkSurat}" target="_blank" class="btn" title="Lihat File" style="padding: 8px 12px; font-size: 0.9rem; background-color: #28a745; gap: 0;">
-                                    <i class="fas fa-eye"></i>
-                                </a>`
-                            :
-                            'Tidak ada'
-                        }
-                        </td>
-                        <td style="display: flex; flex-wrap: wrap; gap: 5px;">
-                            <button class="btn" onclick="openModal('${surat.id}')" title="Edit" style="padding: 8px 12px; font-size: 0.9rem; background-color: #ffc107; gap: 0;">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-danger" onclick="deleteSurat('${surat.id}')" title="Hapus" style="padding: 8px 12px; font-size: 0.9rem; gap: 0;">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    `;
-                });
-            }
-
-            function populateTujuanDropdown() {
-                const tujuanSelect = document.getElementById('tujuanSurat');
-                tujuanSelect.innerHTML = '<option value="" disabled selected>Pilih Tujuan</option>';
-                pimpinanData.forEach(p => {
-                    const option = document.createElement('option');
-                    option.value = p.nama;
-                    option.textContent = p.nama;
-                    tujuanSelect.appendChild(option);
-                });
-            }
-
-            function openModal(suratId = null) {
-                suratForm.reset();
-                currentEditId = suratId;
-                populateTujuanDropdown();
-                document.getElementById('fileSurat').value = ''; // Reset file input
-
-                if (suratId) {
-                    // String conversion for robust compare
-                    const surat = suratMasukData.find(s => String(s.id) === String(suratId));
-                    if (!surat) return;
-
-                    document.getElementById('modalTitle').textContent = 'Edit Surat Masuk';
-                    document.getElementById('suratId').value = surat.id;
-                    document.getElementById('noAgenda').value = surat.noAgenda;
-                    document.getElementById('tglTerima').value = formatDateForInput(surat.tglTerima);
-                    document.getElementById('sifatSurat').value = surat.sifatSurat;
-                    document.getElementById('noSurat').value = surat.noSurat;
-                    document.getElementById('tglSurat').value = formatDateForInput(surat.tglSurat);
-                    document.getElementById('pengirim').value = surat.pengirim;
-                    document.getElementById('perihal').value = surat.perihal;
-                    document.getElementById('linkSurat').value = surat.linkSurat || '';
-                    document.getElementById('tujuanSurat').value = surat.tujuanSurat || '';
-                    document.getElementById('nomorWa').value = surat.nomorWa || '';
-                } else {
-                    document.getElementById('modalTitle').textContent = 'Tambah Surat Masuk Baru';
-                    const lastAgenda = suratMasukData.reduce((max, s) => Math.max(max, parseInt(s.noAgenda) || 0), 0);
-                    document.getElementById('noAgenda').value = lastAgenda + 1;
-                    document.getElementById('tglTerima').valueAsDate = new Date();
-                }
-                suratModal.style.display = 'flex';
-            }
-            window.openModal = openModal;
-
-            function closeModal() {
-                suratModal.style.display = 'none';
-            }
-
-            // Helper for date input (YYYY-MM-DD or standard strings)
-            function formatDateForInput(dateStr) {
-                if (!dateStr) return '';
-                // Handle different formats if necessary, standard ISO is best
-                const d = new Date(dateStr);
-                if (!isNaN(d)) return d.toISOString().split('T')[0];
-                return dateStr;
-            }
-
-            window.openDisposisiModal = function (suratId) {
-                const surat = suratMasukData.find(s => String(s.id) === String(suratId));
-                if (!surat) return;
-
-                const disposisiContent = document.getElementById('disposisiContent');
-                const disposisi = surat.disposisi || {};
-
-                const pejabatStruktural = ["Sekretaris", "Kabid. Kelembagaan & PMD", "Kabid. Pemberdayaan Ekonomi & TTG", "Analis Kebijakan", "Pranata Komputer"];
-                const instruksiList = ["Tanggapan dan saran", "Untuk diketahui", "Proses lebih lanjut", "Selesaikan", "Koordinasikan", "Wakili / Hadiri", "Agendakan", "Arsip"];
-
-                const lainnyaDiteruskanValue = (disposisi.diteruskan || []).find(d => !pejabatStruktural.includes(d));
-
-                const createCheckboxList = (list, checkedItems) => {
-                    return list.map(item => `
-                        <label>
-                            <input type="checkbox" ${(checkedItems || []).includes(item) ? 'checked' : ''} disabled> ${item}
-                        </label>
-                    `).join('');
-                };
-
-                let disposisiHTML = `
-                    <div class="print-header">
-                        <img src="logo copy.png" alt="Logo KKT" class="logo" onerror="this.src='https://placehold.co/80x80?text=Logo'">
-                        <div class="header-text">
-                            <h3>PEMERINTAH KABUPATEN KEPULAUAN TANIMBAR</h3>
-                            <h2>DINAS PEMBERDAYAAN MASYARAKAT DAN DESA</h2>
-                            <p>Jl. Ir. Soekarno, Kompleks Perkantoran Bupati Kepulauan Tanimbar, Maluku<br>Email : mtb_bpmd@yahoo.co.id/bpmd.kabmtb@gmail.com Kode Pos 97664</p>
+        function renderTable() {
+            const body = document.getElementById('suratTableBody');
+            body.innerHTML = '';
+            allSurat.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${s.noAgenda}</td>
+                    <td>${s.tujuanSurat || '-'}</td>
+                    <td>${s.noSurat}</td>
+                    <td>${s.pengirim}</td>
+                    <td>${s.perihal}</td>
+                    <td id="status-${s.id}">${s.disposisi ? 'Sudah' : 'Belum'}</td>
+                    <td>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn btn-sm" onclick="openModal('${s.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm" style="background:#6f42c1" onclick="viewDisposisi('${s.id}')" title="Lihat Disposisi"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm" style="background:#28a745" onclick="sendToLeader('${s.id}')" title="Kirim ke Pimpinan"><i class="fab fa-whatsapp"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteSurat('${s.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
                         </div>
-                    </div>
-                    <div id="disposisi-sheet">
-                        <h4>LEMBAR DISPOSISI</h4>
-                        <table class="disposisi-table">
-                            <tr>
-                                <td style="width: 50%;">Surat dari : <span class="value">${surat.pengirim || ''}</span></td>
-                                <td>Diterima Tgl : <span class="value">${formatDate(surat.tglTerima)}</span></td>
-                            </tr>
-                            <tr>
-                                <td>No. Surat : <span class="value">${surat.noSurat || ''}</span></td>
-                                <td>No. Agenda : <span class="value">${surat.noAgenda || ''}</span></td>
-                            </tr>
-                            <tr>
-                                <td>Tgl. Surat : <span class="value">${formatDate(surat.tglSurat)}</span></td>
-                                <td>Sifat : 
-                                    <div style="display:inline-block; margin-left: 5px;">
-                                        <label><input type="checkbox" disabled ${surat.sifatSurat === 'Sangat Segera' ? 'checked' : ''}> Sangat segera</label>
-                                        <label><input type="checkbox" disabled ${surat.sifatSurat === 'Penting' ? 'checked' : ''}> Penting</label>
-                                    </div>
-                                    <div style="display:inline-block; margin-left: 15px;">
-                                        <label><input type="checkbox" disabled ${surat.sifatSurat === 'Segera' ? 'checked' : ''}> Segera</label>
-                                        <label><input type="checkbox" disabled ${surat.sifatSurat === 'Rahasia' ? 'checked' : ''}> Rahasia</label>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="hal-value">
-                                <td colspan="2">Hal : <span class="value">${surat.perihal || ''}</span></td>
-                            </tr>
-                            <tr>
-                                <td class="full-width">
-                                    <strong>Diteruskan kepada Sdr:</strong>
-                                    <div style="padding-left: 10px; margin-top: 5px;">
-                                        ${createCheckboxList(pejabatStruktural, disposisi.diteruskan)}
-                                        <label>
-                                            <input type="checkbox" ${lainnyaDiteruskanValue ? 'checked' : ''} disabled> Lainnya
-                                        </label>
-                                        ${lainnyaDiteruskanValue ? `<p style="padding-left: 25px; margin:0; font-style: italic;">- ${lainnyaDiteruskanValue}</p>` : ''}
-                                    </div>
-                                </td>
-                                <td class="full-width">
-                                    <strong>Dengan hormat harap:</strong>
-                                    <div style="padding-left: 10px; margin-top: 5px;">
-                                        ${createCheckboxList(instruksiList, disposisi.instruksi)}
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" class="catatan-value">
-                                    <strong>Catatan:</strong><br>
-                                    <p style="padding-left: 5px; white-space: pre-wrap; margin:0;">${disposisi.catatan || 'Tidak ada catatan.'}</p>
-                                </td>
-                            </tr>
-                        </table>
-                        <div class="signature-block">
-                            <p>Plt. Kepala Dinas Pemberdayaan Masyarakat dan Desa<br>Kabupaten Kepulauan Tanimbar,</p>
-                            <p class="name">Ir. MESSALA HUTABARAT, M.M</p>
-                            <p>Pembina Utama</p>
-                            <p>NIP. 19710722 199703 1 006</p>
-                        </div>
-                        <div style="clear: both;"></div>
-                    </div>
+                    </td>
                 `;
-
-                const hasDisposisiContent = disposisi && (disposisi.catatan || (disposisi.diteruskan && disposisi.diteruskan.length > 0));
-                if (!hasDisposisiContent) {
-                    disposisiHTML = `<p><em>Belum ada disposisi untuk surat ini. Menunggu balasan dari pimpinan.</em></p>`;
-                    document.getElementById('printDisposisiBtn').style.display = 'none';
-                } else {
-                    document.getElementById('printDisposisiBtn').style.display = 'inline-flex';
-                }
-
-                disposisiContent.innerHTML = disposisiHTML;
-                disposisiModal.style.display = 'flex';
-            }
-
-            closeDisposisiBtn.addEventListener('click', () => {
-                disposisiModal.style.display = 'none';
+                body.appendChild(tr);
             });
+        }
 
-            document.getElementById('printDisposisiBtn').addEventListener('click', () => {
-                window.print();
-            });
-
-            window.deleteSurat = function (suratId) {
-                showAlert('Apakah Anda yakin ingin menghapus surat ini? Tindakan ini tidak dapat dibatalkan.', 'delete', async () => {
-                    try {
-                        const res = await api.deleteSuratMasuk(suratId);
-                        if (res.status === 'success') {
-                            showAlert('Surat berhasil dihapus!', 'success', () => {
-                                loadData();
-                            });
-                        } else {
-                            alert('Gagal menghapus: ' + res.message);
-                        }
-                    } catch (e) {
-                        alert('Error saat menghapus.');
-                    }
-                });
+        function openModal(id = null) {
+            currentId = id;
+            document.getElementById('suratForm').reset();
+            if (id) {
+                const s = allSurat.find(x => String(x.id) === String(id));
+                document.getElementById('noAgenda').value = s.noAgenda;
+                document.getElementById('tglTerima').value = s.tglTerima;
+                document.getElementById('noSurat').value = s.noSurat;
+                document.getElementById('sifatSurat').value = s.sifatSurat || 'Biasa';
+                document.getElementById('pengirim').value = s.pengirim;
+                document.getElementById('perihal').value = s.perihal;
+                document.getElementById('linkSurat').value = s.linkSurat;
+                document.getElementById('nomorWa').value = s.nomorWa;
+            } else {
+                const max = allSurat.reduce((m, x) => Math.max(m, parseInt(x.noAgenda) || 0), 0);
+                document.getElementById('noAgenda').value = max + 1;
             }
+            document.getElementById('suratModal').style.display = 'flex';
+        }
 
-            suratForm.addEventListener('submit', async function (e) {
-                e.preventDefault();
+        function closeModal() {
+            document.getElementById('suratModal').style.display = 'none';
+        }
 
-                const submitBtn = suratForm.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-
-                try {
-                    let uploadedUrl = document.getElementById('linkSurat').value;
-                    const fileInput = document.getElementById('fileSurat');
-
-                    if (fileInput.files.length > 0) {
-                        try {
-                            submitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Mengupload File...';
-                            const uploadRes = await api.uploadFile(fileInput.files[0]);
-                            if (uploadRes.status === 'success') {
-                                uploadedUrl = uploadRes.webViewLink; // Menggunakan link preview
-                            } else {
-                                throw new Error('Gagal upload file: ' + uploadRes.message);
-                            }
-                        } catch (uErr) {
-                            alert('Gagal mengupload file: ' + uErr.message);
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = originalText;
-                            return;
-                        }
-                    }
-
-                    const suratId = currentEditId || ''; // Backend handles ID if empty, but better pass empty ID only if new
-                    const suratData = {
-                        id: currentEditId, // Pass null or id
-                        noAgenda: document.getElementById('noAgenda').value,
-                        tglTerima: document.getElementById('tglTerima').value,
-                        sifatSurat: document.getElementById('sifatSurat').value,
-                        noSurat: document.getElementById('noSurat').value,
-                        tglSurat: document.getElementById('tglSurat').value,
-                        pengirim: document.getElementById('pengirim').value,
-                        perihal: document.getElementById('perihal').value,
-                        linkSurat: uploadedUrl,
-                        tujuanSurat: document.getElementById('tujuanSurat').value,
-                        nomorWa: document.getElementById('nomorWa').value
-                    };
-
-                    // Preserve existing disposisi if in edit mode
-                    if (currentEditId) {
-                        const existing = suratMasukData.find(s => String(s.id) === String(currentEditId));
-                        if (existing) suratData.disposisi = existing.disposisi;
-                    }
-
-                    submitBtn.innerHTML = '<i class="fas fa-save"></i> Menyimpan...';
-                    const saveRes = await api.saveSuratMasuk(suratData);
-
-                    if (saveRes.status === 'success') {
-                        // WA Logic
-                        const no_wa = suratData.nomorWa;
-                        const namaTujuan = suratData.tujuanSurat;
-                        const finalId = saveRes.id || suratId;
-
-                        if (no_wa && namaTujuan) {
-                            const path = window.location.pathname.replace(/[^/]*$/, 'lembar-disposisi.html');
-                            const baseUrl = window.location.origin + path;
-                            const params = new URLSearchParams();
-
-                            // Reconstruct pure data params for the link (exclude disposisi obj)
-                            suratData.id = finalId;
-                            for (const key in suratData) {
-                                if (key !== 'disposisi' && suratData[key]) {
-                                    params.append(key, suratData[key]);
-                                }
-                            }
-                            const disposisiUrl = `${baseUrl}?${params.toString()}`;
-
-                            let message = `*SURAT MASUK BARU* 📨\n\nYth. Bapak/Ibu ${namaTujuan},\n\nAda surat masuk baru yang memerlukan perhatian Bapak/Ibu.\n\n*Dari:* ${suratData.pengirim}\n*No. Surat:* ${suratData.noSurat}\n*Perihal:* ${suratData.perihal}\n\n`;
-                            if (uploadedUrl) {
-                                message += `*Lihat Lampiran Surat:*\n${uploadedUrl}\n\n`;
-                            }
-                            message += `Mohon untuk memberikan disposisi melalui tautan di bawah ini:\n${disposisiUrl}\n\n*KLIK LINK DI ATAS UNTUK LANGSUNG MENGISI DISPOSISI*\n\nTerima kasih.`;
-
-                            const whatsappUrl = `https://api.whatsapp.com/send?phone=${no_wa}&text=${encodeURIComponent(message)}`;
-                            window.open(whatsappUrl, '_blank');
-
-                            showAlert('Data tersimpan dan WA terbuka!', 'success', () => {
-                                window.location.reload();
-                            });
-                        } else {
-                            showAlert('Data tersimpan!', 'success', () => {
-                                window.location.reload();
-                            });
-                        }
-                    } else {
-                        alert('Gagal menyimpan: ' + saveRes.message);
-                    }
-                } catch (error) {
-                    console.error(error);
-                    alert('Terjadi kesalahan system.');
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                }
-            });
-
-            // Handle URL update for Disposisi (Updated for API)
-            async function handleUrlUpdate() {
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('action') === 'updateDisposisi') {
-                    const suratId = urlParams.get('id');
-                    // Find surat
-                    const surat = suratMasukData.find(s => String(s.id) === String(suratId));
-                    if (surat) {
-                        const newDisposisi = {
-                            catatan: urlParams.get('catatan') || '',
-                            diteruskan: (urlParams.get('diteruskan') || '').split(',').filter(Boolean),
-                            instruksi: (urlParams.get('instruksi') || '').split(',').filter(Boolean),
-                            timestamp: new Date().toISOString()
-                        };
-                        // Merge with surat data
-                        const updatedSurat = { ...surat, disposisi: newDisposisi };
-                        // Save via API
-                        try {
-                            await api.saveSuratMasuk(updatedSurat);
-                            showAlert(`✅ Disposisi untuk surat No. Agenda ${surat.noAgenda} telah diperbarui!`, 'success');
-                            window.history.replaceState({}, '', window.location.pathname);
-                            loadData(); // Refresh table
-                        } catch (e) {
-                            alert('Gagal update disposisi: ' + e.message);
-                        }
-                    } else {
-                        // Data maybe not loaded yet, or ID invalid.
-                        // Ideally we should wait for loadData() then check.
-                        // But loadData is async. We can check inside loadData or call this after.
-                    }
-                }
-            }
-
-            addSuratBtn.addEventListener('click', () => openModal());
-            closeBtn.addEventListener('click', closeModal);
-
-            window.onclick = function (event) {
-                if (event.target == suratModal) closeModal();
-                if (event.target == disposisiModal) disposisiModal.style.display = 'none';
-            }
-
-            const formatDate = (dateString) => {
-                if (!dateString) return '-';
-                const date = new Date(dateString);
-                if (isNaN(date)) return dateString;
-                return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        document.getElementById('suratForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                id: currentId,
+                noAgenda: document.getElementById('noAgenda').value,
+                tglTerima: document.getElementById('tglTerima').value,
+                noSurat: document.getElementById('noSurat').value,
+                sifatSurat: document.getElementById('sifatSurat').value,
+                pengirim: document.getElementById('pengirim').value,
+                perihal: document.getElementById('perihal').value,
+                linkSurat: document.getElementById('linkSurat').value,
+                nomorWa: document.getElementById('nomorWa').value
             };
 
-            // Initialization
-            loadData().then(() => {
-                handleUrlUpdate();
+            const fileInput = document.getElementById('fileSurat');
+            if (fileInput.files.length > 0) {
+                const up = await api.uploadFile(fileInput.files[0]);
+                if (up.status === 'success') payload.linkSurat = up.webViewLink;
+            }
+
+            await api.saveSuratMasuk(payload);
+            closeModal();
+            loadData();
+        };
+
+        function viewDisposisi(id) {
+            const s = allSurat.find(x => String(x.id) === String(id));
+            const content = document.getElementById('disposisiContent');
+
+            let disposisiHtml = '<p style="text-align:center; color:red">Belum ada disposisi dari pimpinan.</p>';
+
+            if (s.disposisi) {
+                try {
+                    const d = typeof s.disposisi === 'string' ? JSON.parse(s.disposisi) : s.disposisi;
+                    disposisiHtml = `
+                        <div style="margin-top:20px; border-top: 2px solid #000; padding-top:10px;">
+                            <p><strong>Catatan:</strong> ${d.catatan || '-'}</p>
+                            <p><strong>Diteruskan Ke:</strong> ${d.diteruskan ? d.diteruskan.join(', ') : '-'}</p>
+                            <p><strong>Instruksi:</strong> ${d.instruksi ? d.instruksi.join(', ') : '-'}</p>
+                            <p style="font-size:0.8rem; color:gray; margin-top:10px;">Diproses pada: ${new Date(d.timestamp).toLocaleString()}</p>
+                        </div>
+                    `;
+                } catch (e) {
+                    disposisiHtml = `<p>Error parsing disposisi data: ${e.message}</p>`;
+                }
+            }
+
+            content.innerHTML = `
+                <div class="print-header">
+                    <div style="text-align:center; width:100%">
+                        <h3>PEMERINTAH KABUPATEN KEPULAUAN TANIMBAR</h3>
+                        <h2>DINAS PEMBERDAYAAN MASYARAKAT DAN DESA</h2>
+                    </div>
+                </div>
+                <div id="disposisi-sheet">
+                    <h4 style="text-align:center">LEMBAR DISPOSISI</h4>
+                    <table class="disposisi-table">
+                        <tr><td>Pengirim: ${s.pengirim}</td><td>Agenda: ${s.noAgenda}</td></tr>
+                        <tr><td>No Surat: ${s.noSurat}</td><td>Terima: ${s.tglTerima}</td></tr>
+                        <tr><td colspan="2">Perihal: ${s.perihal}</td></tr>
+                    </table>
+                    ${disposisiHtml}
+                </div>
+            `;
+            document.getElementById('disposisiModal').style.display = 'flex';
+        }
+
+        async function sendToLeader(id) {
+            const s = allSurat.find(x => String(x.id) === String(id));
+            if (!s.nomorWa) return alert('Nomor WA Pimpinan belum diisi!');
+
+            // Build the URL for lembar-disposisi.html
+            const baseUrl = window.location.href.split('/').slice(0, -1).join('/') + '/lembar-disposisi.html';
+            const params = new URLSearchParams({
+                id: s.id,
+                noAgenda: s.noAgenda,
+                tglTerima: s.tglTerima,
+                noSurat: s.noSurat,
+                tglSurat: s.tglSurat || '',
+                pengirim: s.pengirim,
+                perihal: s.perihal,
+                sifatSurat: s.sifatSurat || 'Penting'
             });
-        });
+
+            const fullUrl = `${baseUrl}?${params.toString()}`;
+            const message = `*NOTIFIKASI SURAT MASUK* 📬\n\nYth. Bapak/Ibu Pimpinan,\nMohon kesediaan untuk mengisi Lembar Disposisi surat berikut:\n\n*No. Agenda:* ${s.noAgenda}\n*Pengirim:* ${s.pengirim}\n*Perihal:* ${s.perihal}\n\nKlik tautan berikut untuk mengisi disposisi:\n${fullUrl}`;
+
+            const waUrl = `https://api.whatsapp.com/send?phone=${s.nomorWa}&text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        async function deleteSurat(id) {
+            if (confirm('Hapus data surat ini?')) {
+                const res = await api.deleteSuratMasuk(id);
+                if (res.status === 'success') {
+                    loadData();
+                } else {
+                    alert('Gagal menghapus: ' + res.message);
+                }
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('isLoggedIn');
+            window.location.replace('<?= getScriptUrl(); ?>?p=login');
+        }
+
+        window.onload = loadData;
     </script>
 </body>
 

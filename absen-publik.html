@@ -4,19 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absen Online Publik - DPMD</title>
-
-    <!-- Stylesheets and Fonts -->
+    <title>Absensi Online - DPMD Kab. Kepulauan Tanimbar</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Firebase Scripts -->
-    <!-- Removed global Firebase SDK loading as it's now imported as modules -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script> -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js"></script> -->
-
     <style>
         :root {
             --bg-primary: #f4f7fc;
@@ -39,741 +31,366 @@
         body {
             background-color: var(--bg-primary);
             color: var(--text-primary);
-        }
-
-        .main-content {
-            width: 100%;
-            padding: 15px;
-            max-width: 600px;
-            /* Batas lebar maksimum untuk tampilan desktop */
-            margin: 0 auto;
-            /* Pusatkan konten */
-        }
-
-        .public-header {
-            text-align: center;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header i {
+            font-size: 3rem;
+            color: var(--secondary-accent);
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px var(--shadow-color);
             margin-bottom: 20px;
         }
 
-        .public-header img {
-            max-width: 80px;
-            margin-bottom: 15px;
-        }
-
-        .public-header h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .public-header p {
-            font-size: 1rem;
+        .instruction {
+            font-size: 0.9rem;
             color: var(--text-secondary);
-        }
-
-        .attendance-card {
-            width: 100%;
-            background-color: var(--bg-secondary);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px var(--shadow-color);
+            margin-bottom: 20px;
             text-align: center;
         }
 
-        .attendance-card .icon {
-            font-size: 4rem;
-            color: var(--secondary-accent);
-            margin-bottom: 1.5rem;
+        .form-group {
+            margin-bottom: 15px;
         }
 
-        .attendance-card h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .attendance-card .instruction {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
-        .form-field {
-            width: 100%;
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-
-        .form-field label {
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
             font-weight: 500;
             font-size: 0.9rem;
-            margin-bottom: 8px;
-            display: block;
         }
 
-        .form-field input {
+        .form-group input {
             width: 100%;
-            padding: 12px 15px;
-            border-radius: 8px;
+            padding: 12px;
             border: 1px solid var(--border-color);
-            font-size: 1rem;
-        }
-
-        #nip-display {
-            background-color: #e9ecef;
-            color: #495057;
-        }
-
-        .search-container {
-            position: relative;
-            display: flex;
-            gap: 10px;
-        }
-
-        .search-container input {
-            flex-grow: 1;
+            border-radius: 8px;
+            background: #f9f9f9;
         }
 
         .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--secondary-accent);
-            color: #ffffff;
-        }
-
-        #attendance-button {
-            width: 100%;
             padding: 12px;
-            border-radius: 8px;
             border: none;
-            background-color: #28a745;
-            color: white;
-            font-size: 1rem;
-            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: 0.3s;
+            margin-top: 10px;
         }
 
-        #attendance-button:hover {
-            background-color: #218838;
+        .btn-primary {
+            background: var(--secondary-accent);
+            color: white;
         }
 
-        #attendance-button:disabled {
-            background-color: #6c757d;
+        .btn-morning {
+            background: #28a745;
+            color: white;
+            display: none;
+        }
+
+        .btn-evening {
+            background: #6f42c1;
+            color: white;
+            display: none;
+        }
+
+        .btn:disabled {
+            background: #ccc;
             cursor: not-allowed;
         }
 
         #status-display {
-            margin-top: 1.5rem;
-            padding: 1rem;
+            padding: 15px;
             border-radius: 8px;
-            font-weight: 500;
-            min-height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none;
         }
 
         .status-info {
-            background-color: #e3f2fd;
+            background: #e3f2fd;
             color: #007bff;
+            display: block !important;
         }
 
         .status-success {
-            background-color: #d4edda;
+            background: #d4edda;
             color: #155724;
+            display: block !important;
         }
 
         .status-error {
-            background-color: #f8d7da;
+            background: #f8d7da;
             color: #721c24;
+            display: block !important;
         }
 
-        .status-active {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        /* Green for active */
-        .status-inactive {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        /* Red for inactive */
-
-
-        /* Modal Styles */
-        .modal-overlay {
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 1001;
+            z-index: 100;
         }
 
-        .modal-container {
+        .modal-content {
             background: white;
-            padding: 25px;
+            padding: 20px;
             border-radius: 12px;
             width: 90%;
-            max-width: 500px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            font-size: 1.3rem;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-            line-height: 1;
-        }
-
-        .modal-body {
-            max-height: 60vh;
+            max-width: 400px;
+            max-height: 80vh;
             overflow-y: auto;
         }
 
-        .modal-body input {
-            width: 100%;
+        .pegawai-item {
             padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-        }
-
-        .pegawai-list-item {
-            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
             cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
         }
 
-        .pegawai-list-item:last-child {
-            border-bottom: none;
+        .pegawai-item:hover {
+            background: #f0f7ff;
         }
 
-        .pegawai-list-item:hover {
-            background-color: var(--primary-accent);
-        }
-
-        .pegawai-list-item span {
+        .pegawai-item b {
             display: block;
         }
 
-        .pegawai-list-item .nama {
-            font-weight: 600;
-        }
-
-        .pegawai-list-item .nip {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .modal-loader {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-        }
-
-        .modal-loader i {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            display: block;
-            animation: spin 1.5s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* New styles for morning/evening attendance buttons */
-        .attendance-time-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 1rem;
-            justify-content: center;
-        }
-
-        .attendance-time-buttons button {
-            flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .btn-morning {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .btn-morning:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-evening {
-            background-color: #6f42c1;
-            color: white;
-        }
-
-        .btn-evening:hover {
-            background-color: #563d7c;
-        }
-
-        .attendance-time-buttons button:disabled {
-            background-color: #6c757d;
-            cursor: not-allowed;
-        }
-
-        .session-status-text {
-            font-weight: 600;
-            margin-top: 10px;
-            text-align: center;
-            padding: 5px 0;
+        .pegawai-item small {
+            color: #666;
         }
     </style>
 </head>
 
 <body>
-    <div class="main-content" id="mainContent">
-        <div class="public-header">
-            <img src="logo copy.png" alt="Logo DPMD">
-            <h1>Absensi Online</h1>
-            <p>Dinas Pemberdayaan Masyarakat dan Desa</p>
+    <div class="container">
+        <div class="header">
+            <i class="fas fa-camera-retro"></i>
+            <h1>Absensi Online DPMD</h1>
+            <p>Kab. Kepulauan Tanimbar</p>
         </div>
 
-        <div class="attendance-card">
-            <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
-            <h2>Absensi Kehadiran</h2>
-            <p class="instruction">Klik "Lihat Nama", pilih nama Anda, lalu klik tombol absen. Pastikan GPS pada
-                perangkat Anda sudah aktif.</p>
+        <div class="card">
+            <p class="instruction">Pilih nama Anda, aktifkan GPS, dan tekan tombol absen sesuai sesi yang aktif.</p>
 
-            <div class="form-field">
-                <label for="search-name-input">Nama Pegawai</label>
-                <div class="search-container">
-                    <input type="text" id="search-name-input" placeholder="Pilih nama dari daftar" readonly>
-                    <button class="btn" id="showNameListBtn">Lihat Nama</button>
-                </div>
+            <div class="form-group">
+                <label>Nama Pegawai</label>
+                <input type="text" id="employeeName" placeholder="Ketuk untuk memilih nama" readonly
+                    onclick="showModal()">
             </div>
 
-            <div class="form-field">
-                <label for="nip-display">NIP</label>
-                <input type="text" id="nip-display" placeholder="NIP akan muncul di sini" readonly>
+            <div class="form-group">
+                <label>NIP</label>
+                <input type="text" id="employeeNIP" placeholder="NIP otomatis muncul" readonly>
             </div>
 
-            <div class="attendance-time-buttons">
-                <button id="morningAttendanceBtn" class="btn-morning" disabled>Absen Pagi</button>
-                <button id="eveningAttendanceBtn" class="btn-evening" disabled>Absen Sore</button>
+            <div id="sessionButtons">
+                <button id="btnMorning" class="btn btn-morning" onclick="takeAttendance('Pagi')">Absen Pagi</button>
+                <button id="btnEvening" class="btn btn-evening" onclick="takeAttendance('Sore')">Absen Sore</button>
             </div>
 
-            <!-- New elements for displaying session status -->
-            <div id="morningSessionStatus" class="session-status-text">Absen Pagi: Memuat...</div>
-            <div id="eveningSessionStatus" class="session-status-text">Absen Sore: Memuat...</div>
-
-            <div id="status-display" class="status-info">
-                Silakan pilih nama Anda untuk memulai.
-            </div>
+            <div id="status-display">Silakan pilih nama Anda</div>
         </div>
     </div>
 
-    <!-- Modal Daftar Nama Pegawai -->
-    <div class="modal-overlay" id="pegawaiModal">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3>Pilih Pegawai</h3>
-                <button class="close-btn" id="closeModalBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="modalSearchInput" placeholder="Ketik untuk mencari nama...">
-                <div id="pegawaiListContainer">
-                    <!-- Daftar nama atau loader akan dimuat di sini -->
-                </div>
-            </div>
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                Pilih Pegawai
+                <i class="fas fa-times" onclick="closeModal()" style="cursor:pointer"></i>
+            </h3>
+            <input type="text" id="searchBox" placeholder="Cari nama..."
+                style="width:100%; padding:10px; margin-bottom:10px; border-radius:6px; border:1px solid #ddd;"
+                onkeyup="filterPegawai()">
+            <div id="employeeList">Memuat data...</div>
         </div>
     </div>
 
-
-    <script src="js/config.js"></script>
-    <script src="js/api.js"></script>
+    <?!= include('config_js'); ?>
+    <?!= include('api_js'); ?>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // --- GAS & Client Logic ---
-            // Replaces Firebase references
+        let pegawaiList = [];
+        let selectedPegawai = null;
+        let settings = {};
 
-            // --- UI Elements ---
-            const searchNameInput = document.getElementById('search-name-input');
-            const nipDisplay = document.getElementById('nip-display');
-            const morningAttendanceBtn = document.getElementById('morningAttendanceBtn');
-            const eveningAttendanceBtn = document.getElementById('eveningAttendanceBtn');
-            const statusDisplay = document.getElementById('status-display');
-            const showNameListBtn = document.getElementById('showNameListBtn');
-            const pegawaiModal = document.getElementById('pegawaiModal');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            const modalSearchInput = document.getElementById('modalSearchInput');
-            const pegawaiListContainer = document.getElementById('pegawaiListContainer');
-            const morningSessionStatusDiv = document.getElementById('morningSessionStatus');
-            const eveningSessionStatusDiv = document.getElementById('eveningSessionStatus');
-
-            let allPegawai = [];
-            let selectedPegawai = null;
-            let officeLat = null;
-            let officeLon = null;
-            let maxDistanceMeters = null;
-            let isMorningAttendanceActive = false;
-            let isEveningAttendanceActive = false;
-
-            // Generate/Get Device ID
-            function getDeviceId() {
-                let deviceId = localStorage.getItem('dpmd_deviceId');
-                if (!deviceId) {
-                    deviceId = 'device-' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-                    localStorage.setItem('dpmd_deviceId', deviceId);
-                }
-                return deviceId;
+        async function init() {
+            const resS = await api.getAppSettings();
+            if (resS.status === 'success') {
+                settings = resS.data;
+                updateButtons();
             }
 
-            const currentDeviceId = getDeviceId();
+            const resP = await api.getPegawai();
+            if (resP.status === 'success') {
+                pegawaiList = resP.data;
+                renderList();
+            }
+        }
 
-            // Load settings and pegawai data
-            async function loadInitialData() {
-                updateStatus('Memuat pengaturan dan data pegawai...', 'info');
-                try {
-                    // 1. Get Settings
-                    const settingsRes = await api.getAppSettings();
-                    if (settingsRes.status === 'success') {
-                        const s = settingsRes.data;
-                        officeLat = s.officeLat;
-                        officeLon = s.officeLon;
-                        maxDistanceMeters = s.jarakMaksimal;
-                        isMorningAttendanceActive = s.morning_active;
-                        isEveningAttendanceActive = s.evening_active;
+        function updateButtons() {
+            const morning = settings.morning_active === true || settings.morning_active === 'true';
+            const evening = settings.evening_active === true || settings.evening_active === 'true';
 
-                        updateSessionStatusDisplay();
-                    } else {
-                        updateStatus('Gagal memuat pengaturan: ' + settingsRes.message, 'error');
-                        disableAllAttendanceButtons();
-                        return; // Stop if settings fail
-                    }
+            document.getElementById('btnMorning').style.display = morning ? 'block' : 'none';
+            document.getElementById('btnEvening').style.display = evening ? 'block' : 'none';
 
-                    // 2. Get Pegawai
-                    const pegawaiRes = await api.getPegawai();
-                    if (pegawaiRes.status === 'success') {
-                        allPegawai = pegawaiRes.data;
-                        updateStatus('Silakan pilih nama Anda untuk memulai.', 'info');
-                    } else {
-                        updateStatus('Gagal memuat data pegawai.', 'error');
-                        disableAllAttendanceButtons();
-                    }
+            if (!morning && !evening) {
+                showStatus('Maaf, tidak ada sesi absen yang aktif saat ini.', 'error');
+            }
+        }
 
-                    updateAttendanceButtonStates();
+        function renderList() {
+            const container = document.getElementById('employeeList');
+            container.innerHTML = '';
+            pegawaiList.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'pegawai-item';
+                div.innerHTML = `<b>${p.nama}</b><small>${p.nip}</small>`;
+                div.onclick = () => selectPegawai(p);
+                container.appendChild(div);
+            });
+        }
 
-                } catch (error) {
-                    console.error("Gagal memuat data awal:", error);
-                    updateStatus('Gagal memuat data awal dari server.', 'error');
-                    disableAllAttendanceButtons();
-                }
+        function selectPegawai(p) {
+            selectedPegawai = p;
+            document.getElementById('employeeName').value = p.nama;
+            document.getElementById('employeeNIP').value = p.nip;
+            closeModal();
+
+            const deviceId = getDeviceId();
+            if (p.deviceId && p.deviceId !== deviceId) {
+                showStatus('Perangkat tidak terdaftar. Perangkat Anda berbeda dengan yang terdaftar di sistem.', 'error');
+                disableButtons(true);
+            } else {
+                showStatus('Pilih sesi absen untuk melanjutkan.', 'info');
+                disableButtons(false);
+            }
+        }
+
+        function getDeviceId() {
+            let id = localStorage.getItem('dpmd_device_id');
+            if (!id) {
+                id = 'DEV-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                localStorage.setItem('dpmd_device_id', id);
+            }
+            return id;
+        }
+
+        function disableButtons(disabled) {
+            document.getElementById('btnMorning').disabled = disabled;
+            document.getElementById('btnEvening').disabled = disabled;
+        }
+
+        function takeAttendance(session) {
+            if (!selectedPegawai) return showStatus('Pilih nama terlebih dahulu', 'error');
+
+            showStatus(`Sedang mendapatkan lokasi...`, 'info');
+
+            if (!navigator.geolocation) return showStatus('GPS tidak didukung oleh browser Anda', 'error');
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => processAttendance(pos, session),
+                (err) => showStatus('Gagal mendapatkan lokasi. Pastikan GPS aktif.', 'error'),
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        async function processAttendance(pos, session) {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            const officeLat = settings.officeLat;
+            const officeLon = settings.officeLon;
+            const radius = settings.jarakMaksimal || 30;
+
+            if (!officeLat || !officeLon) return showStatus('Lokasi kantor belum diatur oleh Admin.', 'error');
+
+            const dist = calculateDistance(lat, lon, officeLat, officeLon);
+
+            if (dist > radius) {
+                return showStatus(`Gagal! Anda berada di luar radius (${dist.toFixed(0)}m dari kantor). Jarak maks: ${radius}m`, 'error');
             }
 
-            function disableAllAttendanceButtons() {
-                morningAttendanceBtn.disabled = true;
-                eveningAttendanceBtn.disabled = true;
-                morningAttendanceBtn.textContent = 'Absen Pagi (Nonaktif)';
-                eveningAttendanceBtn.textContent = 'Absen Sore (Nonaktif)';
-            }
+            showStatus('Mengirim data absensi...', 'info');
 
-            function updateAttendanceButtonStates() {
-                if (officeLat === null || officeLon === null || maxDistanceMeters === null || allPegawai.length === 0) {
-                    // Still loading or failed
-                    return;
-                }
-
-                if (selectedPegawai) {
-                    const isDeviceAllowed = !selectedPegawai.registeredDeviceId || String(selectedPegawai.registeredDeviceId) === String(currentDeviceId);
-
-                    if (isDeviceAllowed) {
-                        morningAttendanceBtn.disabled = !isMorningAttendanceActive;
-                        eveningAttendanceBtn.disabled = !isEveningAttendanceActive;
-
-                        morningAttendanceBtn.textContent = isMorningAttendanceActive ? 'Absen Pagi' : 'Absen Pagi (Ditutup)';
-                        eveningAttendanceBtn.textContent = isEveningAttendanceActive ? 'Absen Sore' : 'Absen Sore (Ditutup)';
-
-                        if (!isMorningAttendanceActive && !isEveningAttendanceActive) {
-                            updateStatus('Absensi pagi dan sore saat ini ditutup.', 'info');
-                        } else {
-                            updateStatus(`Pegawai ${selectedPegawai.nama} dipilih. Silakan lakukan absensi.`, 'info');
-                        }
-
-                    } else {
-                        updateStatus('Absen ditolak. Pegawai ini sudah terdaftar pada perangkat lain.', 'error');
-                        disableAllAttendanceButtons();
-                    }
-                } else {
-                    disableAllAttendanceButtons();
-                    // Initial status set by loadInitialData or retained
-                }
-            }
-
-            function updateSessionStatusDisplay() {
-                if (isMorningAttendanceActive) {
-                    morningSessionStatusDiv.textContent = 'Absen Pagi: Aktif';
-                    morningSessionStatusDiv.className = 'session-status-text status-active';
-                } else {
-                    morningSessionStatusDiv.textContent = 'Absen Pagi: Nonaktif';
-                    morningSessionStatusDiv.className = 'session-status-text status-inactive';
-                }
-
-                if (isEveningAttendanceActive) {
-                    eveningSessionStatusDiv.textContent = 'Absen Sore: Aktif';
-                    eveningSessionStatusDiv.className = 'session-status-text status-active';
-                } else {
-                    eveningSessionStatusDiv.textContent = 'Absen Sore: Nonaktif';
-                    eveningSessionStatusDiv.className = 'session-status-text status-inactive';
-                }
-            }
-
-            // Render pegawai list in modal
-            function renderPegawaiList(filter = '') {
-                pegawaiListContainer.innerHTML = '';
-                const filteredList = allPegawai.filter(p => (p.nama || '').toLowerCase().includes(filter.toLowerCase()));
-
-                if (filteredList.length === 0) {
-                    pegawaiListContainer.innerHTML = '<p style="text-align:center; color: var(--text-secondary);">Nama tidak ditemukan.</p>';
-                    return;
-                }
-
-                filteredList.forEach(pegawai => {
-                    const item = document.createElement('div');
-                    item.classList.add('pegawai-list-item');
-                    item.innerHTML = `<span class="nama">${pegawai.nama}</span><span class="nip">${pegawai.nip}</span>`;
-                    item.addEventListener('click', () => selectPegawai(pegawai));
-                    pegawaiListContainer.appendChild(item);
-                });
-            }
-
-            // Select a pegawai from the list
-            function selectPegawai(pegawai) {
-                selectedPegawai = pegawai;
-                searchNameInput.value = pegawai.nama;
-                nipDisplay.value = pegawai.nip;
-
-                pegawaiModal.style.display = 'none';
-                updateAttendanceButtonStates();
-            }
-
-            // Show pegawai list modal
-            showNameListBtn.addEventListener('click', () => {
-                pegawaiModal.style.display = 'flex';
-                pegawaiListContainer.innerHTML = `
-                    <div class="modal-loader">
-                        <i class="fas fa-spinner"></i>
-                        <p>Mohon menunggu...</p>
-                    </div>`;
-                modalSearchInput.value = '';
-                modalSearchInput.style.display = 'none';
-
-                setTimeout(() => {
-                    modalSearchInput.style.display = 'block';
-                    renderPegawaiList();
-                    modalSearchInput.focus();
-                }, 500); // Faster than Firebase 2000
+            const res = await api.saveAbsensi({
+                pegawaiId: selectedPegawai.id,
+                nama: selectedPegawai.nama,
+                nip: selectedPegawai.nip,
+                session: session,
+                latitude: lat,
+                longitude: lon,
+                deviceId: getDeviceId()
             });
 
-            // Close pegawai list modal
-            closeModalBtn.addEventListener('click', () => {
-                pegawaiModal.style.display = 'none';
+            if (res.status === 'success') {
+                showStatus(`Berhasil! Absen ${session} tersimpan. Terima kasih.`, 'success');
+                setTimeout(() => location.reload(), 3000);
+            } else {
+                showStatus('Gagal: ' + res.message, 'error');
+            }
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371e3;
+            const p1 = lat1 * Math.PI / 180;
+            const p2 = lat2 * Math.PI / 180;
+            const dP = (lat2 - lat1) * Math.PI / 180;
+            const dL = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dP / 2) * Math.sin(dP / 2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dL / 2) * Math.sin(dL / 2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status-display');
+            el.textContent = msg;
+            el.className = 'status-' + type;
+            el.style.display = 'block';
+        }
+
+        function showModal() { document.getElementById('employeeModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('employeeModal').style.display = 'none'; }
+        function filterPegawai() {
+            const q = document.getElementById('searchBox').value.toLowerCase();
+            document.querySelectorAll('.pegawai-item').forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
             });
+        }
 
-            // Filter pegawai list based on search input
-            modalSearchInput.addEventListener('input', () => {
-                renderPegawaiList(modalSearchInput.value);
-            });
-
-            // Handle attendance button click
-            morningAttendanceBtn.addEventListener('click', () => handleAttendance('Pagi'));
-            eveningAttendanceBtn.addEventListener('click', () => handleAttendance('Sore'));
-
-            async function handleAttendance(sessionType) {
-                if (!selectedPegawai) {
-                    updateStatus('Silakan pilih nama pegawai terlebih dahulu.', 'error');
-                    return;
-                }
-
-                if (officeLat === null || officeLon === null) {
-                    updateStatus('Pengaturan lokasi kantor belum dimuat.', 'error');
-                    return;
-                }
-
-                // Device Check (Frontend)
-                if (selectedPegawai.registeredDeviceId && String(selectedPegawai.registeredDeviceId) !== String(currentDeviceId)) {
-                    updateStatus('Absen ditolak. Perangkat tidak sesuai.', 'error');
-                    return;
-                }
-
-                if ((sessionType === 'Pagi' && !isMorningAttendanceActive) || (sessionType === 'Sore' && !isEveningAttendanceActive)) {
-                    updateStatus(`Absensi ${sessionType} saat ini tidak aktif.`, 'error');
-                    return;
-                }
-
-                updateStatus(`Mendapatkan lokasi Anda untuk absen ${sessionType}, mohon tunggu...`, 'info');
-                morningAttendanceBtn.disabled = true;
-                eveningAttendanceBtn.disabled = true;
-                morningAttendanceBtn.textContent = 'Memproses...';
-                eveningAttendanceBtn.textContent = 'Memproses...';
-
-                if (!navigator.geolocation) {
-                    updateStatus('Geolocation tidak didukung oleh browser ini.', 'error');
-                    updateAttendanceButtonStates();
-                    return;
-                }
-
-                navigator.geolocation.getCurrentPosition(
-                    (position) => positionSuccess(position, sessionType),
-                    positionError,
-                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-                );
-            }
-
-            async function positionSuccess(position, sessionType) {
-                const userLat = position.coords.latitude;
-                const userLon = position.coords.longitude;
-                const distance = calculateDistance(userLat, userLon, officeLat, officeLon);
-
-                if (distance <= maxDistanceMeters) {
-                    updateStatus(`Lokasi valid! Jarak ${distance.toFixed(0)}m. Menyimpan data...`, 'info');
-                    await saveAttendance(selectedPegawai, userLat, userLon, sessionType);
-                } else {
-                    updateStatus(`Absen Ditolak. Jarak Anda ${distance.toFixed(0)}m (Max ${maxDistanceMeters}m).`, 'error');
-                    updateAttendanceButtonStates();
-                }
-            }
-
-            function positionError(error) {
-                let errorMessage = 'Gagal mendapatkan lokasi. ';
-                switch (error.code) {
-                    case error.PERMISSION_DENIED: errorMessage += "Izin lokasi ditolak."; break;
-                    case error.POSITION_UNAVAILABLE: errorMessage += "Lokasi tidak tersedia."; break;
-                    case error.TIMEOUT: errorMessage += "Waktu habis."; break;
-                    default: errorMessage += "Kesalahan tidak diketahui."; break;
-                }
-                updateStatus(errorMessage, 'error');
-                updateAttendanceButtonStates();
-            }
-
-            function calculateDistance(lat1, lon1, lat2, lon2) {
-                const R = 6371e3; // metres
-                const phi1 = lat1 * Math.PI / 180;
-                const phi2 = lat2 * Math.PI / 180;
-                const deltaPhi = (lat2 - lat1) * Math.PI / 180;
-                const deltaLambda = (lon2 - lon1) * Math.PI / 180;
-
-                const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
-                    Math.cos(phi1) * Math.cos(phi2) *
-                    Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-                return R * c; // in meters
-            }
-
-            async function saveAttendance(pegawai, lat, lon, sessionType) {
-                const now = new Date();
-                const timeStr = now.toTimeString().split(' ')[0]; // HH:MM:SS
-
-                const payload = {
-                    pegawaiId: pegawai.id, // For backend search
-                    nama: pegawai.nama,
-                    nip: pegawai.nip,
-                    waktu: timeStr,
-                    status: 'Hadir',
-                    keterangan: `Absen Lokasi GPS (${sessionType})`,
-                    lokasi: { latitude: lat, longitude: lon },
-                    deviceId: currentDeviceId,
-                    session: sessionType
-                };
-
-                try {
-                    const result = await api.saveAbsensi(payload);
-                    if (result.status === 'success') {
-                        updateStatus(`Selamat datang, ${pegawai.nama}! Absen ${sessionType} berhasil.`, 'success');
-
-                        // Update local registeredDeviceId if it was empty, to reflect immediate state
-                        if (!pegawai.registeredDeviceId) {
-                            pegawai.registeredDeviceId = currentDeviceId;
-                            // Optionally refresh allPegawai here or just update usage logic
-                        }
-
-                        searchNameInput.value = '';
-                        nipDisplay.value = '';
-                        selectedPegawai = null;
-
-                        setTimeout(() => {
-                            updateAttendanceButtonStates();
-                            updateStatus('Silakan pilih nama Anda untuk memulai.', 'info');
-                        }, 4000);
-                    } else {
-                        updateStatus('Gagal: ' + result.message, 'error');
-                        updateAttendanceButtonStates();
-                    }
-                } catch (error) {
-                    updateStatus('Gagal menyimpan ke server.', 'error');
-                    console.error("API error:", error);
-                    updateAttendanceButtonStates();
-                }
-            }
-
-            function updateStatus(message, type) {
-                statusDisplay.textContent = message;
-                statusDisplay.className = 'status-display';
-                statusDisplay.classList.add(type === 'info' ? 'status-info' : type === 'success' ? 'status-success' : 'status-error');
-            }
-
-            window.addEventListener('click', (e) => {
-                if (e.target === pegawaiModal) {
-                    pegawaiModal.style.display = 'none';
-                }
-            });
-
-            // Initial Load
-            loadInitialData();
-        });
+        window.onload = init;
     </script>
 </body>
 

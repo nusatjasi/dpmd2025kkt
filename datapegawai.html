@@ -3,29 +3,13 @@
 
 <head>
     <script>
-        // Skrip ini berjalan segera untuk melindungi halaman sebelum dirender.
         if (sessionStorage.getItem('isLoggedIn') !== 'true') {
-            // Jika belum login, paksa alihkan ke halaman login.
-            // Ganti 'login.html' jika nama file login Anda berbeda.
-            window.location.replace('login.html');
+            window.location.replace('<?= getScriptUrl(); ?>?p=login');
         }
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Pegawai - DPMD Kab. Kepulauan Tanimbar</title>
-
-    <!-- ======================= Skrip Proteksi Halaman ======================= -->
-    <script>
-        // Skrip ini berjalan segera untuk melindungi halaman sebelum dirender.
-        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
-            // Jika belum login, alihkan ke halaman login.
-            // PERBAIKAN: Menggunakan URL absolut yang dibuat secara dinamis untuk menghindari error pada URL blob.
-            const newUrl = window.location.href.replace(/[^/]*$/, 'login.html');
-            window.location.replace(newUrl);
-        }
-    </script>
-    <!-- ===================================================================== -->
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,16 +25,6 @@
             --border-color: #dee2e6;
             --shadow-color: rgba(0, 0, 0, 0.1);
             --danger-color: #dc3545;
-            --success-color: #28a745;
-
-            --icon-color-1: #007bff;
-            --icon-color-2: #28a745;
-            --icon-color-3: #ffc107;
-            --icon-color-4: #dc3545;
-            --icon-color-5: #17a2b8;
-            --icon-color-6: #6f42c1;
-            --icon-color-7: #fd7e14;
-            --icon-color-8: #20c997;
         }
 
         * {
@@ -66,11 +40,8 @@
             display: flex;
             min-height: 100vh;
             overflow-x: hidden;
-            /* Sembunyikan konten hingga login diverifikasi */
-            visibility: hidden;
         }
 
-        /* --- Sidebar --- */
         .sidebar {
             width: 260px;
             background: var(--bg-secondary);
@@ -79,7 +50,6 @@
             position: fixed;
             left: 0;
             top: 0;
-            transition: transform 0.4s ease, width 0.4s ease;
             z-index: 1000;
             box-shadow: 0 0 15px var(--shadow-color);
         }
@@ -95,13 +65,6 @@
             color: var(--secondary-accent);
             font-weight: 700;
             margin: 0;
-        }
-
-        .sidebar-header p {
-            font-size: 0.8rem;
-            opacity: 0.7;
-            margin-top: 5px;
-            color: var(--text-secondary);
         }
 
         .sidebar-menu {
@@ -120,98 +83,29 @@
             padding: 15px 25px;
             color: var(--text-secondary);
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: 0.3s;
             font-size: 0.95rem;
-            position: relative;
             margin: 5px 15px;
             border-radius: 8px;
-            white-space: nowrap;
         }
 
         .sidebar-menu a:hover,
         .sidebar-menu a.active {
             background-color: var(--secondary-accent);
-            color: #ffffff;
-            transform: translateX(5px);
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+            color: #fff;
         }
 
-        .sidebar-menu a:hover i,
-        .sidebar-menu a.active i {
-            color: #ffffff !important;
-        }
-
-        .sidebar-menu a i.menu-icon {
+        .sidebar-menu a i {
             margin-right: 15px;
             width: 20px;
             text-align: center;
-            font-size: 1.1rem;
         }
 
-        .icon-color-1 {
-            color: var(--icon-color-1);
-        }
-
-        .icon-color-2 {
-            color: var(--icon-color-2);
-        }
-
-        .icon-color-3 {
-            color: var(--icon-color-3);
-        }
-
-        .icon-color-4 {
-            color: var(--icon-color-4);
-        }
-
-        .icon-color-5 {
-            color: var(--icon-color-5);
-        }
-
-        .icon-color-6 {
-            color: var(--icon-color-6);
-        }
-
-        .icon-color-7 {
-            color: var(--icon-color-7);
-        }
-
-        .icon-color-8 {
-            color: var(--icon-color-8);
-        }
-
-        .logout-btn {
-            position: absolute;
-            bottom: 20px;
-            left: 15px;
-            right: 15px;
-        }
-
-        .logout-btn a {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: var(--primary-accent);
-            color: var(--secondary-accent);
-            text-align: center;
-            padding: 12px;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn a:hover {
-            background-color: #e53935;
-            color: #ffffff;
-            box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
-        }
-
-        /* --- Konten Utama --- */
         .main-content {
             margin-left: 260px;
             width: calc(100% - 260px);
             padding: 25px;
-            transition: all 0.4s ease;
+            transition: 0.4s;
         }
 
         .header {
@@ -221,85 +115,8 @@
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            box-shadow: 0 4px 15px var(--shadow-color);
             margin-bottom: 25px;
-        }
-
-        .header-content {
             padding: 15px 20px;
-            flex-grow: 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .hamburger-menu {
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        .hamburger-menu span {
-            display: block;
-            width: 25px;
-            height: 3px;
-            background-color: var(--text-primary);
-            margin: 5px 0;
-            transition: all 0.3s;
-            border-radius: 3px;
-        }
-
-        .header h2 {
-            color: var(--text-primary);
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px var(--shadow-color);
-        }
-
-        .table-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .search-bar {
-            flex-grow: 1;
-            max-width: 400px;
-            position: relative;
-        }
-
-        .search-bar input {
-            width: 100%;
-            padding: 10px 15px 10px 40px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            font-size: 0.95rem;
-        }
-
-        .search-bar i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
         }
 
         .btn-primary {
@@ -309,19 +126,38 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.95rem;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: opacity 0.3s;
         }
 
-        .btn-primary:hover {
-            opacity: 0.9;
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px var(--shadow-color);
         }
 
-        .table-responsive {
-            overflow-x: auto;
+        .search-bar {
+            margin-bottom: 20px;
+            position: relative;
+            max-width: 400px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
         }
 
         table {
@@ -340,35 +176,6 @@
         table th {
             background-color: var(--bg-primary);
             font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        table td {
-            color: var(--text-secondary);
-            vertical-align: middle;
-        }
-
-        table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .action-buttons button {
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 1.1rem;
-            padding: 5px;
-            margin-right: 10px;
-            color: var(--text-secondary);
-            transition: color 0.3s;
-        }
-
-        .action-buttons .edit-btn:hover {
-            color: var(--secondary-accent);
-        }
-
-        .action-buttons .delete-btn:hover {
-            color: var(--danger-color);
         }
 
         .status-tag {
@@ -388,7 +195,6 @@
             color: #28a745;
         }
 
-        /* --- Style Modal --- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -408,32 +214,6 @@
             border-radius: 12px;
             width: 90%;
             max-width: 700px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-
-        .modal-body {
-            max-height: 65vh;
-            overflow-y: auto;
-            padding-right: 15px;
         }
 
         .form-grid {
@@ -445,10 +225,11 @@
         .form-group {
             display: flex;
             flex-direction: column;
+            margin-bottom: 10px;
         }
 
         .form-group label {
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-weight: 500;
             font-size: 0.9rem;
         }
@@ -458,22 +239,11 @@
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 1rem;
         }
 
-        .modal-footer {
-            margin-top: 25px;
-            text-align: right;
-        }
-
-        /* --- Responsif & Logika Toggle Sidebar --- */
         @media (max-width: 992px) {
             .sidebar {
                 transform: translateX(-100%);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
             }
 
             .main-content {
@@ -481,409 +251,178 @@
                 width: 100%;
             }
         }
-
-        @media (min-width: 993px) {
-            .sidebar.collapsed {
-                width: 90px;
-            }
-
-            .sidebar.collapsed .sidebar-header h3,
-            .sidebar.collapsed .sidebar-header p,
-            .sidebar.collapsed .sidebar-menu a span,
-            .sidebar.collapsed .logout-btn span {
-                display: none;
-            }
-
-            .sidebar.collapsed .sidebar-menu a,
-            .sidebar.collapsed .logout-btn a {
-                justify-content: center;
-                padding-left: 25px;
-                padding-right: 25px;
-            }
-
-            .main-content.expanded {
-                margin-left: 90px;
-                width: calc(100% - 90px);
-            }
-        }
     </style>
-
+    <?!= include('config_js'); ?>
+    <?!= include('api_js'); ?>
 </head>
 
 <body>
-    <div class="sidebar" id="sidebar">
+    <div class="sidebar">
         <div class="sidebar-header">
-            <h3>DPMD</h3>
-            <p>Kab. Kepulauan Tanimbar</p>
+            <div class="logo-icon" style="font-size: 2.2rem; color: #f59e0b; margin-bottom: 0.5rem;"><i
+                    class="fas fa-building"></i></div>
+            <h3 style="font-size: 1.2rem;">DPMD Digital</h3>
+            <p style="font-size: 0.75rem; color: var(--text-secondary);">Kab. Kepulauan Tanimbar</p>
         </div>
         <div class="sidebar-menu">
             <ul>
-                <li><a href="index.html"><i class="fas fa-home menu-icon icon-color-1"></i> <span>Beranda</span></a>
+                <li><a href="<?= getScriptUrl(); ?>?p=index"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
                 </li>
-                <li><a href="datapegawai.html" class="active"><i class="fas fa-users menu-icon icon-color-2"></i>
-                        <span>Data Pegawai</span></a></li>
-                <li><a href="suratmasuk.html"><i class="fas fa-envelope-open-text menu-icon icon-color-3"></i>
-                        <span>Surat</span></a></li>
-                <li><a href="bezeting.html"><i class="fas fa-file-invoice menu-icon icon-color-4"></i> <span>Bezeting
+                <li><a href="<?= getScriptUrl(); ?>?p=datapegawai" class="active"><i class="fas fa-users"></i>
+                        <span>Data Pegawai</span></a>
+                </li>
+                <li><a href="<?= getScriptUrl(); ?>?p=suratmasuk"><i class="fas fa-envelope-open-text"></i> <span>Surat
+                            Masuk</span></a>
+                </li>
+                <li><a href="<?= getScriptUrl(); ?>?p=bezeting"><i class="fas fa-file-invoice"></i> <span>Bezeting
                             Pegawai</span></a></li>
-                <li><a href="#"><i class="fas fa-village menu-icon icon-color-5"></i> <span>Data Desa</span></a></li>
-                <li><a href="#"><i class="fas fa-info-circle menu-icon icon-color-6"></i> <span>Informasi</span></a>
-                </li>
-                <li><a href="master.html"><i class="fas fa-database menu-icon icon-color-7"></i> <span>Data
+                <li><a href="<?= getScriptUrl(); ?>?p=master"><i class="fas fa-database"></i> <span>Data
                             Master</span></a></li>
-                <li><a href="daftarhadir.html"><i class="fas fa-clipboard-user menu-icon icon-color-8"></i> <span>Daftar
+                <hr style="margin: 15px; border: 0; border-top: 1px solid var(--border-color); opacity: 0.2;">
+                <li><a href="<?= getScriptUrl(); ?>?p=absen_online"><i class="fas fa-camera-retro"></i> <span>Absen
+                            Online</span></a></li>
+                <li><a href="<?= getScriptUrl(); ?>?p=daftarhadir"><i class="fas fa-clipboard-user"></i> <span>Daftar
                             Hadir</span></a></li>
             </ul>
         </div>
-        <div class="logout-btn">
-            <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Keluar</span></a>
+        <div class="logout-btn" style="padding: 20px; border-top: 1px solid var(--border-color); margin-top: auto;">
+            <a href="#" onclick="logout()"
+                style="display: flex; align-items: center; color: var(--danger-color); text-decoration: none; font-weight: 500;">
+                <i class="fas fa-sign-out-alt" style="margin-right: 15px;"></i> <span>Keluar</span>
+            </a>
         </div>
     </div>
 
-    <div class="main-content" id="mainContent">
+    <div class="main-content">
         <header class="header">
-            <div class="header-left">
-                <div class="hamburger-menu" id="hamburgerMenu">
-                    <span></span><span></span><span></span>
-                </div>
-            </div>
-            <div class="header-content">
-                <h2>Data Pegawai</h2>
-                <button class="btn-primary" id="addPegawaiBtn"><i class="fas fa-plus"></i> Tambah Pegawai</button>
-            </div>
+            <h2>Data Pegawai</h2>
+            <button class="btn-primary" id="addBtn"><i class="fas fa-plus"></i> Tambah Pegawai</button>
         </header>
 
         <div class="card">
-            <div class="table-controls">
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Cari berdasarkan nama pegawai...">
-                </div>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Cari pegawai...">
             </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama / NIP</th>
-                            <th>L/P</th>
-                            <th>Pangkat / Gol / Ruang</th>
-                            <th>Jabatan</th>
-                            <th>Agama</th>
-                            <th>Status Pegawai</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pegawaiTableBody">
-                        <!-- Data akan diisi oleh JavaScript -->
-                    </tbody>
-                </table>
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama / NIP</th>
+                        <th>Pangkat / Gol</th>
+                        <th>Jabatan</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="pegawaiTableBody"></tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Modal untuk Tambah/Edit Pegawai -->
     <div class="modal-overlay" id="pegawaiModal">
         <div class="modal-container">
-            <div class="modal-header">
-                <h3 id="modalTitle">Tambah Pegawai Baru</h3>
-                <button class="close-btn" id="closeModalBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="pegawaiForm">
-                    <input type="hidden" id="pegawaiId">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="nama">Nama Lengkap</label>
-                            <input type="text" id="nama" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="nip">NIP</label>
-                            <input type="text" id="nip" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="jenis_kelamin">Jenis Kelamin</label>
-                            <select id="jenis_kelamin" required>
-                                <option value="L">Laki-laki</option>
-                                <option value="P">Perempuan</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="pangkat">Pangkat</label>
-                            <select id="pangkat" required></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="gol_ruang">Golongan/Ruang</label>
-                            <select id="gol_ruang" required></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="jabatan">Jabatan</label>
-                            <select id="jabatan" required></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="agama">Agama</label>
-                            <select id="agama" required></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="status_pegawai">Status Pegawai</label>
-                            <select id="status_pegawai" required>
-                                <option value="PNS">PNS</option>
-                                <option value="PPPK">PPPK</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="tanggal_lahir">Tanggal Lahir</label>
-                            <input type="date" id="tanggal_lahir" required>
-                        </div>
+            <h3>Tambah/Edit Pegawai</h3>
+            <form id="pegawaiForm">
+                <input type="hidden" id="pegawaiId">
+                <div class="form-grid">
+                    <div class="form-group"><label>Nama</label><input type="text" id="nama" required></div>
+                    <div class="form-group"><label>NIP</label><input type="text" id="nip" required></div>
+                    <div class="form-group"><label>Pangkat</label><select id="pangkat"></select></div>
+                    <div class="form-group"><label>Golongan</label><select id="gol_ruang"></select></div>
+                    <div class="form-group"><label>Jabatan</label><select id="jabatan"></select></div>
+                    <div class="form-group"><label>Agama</label><select id="agama"></select></div>
+                    <div class="form-group"><label>Status</label>
+                        <select id="status_pegawai">
+                            <option value="PNS">PNS</option>
+                            <option value="PPPK">PPPK</option>
+                        </select>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn-primary">Simpan Data</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div style="margin-top:20px; text-align:right;">
+                    <button type="button" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn-primary">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <script src="js/config.js"></script>
-    <script src="js/api.js"></script>
     <script>
-        // Tampilkan body sekarang setelah yakin pengguna sudah login
-        if (sessionStorage.getItem('isLoggedIn') === 'true') {
-            document.body.style.visibility = 'visible';
+        let pegawaiData = [];
+        let masterData = {};
+
+        async function loadData() {
+            const [pRes, mRes] = await Promise.all([api.getPegawai(), api.getMasterData()]);
+            if (pRes.status === 'success') { pegawaiData = pRes.data; renderTable(); }
+            if (mRes.status === 'success') { masterData = mRes.data; populateDropdowns(); }
         }
 
-        document.addEventListener('DOMContentLoaded', async function () {
-            // --- Interaktivitas UI Dasar ---
-            const hamburgerMenu = document.getElementById('hamburgerMenu');
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-
-            hamburgerMenu.addEventListener('click', () => {
-                if (window.innerWidth <= 992) {
-                    sidebar.classList.toggle('active');
-                } else {
-                    sidebar.classList.toggle('collapsed');
-                    mainContent.classList.toggle('expanded');
-                }
+        function renderTable() {
+            const body = document.getElementById('pegawaiTableBody');
+            body.innerHTML = '';
+            pegawaiData.forEach((p, i) => {
+                body.innerHTML += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${p.nama}<br><small>${p.nip}</small></td>
+                        <td>${p.pangkat} / ${p.gol_ruang}</td>
+                        <td>${p.jabatan}</td>
+                        <td><span class="status-tag ${p.status_pegawai === 'PNS' ? 'status-pns' : 'status-pppk'}">${p.status_pegawai}</span></td>
+                        <td>
+                            <button onclick="editPegawai('${p.id}')">Edit</button>
+                            <button onclick="deletePegawai('${p.id}')">Hapus</button>
+                        </td>
+                    </tr>`;
             });
+        }
 
-            const logoutButton = document.querySelector('.logout-btn a');
-            logoutButton.addEventListener('click', function (e) {
-                e.preventDefault();
-                sessionStorage.removeItem('isLoggedIn');
-                const newUrl = window.location.href.replace(/[^/]*$/, 'login.html');
-                window.location.replace(newUrl);
-            });
+        function populateDropdowns() {
+            const fill = (id, arr) => {
+                const el = document.getElementById(id);
+                el.innerHTML = '<option value="">Pilih</option>';
+                arr.forEach(v => el.innerHTML += `<option value="${v}">${v}</option>`);
+            };
+            fill('agama', masterData.agama);
+            fill('pangkat', masterData.pangkat);
+            fill('gol_ruang', masterData.golongan);
+            fill('jabatan', masterData.jabatan);
+        }
 
-            // --- Manajemen Data ---
-            let pegawaiData = [];
-            let masterData = {};
+        document.getElementById('addBtn').onclick = () => { document.getElementById('pegawaiForm').reset(); document.getElementById('pegawaiId').value = ''; showModal(); };
+        function showModal() { document.getElementById('pegawaiModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('pegawaiModal').style.display = 'none'; }
 
-            async function loadData() {
-                try {
-                    // Load Master Data
-                    const masterResponse = await api.getMasterData();
-                    if (masterResponse.status === 'success') {
-                        masterData = masterResponse.data;
-                    }
-
-                    // Load Pegawai Data
-                    const response = await api.getPegawai();
-                    if (response.status === 'success') {
-                        pegawaiData = response.data;
-                        renderTable(pegawaiData);
-                    } else {
-                        console.error('Failed to load pegawai:', response.message);
-                    }
-                } catch (error) {
-                    console.error('Error loading data:', error);
-                    // alert('Gagal memuat data. Periksa koneksi atau konfigurasi API.');
-                }
-            }
-
-            function renderTable(dataToRender) {
-                const tableBody = document.getElementById('pegawaiTableBody');
-                tableBody.innerHTML = '';
-                if (dataToRender.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Data tidak ditemukan.</td></tr>`;
-                    return;
-                }
-                dataToRender.forEach((pegawai, index) => {
-                    const statusClass = pegawai.status_pegawai === 'PNS' ? 'status-pns' : 'status-pppk';
-                    const pangkatGol = `${pegawai.pangkat || '-'} / ${pegawai.gol_ruang || '-'}`;
-                    const row = `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>
-                                <div>${pegawai.nama}</div>
-                                <small>${pegawai.nip}</small>
-                            </td>
-                            <td>${pegawai.jenis_kelamin}</td>
-                            <td>${pangkatGol}</td>
-                            <td>${pegawai.jabatan}</td>
-                            <td>${pegawai.agama}</td>
-                            <td><span class="status-tag ${statusClass}">${pegawai.status_pegawai}</span></td>
-                            <td class="action-buttons">
-                                <button class="edit-btn" data-id="${pegawai.id}"><i class="fas fa-edit"></i></button>
-                                <button class="delete-btn" data-id="${pegawai.id}"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.insertAdjacentHTML('beforeend', row);
-                });
-                addTableEventListeners();
-            }
-
-            // --- Logika Modal dan Form ---
-            const modal = document.getElementById('pegawaiModal');
-            const addPegawaiBtn = document.getElementById('addPegawaiBtn');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            const pegawaiForm = document.getElementById('pegawaiForm');
-            const modalTitle = document.getElementById('modalTitle');
-
-            function openModal() { modal.style.display = 'flex'; }
-            function closeModal() { modal.style.display = 'none'; }
-
-            function populateSelect(selectId, dataArray, selectedValue) {
-                const select = document.getElementById(selectId);
-                select.innerHTML = '<option value="">-- Pilih --</option>'; // Opsi default
-                (dataArray || []).forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item;
-                    option.textContent = item;
-                    if (item === selectedValue) option.selected = true;
-                    select.appendChild(option);
-                });
-            }
-
-            function showAddModal() {
-                pegawaiForm.reset();
-                document.getElementById('pegawaiId').value = '';
-                modalTitle.textContent = 'Tambah Pegawai Baru';
-
-                // Mengisi pilihan dari data master (dengan fallback jika kosong)
-                populateSelect('agama', masterData.agama || []);
-                populateSelect('pangkat', masterData.pangkat || []);
-                populateSelect('gol_ruang', masterData.golongan || []);
-                populateSelect('jabatan', masterData.jabatan || []);
-
-                openModal();
-            }
-
-            function showEditModal(id) {
-                // Konversi id ke string karena dari backend mungkin string, tapi di DOM dataset juga string.
-                // Namun kadang dari JSON bisa number.
-                const pegawai = pegawaiData.find(p => String(p.id) === String(id));
-                if (!pegawai) return;
-
-                pegawaiForm.reset();
-                modalTitle.textContent = 'Edit Data Pegawai';
-                document.getElementById('pegawaiId').value = pegawai.id;
-                document.getElementById('nama').value = pegawai.nama;
-                document.getElementById('nip').value = pegawai.nip;
-                document.getElementById('jenis_kelamin').value = pegawai.jenis_kelamin;
-                document.getElementById('status_pegawai').value = pegawai.status_pegawai;
-
-                // Format tanggal untuk input type="date" (YYYY-MM-DD)
-                if (pegawai.tanggal_lahir) {
-                    const date = new Date(pegawai.tanggal_lahir);
-                    if (!isNaN(date.getTime())) {
-                        // Fix timezone offset issue simple method
-                        const local = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-                        document.getElementById('tanggal_lahir').value = local.toISOString().slice(0, 10);
-                    } else {
-                        document.getElementById('tanggal_lahir').value = pegawai.tanggal_lahir; // Try direct value
-                    }
-                } else {
-                    document.getElementById('tanggal_lahir').value = '';
-                }
-
-                populateSelect('agama', masterData.agama || [], pegawai.agama);
-                populateSelect('pangkat', masterData.pangkat || [], pegawai.pangkat);
-                populateSelect('gol_ruang', masterData.golongan || [], pegawai.gol_ruang);
-                populateSelect('jabatan', masterData.jabatan || [], pegawai.jabatan);
-
-                openModal();
-            }
-
-            pegawaiForm.addEventListener('submit', async function (e) {
-                e.preventDefault();
-                const id = document.getElementById('pegawaiId').value;
-                const submitBtn = pegawaiForm.querySelector('button[type="submit"]');
-                const originalText = submitBtn.textContent;
-
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Menyimpan...';
-
-                const submittedData = {
-                    id: id, // if empty, backend creates new
-                    nama: document.getElementById('nama').value.trim(),
-                    nip: document.getElementById('nip').value.trim(),
-                    jenis_kelamin: document.getElementById('jenis_kelamin').value,
-                    pangkat: document.getElementById('pangkat').value,
-                    gol_ruang: document.getElementById('gol_ruang').value,
-                    jabatan: document.getElementById('jabatan').value,
-                    agama: document.getElementById('agama').value,
-                    status_pegawai: document.getElementById('status_pegawai').value,
-                    tanggal_lahir: document.getElementById('tanggal_lahir').value,
-                };
-
-                try {
-                    const result = await api.savePegawai(submittedData);
-                    if (result.status === 'success') {
-                        await loadData(); // Reload data to get updates
-                        closeModal();
-                    } else {
-                        alert('Gagal menyimpan: ' + result.message);
-                    }
-                } catch (error) {
-                    alert('Terjadi kesalahan saat menyimpan.');
-                    console.error(error);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
-                }
-            });
-
-            // --- Event Listeners ---
-            addPegawaiBtn.addEventListener('click', showAddModal);
-            closeModalBtn.addEventListener('click', closeModal);
-            window.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-
-            function addTableEventListeners() {
-                document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => showEditModal(e.currentTarget.dataset.id));
-                });
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        const id = e.currentTarget.dataset.id;
-                        if (confirm('Apakah Anda yakin ingin menghapus data pegawai ini?')) {
-                            // Optimistic update UI? Better wait for server
-                            try {
-                                const result = await api.deletePegawai(id);
-                                if (result.status === 'success') {
-                                    await loadData();
-                                } else {
-                                    alert('Gagal menghapus: ' + result.message);
-                                }
-                            } catch (err) {
-                                alert('Gagal menghapus data.');
-                                console.error(err);
-                            }
-                        }
-                    });
-                });
-            }
-
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                const filteredData = pegawaiData.filter(p => p.nama.toLowerCase().includes(searchTerm) || p.nip.includes(searchTerm));
-                renderTable(filteredData);
-            });
-
-            // --- Pemuatan Awal ---
+        document.getElementById('pegawaiForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = { id: document.getElementById('pegawaiId').value, nama: document.getElementById('nama').value, nip: document.getElementById('nip').value, pangkat: document.getElementById('pangkat').value, gol_ruang: document.getElementById('gol_ruang').value, jabatan: document.getElementById('jabatan').value, agama: document.getElementById('agama').value, status_pegawai: document.getElementById('status_pegawai').value };
+            await api.savePegawai(data);
+            closeModal();
             loadData();
-        });
+        };
+
+        window.editPegawai = (id) => {
+            const p = pegawaiData.find(x => x.id == id);
+            if (p) {
+                document.getElementById('pegawaiId').value = p.id;
+                document.getElementById('nama').value = p.nama;
+                document.getElementById('nip').value = p.nip;
+                document.getElementById('pangkat').value = p.pangkat;
+                document.getElementById('gol_ruang').value = p.gol_ruang;
+                document.getElementById('jabatan').value = p.jabatan;
+                document.getElementById('agama').value = p.agama;
+                document.getElementById('status_pegawai').value = p.status_pegawai;
+                showModal();
+            }
+        };
+
+        window.deletePegawai = async (id) => { if (confirm('Hapus?')) { await api.deletePegawai(id); loadData(); } };
+
+        function logout() {
+            sessionStorage.removeItem('isLoggedIn');
+            window.location.replace('<?= getScriptUrl(); ?>?p=login');
+        }
+
+        loadData();
     </script>
 </body>
 

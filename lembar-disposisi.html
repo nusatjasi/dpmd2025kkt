@@ -331,11 +331,20 @@
             }
         }
     </style>
-    <script src="js/config.js"></script>
-    <script src="js/api.js"></script>
+    <?!= include('config_js'); ?>
+    <?!= include('api_js'); ?>
 </head>
 
 <body>
+    <div class="no-print"
+        style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <a href="<?= getScriptUrl(); ?>?p=suratmasuk" class="btn" style="background: #6c757d;">
+            <i class="fas fa-arrow-left"></i> Kembali ke Surat Masuk
+        </a>
+        <button class="btn" onclick="window.print()">
+            <i class="fas fa-print"></i> Cetak Lembar Disposisi
+        </button>
+    </div>
     <div class="disposisi-container">
         <div id="disposisiContent">
             <!-- Konten akan dimuat di sini oleh JavaScript -->
@@ -351,14 +360,12 @@
             <div class="input-group">
                 <input type="tel" id="nomorWaTujuan"
                     placeholder="Pilih tujuan untuk mengisi nomor otomatis atau isi manual">
-                <button class="btn" id="pickContactBtn" title="Pilih dari Kontak"><i
-                        class="fas fa-address-book"></i></button>
             </div>
         </div>
         <div style="display: flex; justify-content: space-between; margin-top: 20px;">
             <button class="btn no-print" onclick="window.print()"><i class="fas fa-print"></i> Cetak</button>
             <button class="btn" id="saveDisposisiBtn" style="background-color: var(--success-color);"><i
-                    class="fab fa-whatsapp"></i> Kirim Balasan & Selesai</button>
+                    class="fab fa-whatsapp"></i> Simpan & Kirim Balasan</button>
         </div>
     </div>
 
@@ -375,14 +382,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Ambil elemen utama dari DOM
             const disposisiContent = document.getElementById('disposisiContent');
             const saveBtn = document.getElementById('saveDisposisiBtn');
             const teruskanSelect = document.getElementById('teruskanKe');
             const nomorWaInput = document.getElementById('nomorWaTujuan');
-            const pickContactBtn = document.getElementById('pickContactBtn');
 
-            // --- Fungsi Notifikasi Kustom ---
             const customAlert = document.getElementById('customAlert');
             const alertMessage = customAlert.querySelector('.custom-alert-message');
             const alertIcon = customAlert.querySelector('.custom-alert-icon i');
@@ -399,7 +403,11 @@
                     alertIcon.classList.add('fa-exclamation-triangle');
                     alertConfirmBtn.textContent = 'OK';
                     alertConfirmBtn.style.backgroundColor = 'var(--warning-color)';
-                } else { // 'success'
+                } else if (type === 'error') {
+                    alertIcon.classList.add('fa-times-circle');
+                    alertConfirmBtn.textContent = 'Tutup';
+                    alertConfirmBtn.style.backgroundColor = 'var(--danger-color)';
+                } else {
                     alertIcon.classList.add('fa-check-circle');
                     alertConfirmBtn.textContent = 'Lanjutkan';
                     alertConfirmBtn.style.backgroundColor = 'var(--success-color)';
@@ -411,29 +419,23 @@
                 customAlert.classList.remove('show');
             }
 
-            // --- Logika Utama Aplikasi ---
             const urlParams = new URLSearchParams(window.location.search);
             const surat = {};
             for (let [key, value] of urlParams.entries()) {
                 surat[key] = decodeURIComponent(value);
             }
 
-            // Validasi parameter URL
             if (!surat.id) {
                 disposisiContent.innerHTML = `
                     <div class="error-box">
                         <h2>Tautan Tidak Valid</h2>
-                        <p>Maaf, halaman tidak dapat dimuat karena parameter 'id' surat tidak ditemukan di URL.</p>
-                        <p>Pastikan tautan yang Anda gunakan dari notifikasi WhatsApp sudah disalin dengan benar dan lengkap.</p>
+                        <p>ID surat tidak ditemukan. Pastikan tautan lengkap.</p>
                     </div>
                 `;
-                return; // Hentikan eksekusi jika ID tidak ada
+                return;
             }
 
-            // Isi dropdown tujuan balasan
             const daftarKontak = [
-                { nama: 'Staf Pengirim (Admin)', no_wa: '6285349577060' },
-                { nama: 'Kepala Dinas', no_wa: '' },
                 { nama: 'Sekretaris', no_wa: '' },
                 { nama: 'Kabid. Kelembagaan & PMD', no_wa: '' },
                 { nama: 'Kabid. Pemberdayaan Ekonomi & TTG', no_wa: '' },
@@ -451,43 +453,23 @@
                 nomorWaInput.value = selectedOption.dataset.no_wa || '';
             });
 
-            // Logika untuk tombol pilih kontak
-            if ('contacts' in navigator && 'select' in navigator.contacts) {
-                pickContactBtn.addEventListener('click', async () => {
-                    try {
-                        const contacts = await navigator.contacts.select(['tel'], { multiple: false });
-                        if (contacts.length > 0) {
-                            let phoneNumber = contacts[0].tel[0].replace(/[^0-9]/g, '');
-                            if (phoneNumber.startsWith('08')) phoneNumber = '62' + phoneNumber.substring(1);
-                            nomorWaInput.value = phoneNumber;
-                        }
-                    } catch (ex) {
-                        console.error('Gagal mengambil kontak.', ex);
-                        showAlert('Fitur kontak tidak didukung di browser ini. Silakan isi manual.', 'warning');
-                    }
-                });
-            } else {
-                pickContactBtn.style.display = 'none';
-            }
-
-            // Definisikan daftar untuk disposisi
             const pejabatStruktural = ["Sekretaris", "Kabid. Kelembagaan & PMD", "Kabid. Pemberdayaan Ekonomi & TTG", "Analis Kebijakan", "Pranata Komputer"];
             const instruksiList = ["Tanggapan dan saran", "Untuk diketahui", "Proses lebih lanjut", "Selesaikan", "Koordinasikan", "Wakili / Hadiri", "Agendakan", "Arsip"];
 
             function formatDate(dateString) {
                 if (!dateString) return '-';
-                const options = { day: '2-digit', month: 'long', year: 'numeric' };
-                return new Date(dateString).toLocaleDateString('id-ID', options);
+                try {
+                    return new Date(dateString).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+                } catch (e) { return dateString; }
             }
 
-            // Buat dan tampilkan HTML untuk lembar disposisi
             disposisiContent.innerHTML = `
                 <div class="print-header">
-                    <img src="logo copy.png" alt="Logo KKT" class="logo" onerror="this.src='https://placehold.co/80x80?text=Logo'">
+                    <img src="logo.png" alt="Logo" class="logo" onerror="this.src='https://placehold.co/80x80?text=Logo'">
                     <div class="header-text">
                         <h3>PEMERINTAH KABUPATEN KEPULAUAN TANIMBAR</h3>
                         <h2>DINAS PEMBERDAYAAN MASYARAKAT DAN DESA</h2>
-                        <p>Jl. Ir. Soekarno, Kompleks Perkantoran Bupati Kepulauan Tanimbar, Maluku<br>Email : mtb_bpmd@yahoo.co.id/bpmd.kabmtb@gmail.com Kode Pos 97664</p>
+                        <p>Jl. Ir. Soekarno, Kompleks Perkantoran Bupati Kepulauan Tanimbar, Maluku</p>
                     </div>
                 </div>
                 <div id="disposisi-sheet">
@@ -496,16 +478,7 @@
                         <tr><td style="width: 50%;">Surat dari : <span class="value">${surat.pengirim || ''}</span></td><td>Diterima Tgl : <span class="value">${formatDate(surat.tglTerima)}</span></td></tr>
                         <tr><td>No. Surat : <span class="value">${surat.noSurat || ''}</span></td><td>No. Agenda : <span class="value">${surat.noAgenda || ''}</span></td></tr>
                         <tr><td>Tgl. Surat : <span class="value">${formatDate(surat.tglSurat)}</span></td>
-                            <td>Sifat : 
-                                <div style="display:inline-block; margin-left: 5px;">
-                                    <label><input type="checkbox" name="disp_sifat" value="Sangat Segera" ${surat.sifatSurat === 'Sangat Segera' ? 'checked' : ''}> Sangat segera</label>
-                                    <label><input type="checkbox" name="disp_sifat" value="Penting" ${surat.sifatSurat === 'Penting' ? 'checked' : ''}> Penting</label>
-                                </div>
-                                <div style="display:inline-block; margin-left: 15px;">
-                                    <label><input type="checkbox" name="disp_sifat" value="Segera" ${surat.sifatSurat === 'Segera' ? 'checked' : ''}> Segera</label>
-                                    <label><input type="checkbox" name="disp_sifat" value="Rahasia" ${surat.sifatSurat === 'Rahasia' ? 'checked' : ''}> Rahasia</label>
-                                </div>
-                            </td>
+                            <td>Sifat : ${surat.sifatSurat || '-'}</td>
                         </tr>
                         <tr class="hal-value"><td colspan="2">Hal : <span class="value">${surat.perihal || ''}</span></td></tr>
                         <tr>
@@ -513,8 +486,6 @@
                                 <strong>Diteruskan kepada Sdr:</strong>
                                 <div id="disp_diteruskan" style="padding-left: 10px; margin-top: 5px;">
                                     ${pejabatStruktural.map(j => `<label><input type="checkbox" name="diteruskan" value="${j}"> ${j}</label>`).join('')}
-                                    <label><input type="checkbox" id="diteruskan_lainnya_check"> Lainnya</label>
-                                    <textarea id="diteruskan_lainnya_text" style="display:none; width: 95%; margin-left: 15px; margin-top: 5px; padding: 5px; border: 1px solid #ccc; border-radius: 4px;" rows="2" placeholder="Isi tujuan lainnya..."></textarea>
                                 </div>
                             </td>
                             <td class="full-width">
@@ -527,84 +498,52 @@
                         <tr><td colspan="2" class="catatan-value"><strong>Catatan:</strong><textarea id="disp_catatan" placeholder="Isi catatan disposisi..."></textarea></td></tr>
                     </table>
                     <div class="signature-block">
-                        <p>Plt. Kepala Dinas Pemberdayaan Masyarakat dan Desa<br>Kabupaten Kepulauan Tanimbar,</p>
-                        <p class="name">REINHARD SAINUKA, S.Sos</p>
-                        <p>Pembina Tingkat I</p>
-                        <p>NIP. 19670611 200012 1 004</p>
+                        <p>Kepala Dinas,</p>
+                        <p class="name">..................................</p>
+                        <p>NIP. ..........................</p>
                     </div>
                     <div style="clear: both;"></div>
                 </div>`;
 
-            // Tambahkan event listener untuk elemen yang baru dibuat
-            const diteruskanLainnyaCheck = document.getElementById('diteruskan_lainnya_check');
-            const diteruskanLainnyaText = document.getElementById('diteruskan_lainnya_text');
-            diteruskanLainnyaCheck.addEventListener('change', function () {
-                diteruskanLainnyaText.style.display = this.checked ? 'block' : 'none';
-                if (!this.checked) diteruskanLainnyaText.value = '';
-            });
-
-            // Event listener untuk tombol simpan dan kirim - PERBAIKAN UTAMA
             saveBtn.addEventListener('click', async function () {
-                const saveBtn = document.getElementById('saveDisposisiBtn');
-                const originalText = saveBtn.innerHTML;
-
                 const catatan = document.getElementById('disp_catatan').value;
                 const diteruskan = Array.from(document.querySelectorAll('input[name="diteruskan"]:checked')).map(el => el.value);
                 const instruksi = Array.from(document.querySelectorAll('input[name="instruksi"]:checked')).map(el => el.value);
                 const nomorTujuan = nomorWaInput.value;
 
-                if (diteruskanLainnyaCheck.checked && diteruskanLainnyaText.value.trim() !== '') {
-                    diteruskan.push(diteruskanLainnyaText.value.trim());
-                }
-
-                if (!nomorTujuan) {
-                    showAlert('Silakan pilih tujuan dan pastikan nomor WhatsApp terisi.', 'warning');
-                    return;
-                }
-
-                // Construct the Disposisi Object (to be stored in the 'disposisi' column)
                 const disposisiContentObj = {
                     catatan: catatan,
                     diteruskan: diteruskan,
                     instruksi: instruksi,
-                    timestamp: new Date().toISOString(),
-                    // Optional: keep track of who filled it if we had auth, but here it's assumed Leader
+                    timestamp: new Date().toISOString()
                 };
 
-                // Construct payload for API
                 const payload = {
                     id: surat.id,
                     disposisi: disposisiContentObj
                 };
 
                 saveBtn.disabled = true;
+                const originalText = saveBtn.innerHTML;
                 saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
                 try {
-                    // Call API to save to Google Sheet
                     const result = await api.saveSuratMasuk(payload);
-
                     if (result.status === 'success') {
-                        const replyMessage = `*HASIL DISPOSISI* ✅\n-----------------------------------\n*No. Agenda:* ${surat.noAgenda || 'N/A'}\n*Dari:* ${surat.pengirim || 'N/A'}\n*No. Surat:* ${surat.noSurat || 'N/A'}\n*Perihal:* ${surat.perihal || 'N/A'}\n-----------------------------------\n\n*Disposisi dari Pimpinan:*\n*Catatan:* ${catatan || '-'}\n*Diteruskan kepada:* ${diteruskan.length > 0 ? diteruskan.join(', ') : '-'}\n*Instruksi:* ${instruksi.length > 0 ? instruksi.join(', ') : '-'}\n\n-----------------------------------\n*Data disposisi telah tersimpan otomatis ke sistem.*\n\n*Admin dapat melihat hasil disposisi ini di halaman Surat Masuk.*`;
-
-                        const whatsappUrl = `https://api.whatsapp.com/send?phone=${nomorTujuan}&text=${encodeURIComponent(replyMessage)}`;
-
-                        showAlert('Disposisi berhasil disimpan ke Database! Klik Lanjutkan untuk mengirim notifikasi ke Admin.', 'success', () => {
-                            window.open(whatsappUrl, '_blank');
-                            setTimeout(() => {
-                                if (window.history.length > 1) {
-                                    window.history.back();
-                                } else {
-                                    window.close();
-                                }
-                            }, 2000);
-                        });
+                        if (nomorTujuan) {
+                            const msg = `*DISPOSISI SURAT*\nNo. Agenda: ${surat.noAgenda}\nPerihal: ${surat.perihal}\n\n*Catatan:* ${catatan}\n*Diteruskan ke:* ${diteruskan.join(', ')}\n*Instruksi:* ${instruksi.join(', ')}`;
+                            const waUrl = `https://api.whatsapp.com/send?phone=${nomorTujuan}&text=${encodeURIComponent(msg)}`;
+                            showAlert('Disposisi berhasil disimpan! Klik Lanjutkan untuk kirim WhatsApp.', 'success', () => {
+                                window.open(waUrl, '_blank');
+                            });
+                        } else {
+                            showAlert('Disposisi berhasil disimpan tanpa pengiriman WhatsApp.', 'success');
+                        }
                     } else {
-                        showAlert('Gagal menyimpan ke database: ' + result.message, 'error');
+                        showAlert('Gagal menyimpan: ' + result.message, 'error');
                     }
                 } catch (error) {
-                    console.error(error);
-                    showAlert('Terjadi kesalahan saat menyimpan: ' + error.message, 'error');
+                    showAlert('Terjadi kesalahan: ' + error.message, 'error');
                 } finally {
                     saveBtn.disabled = false;
                     saveBtn.innerHTML = originalText;
