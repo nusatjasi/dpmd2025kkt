@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <script>
+        // Skrip ini berjalan segera untuk melindungi halaman sebelum dirender.
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            // Jika belum login, paksa alihkan ke halaman login.
+            // Ganti 'login.html' jika nama file login Anda berbeda.
+            window.location.replace('login.html');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Pegawai - DPMD Kab. Kepulauan Tanimbar</title>
+
+    <!-- ======================= Skrip Proteksi Halaman ======================= -->
+    <script>
+        // Skrip ini berjalan segera untuk melindungi halaman sebelum dirender.
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            // Jika belum login, alihkan ke halaman login.
+            // PERBAIKAN: Menggunakan URL absolut yang dibuat secara dinamis untuk menghindari error pada URL blob.
+            const newUrl = window.location.href.replace(/[^/]*$/, 'login.html');
+            window.location.replace(newUrl);
+        }
+    </script>
+    <!-- ===================================================================== -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f4f7fc;
+            --bg-secondary: #ffffff;
+            --primary-accent: #e3f2fd;
+            --secondary-accent: #007bff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+
+            --icon-color-1: #007bff;
+            --icon-color-2: #28a745;
+            --icon-color-3: #ffc107;
+            --icon-color-4: #dc3545;
+            --icon-color-5: #17a2b8;
+            --icon-color-6: #6f42c1;
+            --icon-color-7: #fd7e14;
+            --icon-color-8: #20c997;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Sembunyikan konten hingga login diverifikasi */
+            visibility: hidden;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: transform 0.4s ease, width 0.4s ease;
+            z-index: 1000;
+            box-shadow: 0 0 15px var(--shadow-color);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.5rem;
+            color: var(--secondary-accent);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            height: calc(100% - 150px);
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            position: relative;
+            margin: 5px 15px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: var(--secondary-accent);
+            color: #ffffff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .sidebar-menu a:hover i,
+        .sidebar-menu a.active i {
+            color: #ffffff !important;
+        }
+
+        .sidebar-menu a i.menu-icon {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .icon-color-1 {
+            color: var(--icon-color-1);
+        }
+
+        .icon-color-2 {
+            color: var(--icon-color-2);
+        }
+
+        .icon-color-3 {
+            color: var(--icon-color-3);
+        }
+
+        .icon-color-4 {
+            color: var(--icon-color-4);
+        }
+
+        .icon-color-5 {
+            color: var(--icon-color-5);
+        }
+
+        .icon-color-6 {
+            color: var(--icon-color-6);
+        }
+
+        .icon-color-7 {
+            color: var(--icon-color-7);
+        }
+
+        .icon-color-8 {
+            color: var(--icon-color-8);
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+        }
+
+        .logout-btn a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-accent);
+            color: var(--secondary-accent);
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn a:hover {
+            background-color: #e53935;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
+        }
+
+        /* --- Konten Utama --- */
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 25px;
+            transition: all 0.4s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-bottom: 25px;
+        }
+
+        .header-content {
+            padding: 15px 20px;
+            flex-grow: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hamburger-menu {
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .hamburger-menu span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-primary);
+            margin: 5px 0;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+
+        .header h2 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-accent);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.3s;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        table th {
+            background-color: var(--bg-primary);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        table td {
+            color: var(--text-secondary);
+            vertical-align: middle;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .action-buttons button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 5px;
+            margin-right: 10px;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+
+        .action-buttons .edit-btn:hover {
+            color: var(--secondary-accent);
+        }
+
+        .action-buttons .delete-btn:hover {
+            color: var(--danger-color);
+        }
+
+        .status-tag {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pns {
+            background-color: #e3f2fd;
+            color: #007bff;
+        }
+
+        .status-pppk {
+            background-color: #e8f5e9;
+            color: #28a745;
+        }
+
+        /* --- Style Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .modal-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .modal-body {
+            max-height: 65vh;
+            overflow-y: auto;
+            padding-right: 15px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .modal-footer {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        /* --- Responsif & Logika Toggle Sidebar --- */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 993px) {
+            .sidebar.collapsed {
+                width: 90px;
+            }
+
+            .sidebar.collapsed .sidebar-header h3,
+            .sidebar.collapsed .sidebar-header p,
+            .sidebar.collapsed .sidebar-menu a span,
+            .sidebar.collapsed .logout-btn span {
+                display: none;
+            }
+
+            .sidebar.collapsed .sidebar-menu a,
+            .sidebar.collapsed .logout-btn a {
+                justify-content: center;
+                padding-left: 25px;
+                padding-right: 25px;
+            }
+
+            .main-content.expanded {
+                margin-left: 90px;
+                width: calc(100% - 90px);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>DPMD</h3>
+            <p>Kab. Kepulauan Tanimbar</p>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home menu-icon icon-color-1"></i> <span>Beranda</span></a>
+                </li>
+                <li><a href="datapegawai.html" class="active"><i class="fas fa-users menu-icon icon-color-2"></i>
+                        <span>Data Pegawai</span></a></li>
+                <li><a href="suratmasuk.html"><i class="fas fa-envelope-open-text menu-icon icon-color-3"></i>
+                        <span>Surat</span></a></li>
+                <li><a href="bezeting.html"><i class="fas fa-file-invoice menu-icon icon-color-4"></i> <span>Bezeting
+                            Pegawai</span></a></li>
+                <li><a href="#"><i class="fas fa-village menu-icon icon-color-5"></i> <span>Data Desa</span></a></li>
+                <li><a href="#"><i class="fas fa-info-circle menu-icon icon-color-6"></i> <span>Informasi</span></a>
+                </li>
+                <li><a href="master.html"><i class="fas fa-database menu-icon icon-color-7"></i> <span>Data
+                            Master</span></a></li>
+                <li><a href="daftarhadir.html"><i class="fas fa-clipboard-user menu-icon icon-color-8"></i> <span>Daftar
+                            Hadir</span></a></li>
+            </ul>
+        </div>
+        <div class="logout-btn">
+            <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Keluar</span></a>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <header class="header">
+            <div class="header-left">
+                <div class="hamburger-menu" id="hamburgerMenu">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+            <div class="header-content">
+                <h2>Data Pegawai</h2>
+                <button class="btn-primary" id="addPegawaiBtn"><i class="fas fa-plus"></i> Tambah Pegawai</button>
+            </div>
+        </header>
+
+        <div class="card">
+            <div class="table-controls">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Cari berdasarkan nama pegawai...">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama / NIP</th>
+                            <th>L/P</th>
+                            <th>Pangkat / Gol / Ruang</th>
+                            <th>Jabatan</th>
+                            <th>Agama</th>
+                            <th>Status Pegawai</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pegawaiTableBody">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk Tambah/Edit Pegawai -->
+    <div class="modal-overlay" id="pegawaiModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tambah Pegawai Baru</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="pegawaiForm">
+                    <input type="hidden" id="pegawaiId">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nama">Nama Lengkap</label>
+                            <input type="text" id="nama" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nip">NIP</label>
+                            <input type="text" id="nip" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jenis_kelamin">Jenis Kelamin</label>
+                            <select id="jenis_kelamin" required>
+                                <option value="L">Laki-laki</option>
+                                <option value="P">Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pangkat">Pangkat</label>
+                            <select id="pangkat" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="gol_ruang">Golongan/Ruang</label>
+                            <select id="gol_ruang" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="jabatan">Jabatan</label>
+                            <select id="jabatan" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="agama">Agama</label>
+                            <select id="agama" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="status_pegawai">Status Pegawai</label>
+                            <select id="status_pegawai" required>
+                                <option value="PNS">PNS</option>
+                                <option value="PPPK">PPPK</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_lahir">Tanggal Lahir</label>
+                            <input type="date" id="tanggal_lahir" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn-primary">Simpan Data</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // Tampilkan body sekarang setelah yakin pengguna sudah login
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            document.body.style.visibility = 'visible';
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            // --- Interaktivitas UI Dasar ---
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+
+            hamburgerMenu.addEventListener('click', () => {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.toggle('active');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('expanded');
+                }
+            });
+
+            const logoutButton = document.querySelector('.logout-btn a');
+            logoutButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                sessionStorage.removeItem('isLoggedIn');
+                const newUrl = window.location.href.replace(/[^/]*$/, 'login.html');
+                window.location.replace(newUrl);
+            });
+
+            // --- Manajemen Data ---
+            let pegawaiData = [];
+            let masterData = {};
+
+            async function loadData() {
+                try {
+                    // Load Master Data
+                    const masterResponse = await api.getMasterData();
+                    if (masterResponse.status === 'success') {
+                        masterData = masterResponse.data;
+                    }
+
+                    // Load Pegawai Data
+                    const response = await api.getPegawai();
+                    if (response.status === 'success') {
+                        pegawaiData = response.data;
+                        renderTable(pegawaiData);
+                    } else {
+                        console.error('Failed to load pegawai:', response.message);
+                    }
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    // alert('Gagal memuat data. Periksa koneksi atau konfigurasi API.');
+                }
+            }
+
+            function renderTable(dataToRender) {
+                const tableBody = document.getElementById('pegawaiTableBody');
+                tableBody.innerHTML = '';
+                if (dataToRender.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Data tidak ditemukan.</td></tr>`;
+                    return;
+                }
+                dataToRender.forEach((pegawai, index) => {
+                    const statusClass = pegawai.status_pegawai === 'PNS' ? 'status-pns' : 'status-pppk';
+                    const pangkatGol = `${pegawai.pangkat || '-'} / ${pegawai.gol_ruang || '-'}`;
+                    const row = `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>
+                                <div>${pegawai.nama}</div>
+                                <small>${pegawai.nip}</small>
+                            </td>
+                            <td>${pegawai.jenis_kelamin}</td>
+                            <td>${pangkatGol}</td>
+                            <td>${pegawai.jabatan}</td>
+                            <td>${pegawai.agama}</td>
+                            <td><span class="status-tag ${statusClass}">${pegawai.status_pegawai}</span></td>
+                            <td class="action-buttons">
+                                <button class="edit-btn" data-id="${pegawai.id}"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-id="${pegawai.id}"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+                });
+                addTableEventListeners();
+            }
+
+            // --- Logika Modal dan Form ---
+            const modal = document.getElementById('pegawaiModal');
+            const addPegawaiBtn = document.getElementById('addPegawaiBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const pegawaiForm = document.getElementById('pegawaiForm');
+            const modalTitle = document.getElementById('modalTitle');
+
+            function openModal() { modal.style.display = 'flex'; }
+            function closeModal() { modal.style.display = 'none'; }
+
+            function populateSelect(selectId, dataArray, selectedValue) {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">-- Pilih --</option>'; // Opsi default
+                (dataArray || []).forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item;
+                    option.textContent = item;
+                    if (item === selectedValue) option.selected = true;
+                    select.appendChild(option);
+                });
+            }
+
+            function showAddModal() {
+                pegawaiForm.reset();
+                document.getElementById('pegawaiId').value = '';
+                modalTitle.textContent = 'Tambah Pegawai Baru';
+
+                // Mengisi pilihan dari data master (dengan fallback jika kosong)
+                populateSelect('agama', masterData.agama || []);
+                populateSelect('pangkat', masterData.pangkat || []);
+                populateSelect('gol_ruang', masterData.golongan || []);
+                populateSelect('jabatan', masterData.jabatan || []);
+
+                openModal();
+            }
+
+            function showEditModal(id) {
+                // Konversi id ke string karena dari backend mungkin string, tapi di DOM dataset juga string.
+                // Namun kadang dari JSON bisa number.
+                const pegawai = pegawaiData.find(p => String(p.id) === String(id));
+                if (!pegawai) return;
+
+                pegawaiForm.reset();
+                modalTitle.textContent = 'Edit Data Pegawai';
+                document.getElementById('pegawaiId').value = pegawai.id;
+                document.getElementById('nama').value = pegawai.nama;
+                document.getElementById('nip').value = pegawai.nip;
+                document.getElementById('jenis_kelamin').value = pegawai.jenis_kelamin;
+                document.getElementById('status_pegawai').value = pegawai.status_pegawai;
+
+                // Format tanggal untuk input type="date" (YYYY-MM-DD)
+                if (pegawai.tanggal_lahir) {
+                    const date = new Date(pegawai.tanggal_lahir);
+                    if (!isNaN(date.getTime())) {
+                        // Fix timezone offset issue simple method
+                        const local = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+                        document.getElementById('tanggal_lahir').value = local.toISOString().slice(0, 10);
+                    } else {
+                        document.getElementById('tanggal_lahir').value = pegawai.tanggal_lahir; // Try direct value
+                    }
+                } else {
+                    document.getElementById('tanggal_lahir').value = '';
+                }
+
+                populateSelect('agama', masterData.agama || [], pegawai.agama);
+                populateSelect('pangkat', masterData.pangkat || [], pegawai.pangkat);
+                populateSelect('gol_ruang', masterData.golongan || [], pegawai.gol_ruang);
+                populateSelect('jabatan', masterData.jabatan || [], pegawai.jabatan);
+
+                openModal();
+            }
+
+            pegawaiForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const id = document.getElementById('pegawaiId').value;
+                const submitBtn = pegawaiForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Menyimpan...';
+
+                const submittedData = {
+                    id: id, // if empty, backend creates new
+                    nama: document.getElementById('nama').value.trim(),
+                    nip: document.getElementById('nip').value.trim(),
+                    jenis_kelamin: document.getElementById('jenis_kelamin').value,
+                    pangkat: document.getElementById('pangkat').value,
+                    gol_ruang: document.getElementById('gol_ruang').value,
+                    jabatan: document.getElementById('jabatan').value,
+                    agama: document.getElementById('agama').value,
+                    status_pegawai: document.getElementById('status_pegawai').value,
+                    tanggal_lahir: document.getElementById('tanggal_lahir').value,
+                };
+
+                try {
+                    const result = await api.savePegawai(submittedData);
+                    if (result.status === 'success') {
+                        await loadData(); // Reload data to get updates
+                        closeModal();
+                    } else {
+                        alert('Gagal menyimpan: ' + result.message);
+                    }
+                } catch (error) {
+                    alert('Terjadi kesalahan saat menyimpan.');
+                    console.error(error);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            });
+
+            // --- Event Listeners ---
+            addPegawaiBtn.addEventListener('click', showAddModal);
+            closeModalBtn.addEventListener('click', closeModal);
+            window.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+            function addTableEventListeners() {
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => showEditModal(e.currentTarget.dataset.id));
+                });
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        if (confirm('Apakah Anda yakin ingin menghapus data pegawai ini?')) {
+                            // Optimistic update UI? Better wait for server
+                            try {
+                                const result = await api.deletePegawai(id);
+                                if (result.status === 'success') {
+                                    await loadData();
+                                } else {
+                                    alert('Gagal menghapus: ' + result.message);
+                                }
+                            } catch (err) {
+                                alert('Gagal menghapus data.');
+                                console.error(err);
+                            }
+                        }
+                    });
+                });
+            }
+
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredData = pegawaiData.filter(p => p.nama.toLowerCase().includes(searchTerm) || p.nip.includes(searchTerm));
+                renderTable(filteredData);
+            });
+
+            // --- Pemuatan Awal ---
+            loadData();
+        });
+    </script>
+</body>
+
+</html>

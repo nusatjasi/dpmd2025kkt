@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <script>
+        // Skrip ini berjalan segera untuk melindungi halaman sebelum dirender.
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            // Jika belum login, paksa alihkan ke halaman login.
+            // Ganti 'login.html' jika nama file login Anda berbeda.
+            window.location.replace('login.html');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Hadir Apel Senin - DPMD Kab. Kepulauan Tanimbar</title>
+    <!-- Impor Ikon dan Font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Gaya CSS untuk Halaman -->
+    <style>
+        :root {
+            --bg-primary: #f4f7fc;
+            --bg-secondary: #ffffff;
+            --primary-accent: #e3f2fd;
+            --secondary-accent: #007bff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+
+            --icon-color-1: #007bff;
+            --icon-color-2: #28a745;
+            --icon-color-3: #ffc107;
+            --icon-color-4: #dc3545;
+            --icon-color-5: #17a2b8;
+            --icon-color-6: #6f42c1;
+            --icon-color-7: #fd7e14;
+            --icon-color-8: #20c997;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Gaya untuk Sidebar --- */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: transform 0.4s ease, width 0.4s ease;
+            z-index: 1000;
+            box-shadow: 0 0 15px var(--shadow-color);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--secondary-accent);
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            height: calc(100% - 150px);
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            position: relative;
+            margin: 5px 15px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: var(--secondary-accent);
+            color: #ffffff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .sidebar-menu a:hover i,
+        .sidebar-menu a.active i {
+            color: #ffffff !important;
+        }
+
+        .sidebar-menu a i.menu-icon {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+
+        .icon-color-1 {
+            color: var(--icon-color-1);
+        }
+
+        .icon-color-2 {
+            color: var(--icon-color-2);
+        }
+
+        .icon-color-3 {
+            color: var(--icon-color-3);
+        }
+
+        .icon-color-4 {
+            color: var(--icon-color-4);
+        }
+
+        .icon-color-5 {
+            color: var(--icon-color-5);
+        }
+
+        .icon-color-6 {
+            color: var(--icon-color-6);
+        }
+
+        .icon-color-7 {
+            color: var(--icon-color-7);
+        }
+
+        .icon-color-8 {
+            color: var(--icon-color-8);
+        }
+
+        .dropdown-toggle {
+            justify-content: space-between;
+        }
+
+        .dropdown-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item-has-children.open>.dropdown-toggle .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            list-style: none;
+            padding-left: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+
+        .menu-item-has-children.open>.submenu {
+            max-height: 500px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .submenu a {
+            padding: 10px 15px 10px 25px;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+        }
+
+        .logout-btn a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-accent);
+            color: var(--secondary-accent);
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn a:hover {
+            background-color: #e53935;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
+        }
+
+        /* --- Gaya untuk Konten Utama --- */
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 25px;
+            transition: all 0.4s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hamburger-menu {
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .hamburger-menu span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-primary);
+            margin: 5px 0;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+
+        .header h2 {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--secondary-accent);
+            color: #ffffff;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn {
+            background-color: #fff;
+            color: var(--secondary-accent);
+            border: 1px solid var(--secondary-accent);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: center;
+            table-layout: fixed;
+            /* Lebar kolom tetap */
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+            border: 1px solid #000;
+            padding: 8px 5px;
+        }
+
+        .attendance-table th {
+            background-color: var(--primary-accent);
+        }
+
+        .attendance-table .pegawai-info {
+            white-space: nowrap;
+        }
+
+        /* Perbaikan lebar kolom */
+        .attendance-table th:nth-child(1),
+        .attendance-table td:nth-child(1) {
+            width: 40px;
+        }
+
+        .attendance-table th:nth-child(2),
+        .attendance-table td:nth-child(2) {
+            width: 250px;
+            text-align: left;
+            padding-left: 8px;
+        }
+
+        .attendance-table th:nth-child(3),
+        .attendance-table td:nth-child(3) {
+            width: 150px;
+        }
+
+        .attendance-table th:nth-child(4),
+        .attendance-table td:nth-child(4) {
+            width: 100px;
+        }
+
+        .attendance-table th:nth-child(5),
+        .attendance-table td:nth-child(5) {
+            width: 120px;
+        }
+
+        .attendance-table select {
+            width: 90%;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 4px;
+            text-align: center;
+        }
+
+        .attendance-table .keterangan-value {
+            display: none;
+        }
+
+        /* --- Gaya untuk Tampilan Cetak --- */
+        .print-header-container {
+            display: none;
+            /* Sembunyikan header di tampilan layar standar */
+        }
+
+        /* GAYA KOP SURAT UNTUK CETAK */
+        .print-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .header-text-wrapper {
+            flex-grow: 1;
+            /* Mengambil sisa ruang */
+            position: relative;
+            padding-bottom: 10px;
+            /* Memberi ruang untuk garis di bawah teks */
+        }
+
+        /* Garis atas yang tebal */
+        .header-text-wrapper::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 4px;
+            /* Posisikan garis atas */
+            height: 3px;
+            background-color: black;
+        }
+
+        /* Garis bawah yang tipis */
+        .header-text-wrapper::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 2px;
+            /* Posisikan garis bawah */
+            height: 1px;
+            background-color: black;
+        }
+
+        /* AKHIR GAYA KOP SURAT */
+
+        .print-header .logo {
+            width: 70px;
+            height: auto;
+            flex-shrink: 0;
+        }
+
+        .print-header .header-text {
+            text-align: center;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .print-header h3,
+        .print-header h2,
+        .print-header p {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .print-header h3 {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .print-header h2 {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .print-header p {
+            font-size: 12px;
+        }
+
+        .print-title {
+            text-align: center;
+            /* Teks rata tengah */
+            margin-top: 15px;
+            margin-bottom: 25px;
+            position: relative;
+            /* Memungkinkan pergeseran */
+            left: 40px;
+            /* Menggeser blok ke kanan sebanyak 40px */
+        }
+
+        .print-title h4 {
+            text-decoration: underline;
+            margin: 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .print-title p {
+            margin: 3px 0 0 0;
+            font-size: 12px;
+        }
+
+        .signature-section {
+            display: none;
+            margin-top: 40px;
+            page-break-inside: avoid;
+            width: 100%;
+            font-size: 12px;
+        }
+
+        .signature-block {
+            float: right;
+            text-align: center;
+            width: 450px;
+            margin-right: 0;
+        }
+
+        .signature-block p {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .signature-block .name {
+            margin-top: 50px;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+                font-family: 'Times New Roman', Times, serif;
+            }
+
+            .sidebar,
+            .header,
+            .card:not(#printableArea) {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 0;
+            }
+
+            #printableArea {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+
+            .print-header-container {
+                display: block;
+                /* Tampilkan kembali saat mencetak */
+            }
+
+            .attendance-table select {
+                display: none;
+            }
+
+            .attendance-table .keterangan-value {
+                display: inline;
+            }
+
+            .signature-section {
+                display: block;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 20mm;
+            }
+        }
+    </style>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+</head>
+
+<body>
+    <!-- 
+      CATATAN: Skrip pengecekan login di bawah ini dinonaktifkan agar pratinjau berfungsi.
+      Jika diaktifkan, halaman akan mencoba mengarahkan ke 'login.html' yang tidak ada di lingkungan ini.
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+          if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'login.html';
+          }
+        });
+    </script>
+    -->
+
+    <!-- Sidebar Navigasi -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>DPMD</h3>
+            <p>Kab. Kepulauan Tanimbar</p>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <!-- CATATAN: Tautan navigasi ini akan mengarah ke halaman lain yang mungkin tidak tersedia di pratinjau. -->
+                <li><a href="index.html"><i class="fas fa-home menu-icon icon-color-1"></i> <span>Beranda</span></a>
+                </li>
+                <li><a href="datapegawai.html"><i class="fas fa-users menu-icon icon-color-2"></i> <span>Data
+                            Pegawai</span></a></li>
+                <li class="menu-item-has-children">
+                    <a href="#" class="dropdown-toggle">
+                        <div><i class="fas fa-envelope-open-text menu-icon icon-color-3"></i> <span>Surat</span></div>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="suratmasuk.html">Surat Masuk</a></li>
+                        <li><a href="#">Surat Keluar</a></li>
+                    </ul>
+                </li>
+                <li><a href="bezeting.html"><i class="fas fa-file-invoice menu-icon icon-color-4"></i> <span>Bezeting
+                            Pegawai</span></a></li>
+                <li><a href="#"><i class="fas fa-village menu-icon icon-color-5"></i> <span>Data Desa</span></a></li>
+                <li><a href="master.html"><i class="fas fa-database menu-icon icon-color-7"></i> <span>Data
+                            Master</span></a></li>
+                <li class="menu-item-has-children active open">
+                    <a href="#" class="dropdown-toggle">
+                        <div><i class="fas fa-clipboard-user menu-icon icon-color-8"></i> <span>Daftar Hadir</span>
+                        </div>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="daftarhadir.html" class="active">Apel Senin</a></li>
+                        <li><a href="daftar_hadir_mingguan.html">Apel Setiap Hari</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="logout-btn">
+            <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Keluar</span></a>
+        </div>
+    </div>
+
+    <!-- Konten Utama Halaman -->
+    <div class="main-content" id="mainContent">
+        <header class="header">
+            <div class="header-left">
+                <div class="hamburger-menu" id="hamburgerMenu">
+                    <span></span><span></span><span></span>
+                </div>
+                <h2>Daftar Hadir Apel Senin</h2>
+            </div>
+            <button class="btn" id="printBtn"><i class="fas fa-print"></i> Cetak Daftar Hadir</button>
+        </header>
+
+        <div class="card">
+            <div id="apelDateSelector" style="display: flex; align-items: center; gap: 10px;">
+                <label for="apelDate">Pilih Tanggal Apel:</label>
+                <select id="apelDate" class="btn nav-btn"></select>
+            </div>
+        </div>
+
+        <!-- Area yang akan dicetak -->
+        <div class="card" id="printableArea">
+            <div id="apelView">
+                <div class="print-header-container">
+                    <div class="print-header">
+                        <!-- Logo diganti dengan placeholder karena file lokal tidak dapat diakses -->
+                        <img src="logo copy.png" alt="Logo KKT" class="logo">
+                        <div class="header-text-wrapper">
+                            <div class="header-text">
+                                <h3>PEMERINTAH KABUPATEN KEPULAUAN TANIMBAR</h3>
+                                <h2>DINAS PEMBERDAYAAN MASYARAKAT DAN DESA</h2>
+                                <p>Jln. Ir. Soekarno, Kompleks Kantor Bupati Kepulauan Tanimbar, Kode Pos 97664</p>
+                                <p>S A U M L A K I</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="print-title">
+                        <h4>DAFTAR HADIR APEL GABUNGAN</h4>
+                        <p id="apelHeader"></p>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="attendance-table" id="apelTable">
+                        <thead>
+                            <tr>
+                                <th>NO</th>
+                                <th>NAMA/NIP</th>
+                                <th>JABATAN</th>
+                                <th>TANDA TANGAN</th>
+                                <th>KETERANGAN</th>
+                            </tr>
+                        </thead>
+                        <tbody id="apelTableBody"></tbody>
+                    </table>
+                </div>
+                <!-- Bagian Tanda Tangan yang akan diisi otomatis -->
+                <div class="signature-section">
+                    <div class="signature-block">
+                        <p>Mengetahui,</p>
+                        <p id="jabatanKadis">Plt. KEPALA DINAS PEMBERDAYAAN MASYARAKAT DAN DESA</p>
+                        <p>KABUPATEN KEPULAUAN TANIMBAR</p>
+                        <br><br><br>
+                        <p class="name" id="kadisName">[Nama Kepala Dinas]</p>
+                        <p id="kadisPangkat">[Pangkat/Golongan]</p>
+                        <p>NIP. <span id="kadisNip">[NIP Kepala Dinas]</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- LOGIKA SIDEBAR ---
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const sidebar = document.getElementById('sidebar');
+            hamburgerMenu.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                document.getElementById('mainContent').classList.toggle('expanded');
+            });
+
+            document.querySelectorAll('.dropdown-toggle').forEach(item => {
+                item.addEventListener('click', event => {
+                    event.preventDefault();
+                    item.parentElement.classList.toggle('open');
+                });
+            });
+
+            // --- LOGIKA APLIKASI UTAMA ---
+
+            // CATATAN: Data pegawai diambil dari localStorage. 
+            // Untuk aplikasi nyata, disarankan menggunakan database.
+            // Anda bisa mengisi data contoh di sini untuk pengujian.
+            let pegawaiData = [];
+            const apelDateSelect = document.getElementById('apelDate');
+
+            async function loadData() {
+                try {
+                    const response = await api.getPegawai();
+                    if (response.status === 'success') {
+                        pegawaiData = response.data;
+                        // Render initial table if date is selected
+                        if (apelDateSelect.value) {
+                            renderApelTable(apelDateSelect.value);
+                        }
+                    } else {
+                        console.error('Failed to load pegawai:', response.message);
+                    }
+                } catch (e) {
+                    console.error('Error loading data:', e);
+                }
+            }
+
+            apelDateSelect.addEventListener('change', (e) => renderApelTable(e.target.value));
+
+            // Fungsi untuk mendapatkan semua hari Senin dalam setahun
+            function getAllMondaysOfYear(year) {
+                const mondays = [];
+                for (let month = 0; month < 12; month++) {
+                    let date = new Date(year, month, 1);
+                    while (date.getMonth() === month) {
+                        if (date.getDay() === 1) { // 1 = Senin
+                            mondays.push(new Date(date));
+                        }
+                        date.setDate(date.getDate() + 1);
+                    }
+                }
+                return mondays;
+            }
+
+            // Fungsi untuk mengisi pilihan tanggal apel
+            function populateApelDates() {
+                const mondays2025 = getAllMondaysOfYear(2025);
+                apelDateSelect.innerHTML = '';
+                mondays2025.forEach(date => {
+                    const option = document.createElement('option');
+
+                    // Format tanggal ke format<x_bin_880>-MM-DD secara manual untuk menghindari masalah zona waktu
+                    const year = date.getFullYear();
+                    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() dimulai dari 0
+                    const day = date.getDate().toString().padStart(2, '0');
+                    const dateString = `${year}-${month}-${day}`;
+
+                    option.value = dateString;
+                    option.textContent = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+                    apelDateSelect.appendChild(option);
+                });
+            }
+
+            // Fungsi untuk menampilkan tabel daftar hadir berdasarkan tanggal yang dipilih
+            function renderApelTable(selectedDate) {
+                const tableBody = document.getElementById('apelTableBody');
+                const apelHeader = document.getElementById('apelHeader');
+                const date = new Date(selectedDate);
+                // Tambahkan waktu agar tidak ada masalah zona waktu saat parsing
+                date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+                apelHeader.textContent = `Senin, ${date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}`;
+
+                tableBody.innerHTML = '';
+                if (pegawaiData.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="5">Tidak ada data pegawai. Silakan tambahkan di menu Data Master.</td></tr>`;
+                } else {
+                    pegawaiData.forEach((pegawai, index) => {
+                        const row = tableBody.insertRow();
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td class="pegawai-info">${pegawai.nama || 'Nama Kosong'}<br>${pegawai.nip || 'NIP Kosong'}</td>
+                            <td>${pegawai.jabatan || 'Jabatan Kosong'}</td>
+                            <td></td>
+                            <td>
+                                <select class="keterangan-select">
+                                    <option value="Hadir">Hadir</option>
+                                    <option value="Libur">Libur</option>
+                                    <option value="Cuti">Cuti</option>
+                                    <option value="Sakit">Sakit</option>
+                                    <option value="Izin">Izin</option>
+                                    <option value="Tanpa Keterangan">Tanpa Keterangan</option>
+                                </select>
+                                <span class="keterangan-value"></span>
+                            </td>
+                        `;
+                    });
+                }
+
+                // --- LOGIKA PENAMPILAN TANDA TANGAN ---
+                // Mencari data kepala dinas dari data master pegawai.
+                // Prioritas pencarian: "Plt. Kepala Dinas", kemudian "Kepala Dinas".
+                let kepalaDinas = pegawaiData.find(p => p.jabatan && p.jabatan.toLowerCase() === "plt. kepala dinas");
+                if (!kepalaDinas) {
+                    kepalaDinas = pegawaiData.find(p => p.jabatan && p.jabatan.toLowerCase() === "kepala dinas");
+                }
+
+                const jabatanKadisEl = document.getElementById('jabatanKadis');
+                const kadisNameEl = document.getElementById('kadisName');
+                const kadisPangkatEl = document.getElementById('kadisPangkat');
+                const kadisNipEl = document.getElementById('kadisNip');
+
+                if (kepalaDinas) {
+                    jabatanKadisEl.textContent = kepalaDinas.jabatan.toUpperCase() + " PEMBERDAYAAN MASYARAKAT DAN DESA";
+                    kadisNameEl.textContent = kepalaDinas.nama;
+                    kadisPangkatEl.textContent = kepalaDinas.pangkat;
+                    kadisNipEl.textContent = kepalaDinas.nip;
+                } else {
+                    // Jika tidak ada data kepala dinas, tampilkan pesan.
+                    kadisNameEl.textContent = "[Nama Kepala Dinas Tidak Ditemukan]";
+                    kadisPangkatEl.textContent = "[Pangkat/Golongan]";
+                    kadisNipEl.textContent = "[NIP Tidak Ditemukan]";
+                }
+            }
+
+            // Event listener untuk tombol cetak
+            document.getElementById('printBtn').addEventListener('click', () => {
+                // Salin nilai dari dropdown ke span agar terlihat saat dicetak
+                document.querySelectorAll('.keterangan-select').forEach(sel => {
+                    const span = sel.nextElementSibling;
+                    if (sel.value !== "Hadir") {
+                        span.textContent = sel.value;
+                    } else {
+                        span.textContent = "";
+                    }
+                });
+                // Panggil fungsi cetak browser
+                window.print();
+            });
+
+            // Inisialisasi halaman saat pertama kali dimuat
+            populateApelDates();
+            loadData();
+        });
+    </script>
+</body>
+
+</html>

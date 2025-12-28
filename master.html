@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="id">
+<script>
+    // Cek status login saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', function () {
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    });
+</script>
+
+<head>
+    <script>
+        // Skrip ini berjalan segera untuk melindungi halaman sebelum dirender.
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            // Jika belum login, paksa alihkan ke halaman login.
+            // Ganti 'login.html' jika nama file login Anda berbeda.
+            window.location.replace('login.html');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Master - DPMD Kab. Kepulauan Tanimbar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f4f7fc;
+            --bg-secondary: #ffffff;
+            --primary-accent: #e3f2fd;
+            --secondary-accent: #007bff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+
+            --icon-color-1: #007bff;
+            --icon-color-2: #28a745;
+            --icon-color-3: #ffc107;
+            --icon-color-4: #dc3545;
+            --icon-color-5: #17a2b8;
+            --icon-color-6: #6f42c1;
+            --icon-color-7: #fd7e14;
+            --icon-color-8: #20c997;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: transform 0.4s ease, width 0.4s ease;
+            z-index: 1000;
+            box-shadow: 0 0 15px var(--shadow-color);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--secondary-accent);
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            height: calc(100% - 150px);
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            position: relative;
+            margin: 5px 15px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: var(--secondary-accent);
+            color: #ffffff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .sidebar-menu a:hover i,
+        .sidebar-menu a.active i {
+            color: #ffffff !important;
+        }
+
+        .sidebar-menu a i.menu-icon {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+
+        .icon-color-1 {
+            color: var(--icon-color-1);
+        }
+
+        .icon-color-2 {
+            color: var(--icon-color-2);
+        }
+
+        .icon-color-3 {
+            color: var(--icon-color-3);
+        }
+
+        .icon-color-4 {
+            color: var(--icon-color-4);
+        }
+
+        .icon-color-5 {
+            color: var(--icon-color-5);
+        }
+
+        .icon-color-6 {
+            color: var(--icon-color-6);
+        }
+
+        .icon-color-7 {
+            color: var(--icon-color-7);
+        }
+
+        .icon-color-8 {
+            color: var(--icon-color-8);
+        }
+
+        .dropdown-toggle {
+            justify-content: space-between;
+        }
+
+        .dropdown-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item-has-children.active>.dropdown-toggle .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            list-style: none;
+            padding-left: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+
+        .menu-item-has-children.active>.submenu {
+            max-height: 500px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .submenu a {
+            padding: 10px 15px 10px 25px;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+        }
+
+        .logout-btn a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-accent);
+            color: var(--secondary-accent);
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn a:hover {
+            background-color: #e53935;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
+        }
+
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 25px;
+            transition: all 0.4s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hamburger-menu {
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .hamburger-menu span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-primary);
+            margin: 5px 0;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+
+        .header h2 {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .master-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .master-item-list {
+            list-style: none;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .master-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .master-item:last-child {
+            border-bottom: none;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        .delete-btn:hover {
+            color: #a71d2a;
+        }
+
+        .add-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-form input {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        .add-form button {
+            padding: 8px 15px;
+            border: none;
+            background-color: var(--secondary-accent);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .add-form button:hover {
+            opacity: 0.9;
+        }
+
+        /* Notification & Confirmation Styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .popup-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .popup-content {
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transform: scale(0.7);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.4s ease;
+        }
+
+        .popup-overlay.show .popup-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .popup-content h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .popup-content p {
+            margin-bottom: 25px;
+            color: var(--text-secondary);
+        }
+
+        .popup-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .popup-buttons .btn {
+            padding: 10px 25px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .popup-buttons .btn-confirm {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .popup-buttons .btn-cancel {
+            background-color: #e9ecef;
+            color: var(--text-primary);
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 3;
+            stroke: #fff;
+            stroke-miterlimit: 10;
+            margin: 0 auto 20px auto;
+            box-shadow: inset 0px 0px 0px var(--secondary-accent);
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+
+        .checkmark-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 3;
+            stroke-miterlimit: 10;
+            stroke: var(--secondary-accent);
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark-check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            stroke: #fff;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scale {
+
+            0%,
+            100% {
+                transform: none;
+            }
+
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 40px var(--secondary-accent);
+            }
+        }
+
+        /* Responsive & Sidebar Toggle Logic */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 993px) {
+            .sidebar.collapsed {
+                width: 90px;
+            }
+
+            .sidebar.collapsed .sidebar-header h3,
+            .sidebar.collapsed .sidebar-header p,
+            .sidebar.collapsed .sidebar-menu a span,
+            .sidebar.collapsed .logout-btn span,
+            .sidebar.collapsed .dropdown-icon {
+                display: none;
+            }
+
+            .sidebar.collapsed .sidebar-menu a {
+                justify-content: center;
+                padding: 15px 0;
+            }
+
+            .sidebar.collapsed .logout-btn a {
+                justify-content: center;
+            }
+
+            .sidebar.collapsed .submenu {
+                display: none !important;
+            }
+
+            .main-content.expanded {
+                margin-left: 90px;
+                width: calc(100% - 90px);
+            }
+        }
+    </style>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+
+            hamburgerMenu.addEventListener('click', () => {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.toggle('active');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('expanded');
+                }
+            });
+
+            document.querySelectorAll('.dropdown-toggle').forEach(item => {
+                item.addEventListener('click', event => {
+                    event.preventDefault();
+                    let parent = item.parentElement;
+                    if (parent.classList.contains('active')) {
+                        parent.classList.remove('active');
+                    } else {
+                        document.querySelectorAll('.menu-item-has-children.active').forEach(openItem => {
+                            openItem.classList.remove('active');
+                        });
+                        parent.classList.add('active');
+                    }
+                });
+            });
+
+            const masterDataConfig = [
+                { key: 'agama', title: 'Agama' },
+                { key: 'pangkat', title: 'Nama Pangkat' },
+                { key: 'golongan', title: 'Golongan' },
+                { key: 'eselon', title: 'Eselon' },
+                { key: 'jabatan', title: 'Nama Jabatan' },
+                { key: 'pendidikan', title: 'Pendidikan' },
+            ];
+
+            // Initialize using API
+            let masterData = {};
+
+            const loadMasterData = async () => {
+                try {
+                    const response = await api.getMasterData();
+                    if (response.status === 'success') {
+                        masterData = response.data;
+                        renderAllMasters();
+                    } else {
+                        console.error('Failed to load master data:', response.message);
+                        alert('Gagal memuat data master.');
+                    }
+                } catch (error) {
+                    console.error('Error loading master data:', error);
+                    // Fallback or alert?
+                    alert('Gagal menghubungkan ke server.');
+                }
+            };
+
+            const saveMasterData = async () => {
+                try {
+                    const response = await api.saveMasterData(masterData);
+                    if (response.status !== 'success') {
+                        alert('Gagal menyimpan data: ' + response.message);
+                        // Reload to sync?
+                        await loadMasterData();
+                    }
+                } catch (error) {
+                    console.error('Error saving data:', error);
+                    alert('Terjadi kesalahan saat menyimpan.');
+                }
+            };
+
+            const masterGrid = document.querySelector('.master-grid');
+
+            function renderAllMasters() {
+                masterGrid.innerHTML = '';
+                masterDataConfig.forEach(config => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    const listItems = (masterData[config.key] || []).map((item, index) => `
+                        <li class="master-item">
+                            <span>${item}</span>
+                            <button class="delete-btn" data-key="${config.key}" data-index="${index}"><i class="fas fa-trash"></i></button>
+                        </li>
+                    `).join('');
+                    card.innerHTML = `
+                        <h3>${config.title}</h3>
+                        <form class="add-form" data-key="${config.key}">
+                            <input type="text" placeholder="Tambah ${config.title} baru..." required>
+                            <button type="submit">Tambah</button>
+                        </form>
+                        <ul class="master-item-list">${listItems}</ul>
+                    `;
+                    masterGrid.appendChild(card);
+                });
+            }
+
+            const showNotification = (message) => {
+                const overlay = document.getElementById('notificationOverlay');
+                const messageEl = document.getElementById('notificationMessage');
+                messageEl.textContent = message;
+                overlay.classList.add('show');
+                setTimeout(() => {
+                    overlay.classList.remove('show');
+                }, 2500);
+            };
+
+            const confirmationOverlay = document.getElementById('confirmationOverlay');
+            const confirmationMessage = document.getElementById('confirmationMessage');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+            let deleteResolver = null;
+
+            function showConfirmation(message) {
+                return new Promise((resolve) => {
+                    confirmationMessage.textContent = message;
+                    confirmationOverlay.classList.add('show');
+                    deleteResolver = resolve;
+                });
+            }
+
+            confirmDeleteBtn.addEventListener('click', () => {
+                if (deleteResolver) deleteResolver(true);
+                confirmationOverlay.classList.remove('show');
+            });
+
+            confirmCancelBtn.addEventListener('click', () => {
+                if (deleteResolver) deleteResolver(false);
+                confirmationOverlay.classList.remove('show');
+            });
+
+            masterGrid.addEventListener('click', async function (e) {
+                if (e.target.closest('.delete-btn')) {
+                    const button = e.target.closest('.delete-btn');
+                    const key = button.dataset.key;
+                    const index = parseInt(button.dataset.index);
+                    const item = masterData[key][index];
+
+                    const confirmed = await showConfirmation(`Yakin ingin menghapus item "${item}" dari daftar ${key}?`);
+
+                    if (confirmed) {
+                        masterData[key].splice(index, 1);
+                        // Optimistic UI update
+                        renderAllMasters();
+                        showNotification('Menghapus data...');
+
+                        await saveMasterData();
+                        showNotification('Data berhasil dihapus!');
+                    }
+                }
+            });
+
+            masterGrid.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                if (e.target.classList.contains('add-form')) {
+                    const key = e.target.dataset.key;
+                    const input = e.target.querySelector('input');
+                    const value = input.value.trim();
+
+                    if (value) {
+                        if (!masterData[key]) masterData[key] = [];
+                        if (masterData[key].includes(value)) {
+                            alert('Item sudah ada dalam daftar.');
+                            return;
+                        }
+
+                        masterData[key].push(value);
+
+                        // Optimistic UI
+                        renderAllMasters();
+                        showNotification('Menyimpan...');
+
+                        await saveMasterData();
+                        showNotification('Data berhasil ditambahkan!');
+                    }
+                }
+            });
+
+            // Initial Load
+            await loadMasterData();
+        });
+    </script>
+    </body>
+
+</html>

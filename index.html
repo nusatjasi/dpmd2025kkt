@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <script>
+        // Skrip ini berjalan segera untuk melindungi halaman sebelum dirender.
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            // Jika belum login, paksa alihkan ke halaman login.
+            // Ganti 'login.html' jika nama file login Anda berbeda.
+            window.location.replace('login.html');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DPMD Kab. Kepulauan Tanimbar</title>
+
+    <!-- ======================= PERUBAHAN UTAMA ADA DI SINI ======================= -->
+    <script>
+        // Skrip ini berjalan secara langsung saat <head> dimuat,
+        // sebelum konten <body> sempat ditampilkan ke pengguna.
+        // Ini adalah cara yang benar untuk melindungi halaman.
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            // Jika status login tidak ditemukan, paksa pengguna kembali ke halaman login.
+            // window.location.replace() digunakan agar pengguna tidak bisa menekan tombol "Back"
+            // browser untuk kembali ke halaman dashboard ini setelah dialihkan.
+            window.location.replace('login.html');
+        }
+    </script>
+    <!-- ========================================================================= -->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #f4f7fc;
+            --bg-secondary: #ffffff;
+            --primary-accent: #e3f2fd;
+            --secondary-accent: #007bff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+
+            --chart-red: #e53935;
+            --chart-blue: #1e88e5;
+            --chart-grey: #90a4ae;
+            --chart-green: #43a047;
+
+            --icon-color-1: #007bff;
+            --icon-color-2: #28a745;
+            --icon-color-3: #ffc107;
+            --icon-color-4: #dc3545;
+            --icon-color-5: #17a2b8;
+            --icon-color-6: #6f42c1;
+            --icon-color-7: #fd7e14;
+            --icon-color-8: #20c997;
+            --icon-color-9: #e83e8c;
+            /* Warna baru untuk Daftar Hadir */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Tambahkan ini untuk mencegah 'flash' konten sebelum redirect */
+            visibility: hidden;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: transform 0.4s ease, width 0.4s ease;
+            z-index: 1000;
+            box-shadow: 0 0 15px var(--shadow-color);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--secondary-accent);
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            height: calc(100% - 150px);
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            position: relative;
+            margin: 5px 15px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: var(--secondary-accent);
+            color: #ffffff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .sidebar-menu a:hover i,
+        .sidebar-menu a.active i {
+            color: #ffffff !important;
+        }
+
+        .sidebar-menu a i.menu-icon {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+
+        .icon-color-1 {
+            color: var(--icon-color-1);
+        }
+
+        .icon-color-2 {
+            color: var(--icon-color-2);
+        }
+
+        .icon-color-3 {
+            color: var(--icon-color-3);
+        }
+
+        .icon-color-4 {
+            color: var(--icon-color-4);
+        }
+
+        .icon-color-5 {
+            color: var(--icon-color-5);
+        }
+
+        .icon-color-6 {
+            color: var(--icon-color-6);
+        }
+
+        .icon-color-7 {
+            color: var(--icon-color-7);
+        }
+
+        .icon-color-8 {
+            color: var(--icon-color-8);
+        }
+
+        .icon-color-9 {
+            color: var(--icon-color-9);
+        }
+
+        .dropdown-toggle {
+            justify-content: space-between;
+        }
+
+        .dropdown-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item-has-children.active>.dropdown-toggle .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            list-style: none;
+            padding-left: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+
+        .menu-item-has-children.active>.submenu {
+            max-height: 500px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .submenu a {
+            padding: 10px 15px 10px 25px;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+        }
+
+        .logout-btn a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-accent);
+            color: var(--secondary-accent);
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn a:hover {
+            background-color: #e53935;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
+        }
+
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 25px;
+            transition: all 0.4s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hamburger-menu {
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .hamburger-menu span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-primary);
+            margin: 5px 0;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+
+        .header h2 {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .info-card {
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .info-card-icon {
+            font-size: 2rem;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .icon-blue {
+            background-color: #007bff;
+        }
+
+        .icon-green {
+            background-color: #28a745;
+        }
+
+        .icon-orange {
+            background-color: #fd7e14;
+        }
+
+        .info-card-content h3 {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin: 0 0 5px 0;
+            font-weight: 500;
+        }
+
+        .info-card-content h1 {
+            font-size: 2.2rem;
+            margin: 0;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .card-footer {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: start;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .chart-canvas-wrapper {
+            position: relative;
+            height: 280px;
+        }
+
+        .table-wrapper {
+            flex-grow: 1;
+            overflow-y: auto;
+            max-height: 250px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            background-color: var(--bg-primary);
+            position: sticky;
+            top: 0;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .full-width-card {
+            grid-column: 1 / -1;
+        }
+
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            background-color: var(--primary-accent);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 10px 0;
+        }
+
+        .marquee {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 25s linear infinite;
+            font-size: 0.9rem;
+            color: var(--secondary-accent);
+            font-weight: 500;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(100%);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 993px) {
+            .sidebar.collapsed {
+                width: 90px;
+            }
+
+            .sidebar.collapsed .sidebar-header h3,
+            .sidebar.collapsed .sidebar-header p,
+            .sidebar.collapsed .sidebar-menu a span,
+            .sidebar.collapsed .logout-btn span,
+            .sidebar.collapsed .dropdown-icon {
+                display: none;
+            }
+
+            .sidebar.collapsed .sidebar-menu a {
+                justify-content: center;
+                padding: 15px 0;
+            }
+
+            .sidebar.collapsed .logout-btn a {
+                justify-content: center;
+            }
+
+            .sidebar.collapsed .submenu {
+                display: none !important;
+            }
+
+            .main-content.expanded {
+                margin-left: 90px;
+                width: calc(100% - 90px);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>DPMD</h3>
+            <p>Kab. Kepulauan Tanimbar</p>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="index.html" class="active"><i class="fas fa-home menu-icon icon-color-1"></i>
+                        <span>Beranda</span></a></li>
+                <li><a href="datapegawai.html"><i class="fas fa-users menu-icon icon-color-2"></i> <span>Data
+                            Pegawai</span></a></li>
+                <li class="menu-item-has-children">
+                    <a href="#" class="dropdown-toggle">
+                        <div><i class="fas fa-envelope-open-text menu-icon icon-color-3"></i> <span>Surat</span></div>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="suratmasuk.html">Surat Masuk</a></li>
+                        <li><a href="#">Surat Keluar</a></li>
+                        <li><a href="#">Rekapan Data Surat</a></li>
+                        <li><a href="#">Contoh Surat</a></li>
+                    </ul>
+                </li>
+                <li><a href="bezeting.html"><i class="fas fa-file-invoice menu-icon icon-color-4"></i> <span>Bezeting
+                            Pegawai</span></a></li>
+                <li><a href="#"><i class="fas fa-village menu-icon icon-color-5"></i> <span>Data Desa</span></a></li>
+                <li><a href="#"><i class="fas fa-info-circle menu-icon icon-color-6"></i> <span>Informasi</span></a>
+                </li>
+                <li><a href="master.html"><i class="fas fa-database menu-icon icon-color-7"></i> <span>Data
+                            Master</span></a></li>
+
+                <!-- MENU BARU: Absen Online -->
+                <li class="menu-item-has-children">
+                    <a href="#" class="dropdown-toggle">
+                        <div><i class="fas fa-camera-retro menu-icon icon-color-8"></i> <span>Absen Online</span></div>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="absen_online.html">Ambil Absen</a></li>
+                        <li><a href="rekapan_absen.html">Rekap Absen</a></li>
+                    </ul>
+                </li>
+
+                <li><a href="daftarhadir.html"><i class="fas fa-clipboard-user menu-icon icon-color-9"></i> <span>Daftar
+                            Hadir</span></a></li>
+            </ul>
+        </div>
+        <div class="logout-btn">
+            <a href="login.html"><i class="fas fa-sign-out-alt"></i> <span>Keluar</span></a>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <header class="header">
+            <div class="header-left">
+                <div class="hamburger-menu" id="hamburgerMenu">
+                    <span></span><span></span><span></span>
+                </div>
+                <h2>Beranda</h2>
+            </div>
+        </header>
+
+        <div class="marquee-container">
+            <div class="marquee">
+                Selamat datang di Sistem Informasi DPMD Kabupaten Kepulauan Tanimbar - Aplikasi ini masih dalam tahap
+                pengembangan - Untuk informasi lebih lanjut hubungi Admin Sekretariat
+            </div>
+        </div>
+
+        <div class="info-cards">
+            <div class="card info-card">
+                <div class="info-card-icon icon-blue"><i class="fas fa-users"></i></div>
+                <div class="info-card-content">
+                    <h3>Total Pegawai</h3>
+                    <h1 id="total-pegawai">-</h1>
+                    <div class="card-footer"><i class="fas fa-info-circle"></i> <span>Total seluruh pegawai DPMD</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card info-card">
+                <div class="info-card-icon icon-green"><i class="fas fa-user-tie"></i></div>
+                <div class="info-card-content">
+                    <h3>PNS</h3>
+                    <h1 id="total-pns">-</h1>
+                    <div class="card-footer"><i class="fas fa-check-circle"></i> <span>Pegawai Negeri Sipil</span></div>
+                </div>
+            </div>
+            <div class="card info-card">
+                <div class="info-card-icon icon-orange"><i class="fas fa-user-check"></i></div>
+                <div class="info-card-content">
+                    <h3>PPPK</h3>
+                    <h1 id="total-pppk">-</h1>
+                    <div class="card-footer"><i class="fas fa-file-signature"></i> <span>Pegawai dengan Perjanjian
+                            Kerja</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Distribusi Agama Pegawai</h3>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="religionChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Ulang Tahun Pegawai Tahun Ini</h3>
+                <div class="table-wrapper">
+                    <table id="birthdayTable">
+                        <thead>
+                            <tr>
+                                <th>Nama Pegawai</th>
+                                <th>Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="birthdayTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Pegawai per Eselon</h3>
+                <div class="table-wrapper">
+                    <table id="eselonTable">
+                        <thead>
+                            <tr>
+                                <th>Eselon</th>
+                                <th>Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eselonTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Pegawai per Golongan</h3>
+                <div class="table-wrapper">
+                    <table id="golonganTable">
+                        <thead>
+                            <tr>
+                                <th>Golongan</th>
+                                <th>Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody id="golonganTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Pegawai Segera Pensiun (5 Tahun Mendatang)</h3>
+                <div class="table-wrapper">
+                    <table id="pensionTable">
+                        <thead>
+                            <tr>
+                                <th>Nama Pegawai</th>
+                                <th>Tanggal Pensiun</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pensionTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card full-width-card">
+                <h3>Struktur Pejabat DPMD</h3>
+                <div class="table-wrapper">
+                    <table id="officialsTable">
+                        <thead>
+                            <tr>
+                                <th>Jabatan</th>
+                                <th>Nama Pejabat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="officialsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Kenaikan Pangkat Akan Datang</h3>
+                <div class="table-wrapper">
+                    <table id="promotionTable">
+                        <thead>
+                            <tr>
+                                <th>Nama Pegawai</th>
+                                <th>Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="promotionTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Kenaikan Gaji Akan Datang</h3>
+                <div class="table-wrapper">
+                    <table id="salaryIncreaseTable">
+                        <thead>
+                            <tr>
+                                <th>Nama Pegawai</th>
+                                <th>Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salaryIncreaseTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // Tampilkan halaman setelah dipastikan login
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            document.body.style.visibility = 'visible';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+
+            hamburgerMenu.addEventListener('click', () => {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.toggle('active');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('expanded');
+                }
+            });
+
+            document.querySelectorAll('.dropdown-toggle').forEach(item => {
+                item.addEventListener('click', event => {
+                    event.preventDefault();
+                    let parent = item.parentElement;
+                    if (parent.classList.contains('active')) {
+                        parent.classList.remove('active');
+                    } else {
+                        document.querySelectorAll('.menu-item-has-children.active').forEach(openItem => {
+                            openItem.classList.remove('active');
+                        });
+                        parent.classList.add('active');
+                    }
+                });
+            });
+
+            // --- LOGIKA LOGOUT DIPINDAHKAN KE SINI ---
+            const logoutButton = document.querySelector('.logout-btn a');
+            logoutButton.addEventListener('click', function (e) {
+                e.preventDefault();
+                // Hapus status login dari session
+                sessionStorage.removeItem('isLoggedIn');
+                // Alihkan ke halaman login
+                window.location.replace('login.html');
+            });
+
+
+            // --- Logika Dashboard (Migrasi ke API) ---
+            async function updateDashboard() {
+                try {
+                    // Tampilkan status loading jika perlu, atau diam-diam
+                    const response = await api.getDashboardStats();
+
+                    if (response.status === 'success') {
+                        const stats = response.data;
+
+                        document.getElementById('total-pegawai').textContent = stats.totalPegawai || 0;
+                        document.getElementById('total-pns').textContent = stats.pns || 0;
+                        document.getElementById('total-pppk').textContent = stats.pppk || 0;
+
+                        updateReligionChart(Object.keys(stats.agama || {}), Object.values(stats.agama || {}));
+                        renderSimpleTable('eselonTableBody', stats.eselon || {});
+                        renderSimpleTable('golonganTableBody', stats.golongan || {});
+
+                        renderPensionTable(stats.upcomingRetirements || []);
+
+                        // Perlu fetch full pegawai untuk tabel pejabat jika backend tidak kirim spesifik
+                        // Untuk efisiensi, backend 'getDashboardStats' saya belum kirim detail pejabat.
+                        // Kita bisa fetch full pegawai jika 'officials' kosong, atau update backend.
+                        // Saat ini API backend `getDashboardStats` saya belum return list officials lengkap,
+                        // hanya aggregates. Mari kita panggil `getPegawai` juga untuk tabel detail 
+                        // seperti Pejabat, Ulang Tahun, Kenaikan Pangkat dsb yg butuh list nama.
+                        // ATAU: Kita update backend agar `getDashboardStats` return list pejabat.
+
+                        // Strategi: Fetch all pegawai sekali saja untuk client-side filtering tabel detail
+                        // supaya tidak request berulang kali. `getDashboardStats` bagus untuk counter cepat.
+                        // Tapi karena tabel dashboard butuh detail nama dan tanggal, lebih baik ambil semua data pegawai.
+                        const pegawaiResponse = await api.getPegawai();
+                        if (pegawaiResponse.status === 'success') {
+                            const allPegawai = pegawaiResponse.data; // Raw array from sheet
+                            // Render tabel yang butuh detail individu
+                            renderOfficialsTable(allPegawai);
+                            renderPromotionTable(allPegawai);
+                            renderSalaryIncreaseTable(allPegawai);
+                            renderBirthdayTable(allPegawai);
+                            renderPensionTable(allPegawai); // Overwrite retirement with precise calculation logic below
+                        }
+                    }
+                } catch (error) {
+                    console.error("Gagal memuat data dashboard:", error);
+                    // alert("Gagal terhubung ke database. Pastikan Code.js sudah dideploy dan URL dikonfigurasi.");
+                }
+            }
+
+            function renderSimpleTable(tbodyId, data) {
+                const tableBody = document.getElementById(tbodyId);
+                tableBody.innerHTML = '';
+                if (Object.keys(data).length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="2" style="text-align: center;">Tidak ada data.</td></tr>`;
+                    return;
+                }
+                Object.entries(data).sort().forEach(([key, value]) => {
+                    tableBody.insertRow().innerHTML = `<td>${key}</td><td>${value}</td>`;
+                });
+            }
+
+            function renderUpcomingEventsTable(tbodyId, data, dateField) {
+                const tableBody = document.getElementById(tbodyId);
+                tableBody.innerHTML = '';
+                const now = new Date();
+                const upcoming = data
+                    .filter(p => p[dateField] && new Date(p[dateField]) > now)
+                    .sort((a, b) => new Date(a[dateField]) - new Date(b[dateField]));
+
+                if (upcoming.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="2" style="text-align: center;">Tidak ada data.</td></tr>`;
+                } else {
+                    upcoming.slice(0, 5).forEach(p => { // Limit to 5
+                        tableBody.insertRow().innerHTML = `<td>${p.nama}</td><td>${formatShortDate(new Date(p[dateField]))}</td>`;
+                    });
+                }
+            }
+
+            let religionChartInstance;
+            function updateReligionChart(labels, data) {
+                const ctx = document.getElementById('religionChart').getContext('2d');
+                if (religionChartInstance) religionChartInstance.destroy();
+                religionChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Jumlah Pegawai',
+                            data: data,
+                            backgroundColor: ['#e53935', '#1e88e5', '#90a4ae', '#43a047'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { color: 'var(--text-secondary)' }, grid: { color: 'var(--border-color)' } },
+                            x: { ticks: { color: 'var(--text-secondary)' }, grid: { color: 'transparent' } }
+                        }
+                    }
+                });
+            }
+
+            const formatShortDate = (date) => date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+
+            function renderPensionTable(pegawaiData) {
+                const tableBody = document.getElementById('pensionTableBody');
+                const RETIREMENT_AGE = 60;
+                const now = new Date();
+                const fiveYearsFromNow = new Date(now.getFullYear() + 5, now.getMonth(), now.getDate());
+
+                // Pastikan format tanggal valid
+                const upcomingRetirees = pegawaiData.map(p => {
+                    if (!p.tanggal_lahir) return null;
+                    const birthDate = new Date(p.tanggal_lahir);
+                    if (isNaN(birthDate)) return null;
+
+                    const retirementDate = new Date(birthDate.getFullYear() + RETIREMENT_AGE, birthDate.getMonth(), birthDate.getDate());
+                    return { ...p, retirementDate };
+                })
+                    .filter(p => p && p.retirementDate > now && p.retirementDate <= fiveYearsFromNow)
+                    .sort((a, b) => a.retirementDate - b.retirementDate);
+
+                tableBody.innerHTML = '';
+                if (upcomingRetirees.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="2" style="text-align: center;">Tidak ada data.</td></tr>`;
+                } else {
+                    upcomingRetirees.forEach(p => {
+                        tableBody.insertRow().innerHTML = `<td>${p.nama}</td><td>${formatShortDate(p.retirementDate)}</td>`;
+                    });
+                }
+            }
+
+            function renderOfficialsTable(pegawaiData) {
+                const tableBody = document.getElementById('officialsTableBody');
+                const officialTitles = ["Kepala Dinas", "Sekretaris", "Kepala Bidang Kelembagaan", "Kepala Bidang Pemberdayaan", "Kepala Seksi A", "Kepala Seksi B", "Kepala Seksi C"];
+                const officials = pegawaiData.filter(p => officialTitles.includes(p.jabatan))
+                    .sort((a, b) => officialTitles.indexOf(a.jabatan) - officialTitles.indexOf(b.jabatan));
+                tableBody.innerHTML = '';
+                if (officials.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="2" style="text-align: center;">Tidak ada data.</td></tr>`;
+                } else {
+                    officials.forEach(p => {
+                        tableBody.insertRow().innerHTML = `<td>${p.jabatan}</td><td>${p.nama}</td>`;
+                    });
+                }
+            }
+
+            function renderPromotionTable(pegawaiData) {
+                // Field 'naik_pangkat_berikutnya' mungkin belum ada di sheet standar,
+                // perlu dipastikan. Jika tidak ada, fungsi ini akan kosong.
+                renderUpcomingEventsTable('promotionTableBody', pegawaiData, 'naik_pangkat_berikutnya');
+            }
+
+            function renderBirthdayTable(pegawaiData) {
+                const tableBody = document.getElementById('birthdayTableBody');
+                tableBody.innerHTML = '';
+                const now = new Date();
+                // Logic ulang tahun tahun ini
+                const birthdays = pegawaiData.filter(p => p.tanggal_lahir).map(p => {
+                    const birthDate = new Date(p.tanggal_lahir);
+                    const nextBirthday = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+                    if (nextBirthday < now) nextBirthday.setFullYear(now.getFullYear() + 1); // Sudah lewat, tahun depan
+                    return { ...p, nextBirthday, birthDate };
+                })
+                    .filter(p => p.nextBirthday.getFullYear() === now.getFullYear()) // Hanya yg sisa tahun ini
+                    .sort((a, b) => a.nextBirthday - b.nextBirthday);
+
+                if (birthdays.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="2" style="text-align: center;">Tidak ada ulang tahun dalam waktu dekat tahun ini.</td></tr>`;
+                } else {
+                    birthdays.slice(0, 5).forEach(p => {
+                        tableBody.insertRow().innerHTML = `<td>${p.nama}</td><td>${formatShortDate(p.nextBirthday)}</td>`;
+                    });
+                }
+            }
+
+            function renderSalaryIncreaseTable(pegawaiData) {
+                renderUpcomingEventsTable('salaryIncreaseTableBody', pegawaiData, 'naik_gaji_berikutnya');
+            }
+
+            // Initial Load
+            updateDashboard();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,113 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .login-container {
+    background: #fff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .login-form h2 {
+    margin-bottom: 10px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .login-form p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+  }
+  
+  .input-group {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  
+  .input-group i {
+    position: absolute;
+    left: 10px;
+    top: 12px;
+    color: #999;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 12px 12px 12px 35px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: 0.3s;
+  }
+  
+  .input-group input:focus {
+    border-color: #4e54c8;
+  }
+  
+  .login-btn {
+    width: 100%;
+    padding: 12px;
+    background: #4e54c8;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .login-btn:hover {
+    background: #3437b1;
+  }
+  
+  .footer {
+    text-align: center;
+    margin-top: 15px;
+  }
+  
+  .footer a {
+    text-decoration: none;
+    color: #4e54c8;
+    font-size: 0.9em;
+  }
+  
+
+  .rainbow-logo {
+    padding: 5px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    outline: 3px solid red;
+    animation: rainbowBorder 6s linear infinite;
+  }
+  
+
+@keyframes rainbowBorder {
+  0% { box-shadow: 0 0 0 6px red; }
+  14% { box-shadow: 0 0 0 6px orange; }
+  28% { box-shadow: 0 0 0 6px yellow; }
+  42% { box-shadow: 0 0 0 6px green; }
+  57% { box-shadow: 0 0 0 6px blue; }
+  71% { box-shadow: 0 0 0 6px indigo; }
+  85% { box-shadow: 0 0 0 6px violet; }
+  100% { box-shadow: 0 0 0 6px red; }
+}
+
+.logo-animated {
+  padding: 10px;
+  border-radius: 50%;
+  background-color: white;
+  animation: rainbowBorder 5s linear infinite;
+}
+
+

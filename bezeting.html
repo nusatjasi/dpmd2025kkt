@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="id">
+<script>
+    // Cek status login saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', function () {
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            // window.location.href = 'login.html'; // Dinonaktifkan untuk mencegah error di lingkungan pratinjau
+            console.log("Mode pratinjau: Pengecekan login dilewati.");
+        }
+    });
+</script>
+
+<head>
+    <script>
+        // Skrip ini berjalan segera untuk melindungi halaman sebelum dirender.
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            // Jika belum login, paksa alihkan ke halaman login.
+            // Ganti 'login.html' jika nama file login Anda berbeda.
+            window.location.replace('login.html');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bezeting Pegawai - DPMD Kab. Kepulauan Tanimbar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #f4f7fc;
+            --bg-secondary: #ffffff;
+            --primary-accent: #e3f2fd;
+            --secondary-accent: #007bff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+
+            --icon-color-1: #007bff;
+            --icon-color-2: #28a745;
+            --icon-color-3: #ffc107;
+            --icon-color-4: #dc3545;
+            --icon-color-5: #17a2b8;
+            --icon-color-6: #6f42c1;
+            --icon-color-7: #fd7e14;
+            --icon-color-8: #20c997;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: transform 0.4s ease, width 0.4s ease;
+            z-index: 1000;
+            box-shadow: 0 0 15px var(--shadow-color);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--secondary-accent);
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            height: calc(100% - 150px);
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            position: relative;
+            margin: 5px 15px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: var(--secondary-accent);
+            color: #ffffff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .sidebar-menu a:hover i,
+        .sidebar-menu a.active i {
+            color: #ffffff !important;
+        }
+
+        .sidebar-menu a i.menu-icon {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+
+        /* Sidebar Icon Colors */
+        .icon-color-1 {
+            color: var(--icon-color-1);
+        }
+
+        .icon-color-2 {
+            color: var(--icon-color-2);
+        }
+
+        .icon-color-3 {
+            color: var(--icon-color-3);
+        }
+
+        .icon-color-4 {
+            color: var(--icon-color-4);
+        }
+
+        .icon-color-5 {
+            color: var(--icon-color-5);
+        }
+
+        .icon-color-6 {
+            color: var(--icon-color-6);
+        }
+
+        .icon-color-7 {
+            color: var(--icon-color-7);
+        }
+
+        .icon-color-8 {
+            color: var(--icon-color-8);
+        }
+
+        /* Dropdown Styles */
+        .dropdown-toggle {
+            justify-content: space-between;
+        }
+
+        .dropdown-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item-has-children.active>.dropdown-toggle .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            list-style: none;
+            padding-left: 20px;
+            /* Indent submenu */
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+
+        .menu-item-has-children.active>.submenu {
+            max-height: 500px;
+            /* A large enough value to show all items */
+            transition: max-height 0.5s ease-in;
+        }
+
+        .submenu a {
+            padding: 10px 15px 10px 25px;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+        }
+
+        .logout-btn a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-accent);
+            color: var(--secondary-accent);
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn a:hover {
+            background-color: #e53935;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
+        }
+
+        /* --- Main Content --- */
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 25px;
+            transition: all 0.4s ease;
+        }
+
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hamburger-menu {
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .hamburger-menu span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-primary);
+            margin: 5px 0;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+
+        .header h2 {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .action-buttons-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .left-buttons,
+        .right-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--secondary-accent);
+            color: #ffffff;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* --- Table --- */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .data-table thead {
+            background-color: var(--primary-accent);
+        }
+
+        .data-table th {
+            color: var(--text-primary);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .data-table tbody tr {
+            background-color: var(--bg-secondary);
+            transition: background-color 0.3s;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: var(--primary-accent);
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: var(--bg-primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            color: #ffffff;
+        }
+
+        .edit-btn {
+            background-color: #ffc107;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+        }
+
+        .view-btn {
+            background-color: #17a2b8;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 30px var(--shadow-color);
+            animation: modalFadeIn 0.4s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+
+        .close-modal:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-control label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .form-control input,
+        .form-control select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .form-control input:focus,
+        .form-control select:focus {
+            outline: none;
+            border-color: var(--secondary-accent);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* --- New Notification Styles --- */
+        .notification-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .notification-overlay.show {
+            display: flex;
+        }
+
+        .notification-content {
+            background-color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transform: scale(0.7);
+            opacity: 0;
+        }
+
+        .notification-overlay.show .notification-content {
+            animation: notificationZoomIn 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+        }
+
+        @keyframes notificationZoomIn {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .checkmark-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 3;
+            stroke-miterlimit: 10;
+            stroke: var(--secondary-accent);
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 4;
+            stroke: #fff;
+            stroke-miterlimit: 10;
+            margin: 0 auto 20px auto;
+            box-shadow: inset 0px 0px 0px var(--secondary-accent);
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+
+        .checkmark-check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            stroke: #fff;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scale {
+
+            0%,
+            100% {
+                transform: none;
+            }
+
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 40px var(--secondary-accent);
+            }
+        }
+
+        .notification-message {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+
+        /* --- Responsive & Sidebar Toggle Logic --- */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 993px) {
+            .sidebar.collapsed {
+                width: 90px;
+            }
+
+            .sidebar.collapsed .sidebar-header h3,
+            .sidebar.collapsed .sidebar-header p,
+            .sidebar.collapsed .sidebar-menu a span,
+            .sidebar.collapsed .logout-btn span,
+            .sidebar.collapsed .dropdown-icon {
+                display: none;
+            }
+
+            .sidebar.collapsed .sidebar-menu a {
+                justify-content: center;
+                padding: 15px 0;
+            }
+
+            .sidebar.collapsed .logout-btn a {
+                justify-content: center;
+            }
+
+            .sidebar.collapsed .submenu {
+                display: none !important;
+            }
+
+            .main-content.expanded {
+                margin-left: 90px;
+                width: calc(100% - 90px);
+            }
+        }
+
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            #printableArea,
+            #printableArea * {
+                visibility: visible;
+            }
+
+            #printableArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 20px;
+                box-shadow: none;
+                border: none;
+            }
+
+            .data-table {
+                font-size: 9pt;
+                color: #000;
+                border-collapse: collapse;
+            }
+
+            .data-table th,
+            .data-table td {
+                border: 1px solid #666;
+                padding: 5px;
+            }
+
+            .data-table th {
+                background-color: #f2f2f2 !important;
+            }
+
+            .action-buttons,
+            .data-table td:last-child,
+            .data-table th:last-child {
+                display: none !important;
+            }
+
+            #printHeader {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            #printHeader h3,
+            #printHeader h4 {
+                margin: 0;
+                color: #000;
+            }
+
+            @page {
+                size: A3 landscape;
+                margin: 20mm;
+            }
+        }
+
+        #printHeader {
+            display: none;
+        }
+    </style>
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+</head>
+
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>DPMD</h3>
+            <p>Kab. Kepulauan Tanimbar</p>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home menu-icon icon-color-1"></i> <span>Beranda</span></a>
+                </li>
+                <li><a href="datapegawai.html"><i class="fas fa-users menu-icon icon-color-2"></i> <span>Data
+                            Pegawai</span></a></li>
+                <li class="menu-item-has-children">
+                    <a href="#" class="dropdown-toggle">
+                        <div><i class="fas fa-envelope-open-text menu-icon icon-color-3"></i> <span>Surat</span></div>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="suratmasuk.html">Surat Masuk</a></li>
+                        <li><a href="#">Surat Keluar</a></li>
+                        <li><a href="#">Rekapan Data Surat</a></li>
+                        <li><a href="#">Contoh Surat</a></li>
+                    </ul>
+                </li>
+                <li><a href="bezeting.html" class="active"><i class="fas fa-file-invoice menu-icon icon-color-4"></i>
+                        <span>Bezeting Pegawai</span></a></li>
+                <li><a href="#"><i class="fas fa-village menu-icon icon-color-5"></i> <span>Data Desa</span></a></li>
+                <li><a href="#"><i class="fas fa-info-circle menu-icon icon-color-6"></i> <span>Informasi</span></a>
+                </li>
+                <li><a href="master.html"><i class="fas fa-database menu-icon icon-color-7"></i> <span>Data
+                            Master</span></a></li>
+                <li><a href="daftarhadir.html"><i class="fas fa-clipboard-user menu-icon icon-color-8"></i> <span>Daftar
+                            Hadir</span></a></li>
+            </ul>
+        </div>
+        <div class="logout-btn">
+            <a href="login.html" id="logoutLink"><i class="fas fa-sign-out-alt"></i> <span>Keluar</span></a>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <header class="header">
+            <div class="header-left">
+                <div class="hamburger-menu" id="hamburgerMenu">
+                    <span></span><span></span><span></span>
+                </div>
+                <h2>Bezeting Pegawai</h2>
+            </div>
+        </header>
+
+        <div class="card">
+            <div class="action-buttons-container">
+                <div class="left-buttons">
+                    <button id="addBtn" class="btn"><i class="fas fa-plus"></i> Tambah Data</button>
+                    <input type="file" id="importFile" accept=".xlsx, .xls" style="display: none;">
+                    <button id="importBtn" class="btn"><i class="fas fa-file-import"></i> Import Excel</button>
+                </div>
+                <div class="right-buttons">
+                    <button id="exportBtn" class="btn"><i class="fas fa-file-excel"></i> Export Excel</button>
+                    <button id="printBtn" class="btn"><i class="fas fa-print"></i> Cetak</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="printableArea">
+            <div id="printHeader">
+                <h3>DAFTAR URUTAN KEPANGKATAN (BEZETING)</h3>
+                <h4>DINAS PEMBERDAYAAN MASYARAKAT DAN DESA KAB. KEPULAUAN TANIMBAR</h4>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table" id="pegawaiTable">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">NO</th>
+                            <th rowspan="2">NAMA / TGL LAHIR</th>
+                            <th rowspan="2">NIP</th>
+                            <th rowspan="2">JK</th>
+                            <th rowspan="2">AGAMA</th>
+                            <th rowspan="2">STATUS</th>
+                            <th colspan="3">PANGKAT</th>
+                            <th colspan="3">JABATAN</th>
+                            <th colspan="2">MASA KERJA</th>
+                            <th rowspan="2">PENDIDIKAN</th>
+                            <th rowspan="2">KARPEG</th>
+                            <th rowspan="2">TMT CPNS</th>
+                            <th rowspan="2">TMT PNS</th>
+                            <th rowspan="2">NAIK PANGKAT</th>
+                            <th rowspan="2">NAIK GAJI</th>
+                            <th rowspan="2">AKSI</th>
+                        </tr>
+                        <tr>
+                            <th>GOL</th>
+                            <th>TMT</th>
+                            <th>NAMA</th>
+                            <th>ESL</th>
+                            <th>TMT</th>
+                            <th>NAMA</th>
+                            <th>THN</th>
+                            <th>BLN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pegawaiTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Add/Edit -->
+    <div class="modal" id="pegawaiModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tambah Data Pegawai</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="pegawaiForm">
+                    <input type="hidden" id="pegawaiId">
+                    <div class="form-group">
+                        <div class="form-control"><label for="nama">Nama Lengkap</label><input type="text" id="nama"
+                                required></div>
+                        <div class="form-control"><label for="tanggal_lahir">Tanggal Lahir</label><input type="date"
+                                id="tanggal_lahir" required></div>
+                        <div class="form-control"><label for="nip">NIP</label><input type="text" id="nip" required>
+                        </div>
+                        <div class="form-control"><label for="jenis_kelamin">Jenis Kelamin</label><select
+                                id="jenis_kelamin" required>
+                                <option value="">Pilih</option>
+                                <option value="L">Laki-laki</option>
+                                <option value="P">Perempuan</option>
+                            </select></div>
+                        <div class="form-control"><label for="agama">Agama</label><select id="agama" required></select>
+                        </div>
+                        <div class="form-control"><label for="status_pegawai">Status Pegawai</label><select
+                                id="status_pegawai" required>
+                                <option value="">Pilih</option>
+                                <option value="PNS">PNS</option>
+                                <option value="PPPK">PPPK</option>
+                            </select></div>
+                        <div class="form-control"><label for="pangkat">Pangkat</label><select id="pangkat"
+                                required></select></div>
+                        <div class="form-control"><label for="gol_ruang">Gol/Ruang</label><select id="gol_ruang"
+                                required></select></div>
+                        <div class="form-control"><label for="tmt_pangkat">TMT Pangkat</label><input type="date"
+                                id="tmt_pangkat" required onchange="hitungMasaKerja()"></div>
+                        <div class="form-control"><label for="jabatan">Jabatan</label><select id="jabatan"
+                                required></select></div>
+                        <div class="form-control"><label for="eselon">Eselon</label><select id="eselon"
+                                required></select></div>
+                        <div class="form-control"><label for="tmt_jabatan">TMT Jabatan</label><input type="date"
+                                id="tmt_jabatan" required></div>
+                        <div class="form-control"><label for="masa_kerja_tahun">Masa Kerja (Thn)</label><input
+                                type="number" id="masa_kerja_tahun" readonly></div>
+                        <div class="form-control"><label for="masa_kerja_bulan">Masa Kerja (Bln)</label><input
+                                type="number" id="masa_kerja_bulan" readonly></div>
+                        <div class="form-control"><label for="pendidikan_terakhir">Pendidikan Terakhir</label><select
+                                id="pendidikan_terakhir" required></select></div>
+                        <div class="form-control"><label for="no_karpeg">Nomor Seri Karpeg</label><input type="text"
+                                id="no_karpeg"></div>
+                        <div class="form-control"><label for="tmt_cpns">TMT CPNS</label><input type="date" id="tmt_cpns"
+                                required onchange="hitungMasaKerja()"></div>
+                        <div class="form-control"><label for="tmt_pns">TMT PNS</label><input type="date" id="tmt_pns">
+                        </div>
+                        <div class="form-control"><label for="naik_pangkat_berikutnya">Kenaikan Pangkat</label><input
+                                type="date" id="naik_pangkat_berikutnya" readonly></div>
+                        <div class="form-control"><label for="naik_gaji_berikutnya">Kenaikan Gaji</label><input
+                                type="date" id="naik_gaji_berikutnya" readonly></div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn" id="cancelBtn">Batal</button>
+                        <button type="submit" class="btn">Simpan Data</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Error Messages -->
+    <div class="modal" id="errorModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 style="color: #dc3545;">Terjadi Kesalahan</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <p id="errorMessage" style="font-size: 1rem; color: var(--text-secondary);"></p>
+            </div>
+            <div class="form-actions" style="justify-content: center;">
+                <button type="button" class="btn close-modal" style="background-color: #6c757d;">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Overlay for Success Messages -->
+    <div class="notification-overlay" id="notificationOverlay">
+        <div class="notification-content">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+            </svg>
+            <p class="notification-message"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Sidebar Logic
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            if (hamburgerMenu) {
+                hamburgerMenu.addEventListener('click', () => {
+                    if (window.innerWidth <= 992) {
+                        sidebar.classList.toggle('active');
+                    } else {
+                        sidebar.classList.toggle('collapsed');
+                        mainContent.classList.toggle('expanded');
+                    }
+                });
+            }
+            document.querySelectorAll('.dropdown-toggle').forEach(item => {
+                item.addEventListener('click', event => {
+                    event.preventDefault();
+                    let parent = item.parentElement;
+                    if (parent.classList.contains('active')) {
+                        parent.classList.remove('active');
+                    } else {
+                        document.querySelectorAll('.menu-item-has-children.active').forEach(openItem => {
+                            openItem.classList.remove('active');
+                        });
+                        parent.classList.add('active');
+                    }
+                });
+            });
+
+            let pegawaiData = [];
+            let masterData = { agama: [], pangkat: [], golongan: [], eselon: [], jabatan: [], pendidikan: [] };
+
+            async function loadInitialData() {
+                try {
+                    const [pegawaiRes, masterRes] = await Promise.all([
+                        api.getPegawai(),
+                        api.getMasterData()
+                    ]);
+
+                    if (pegawaiRes && pegawaiRes.status === 'success') {
+                        pegawaiData = pegawaiRes.data;
+                        renderTable();
+                    }
+                    if (masterRes && masterRes.status === 'success') {
+                        masterData = masterRes.data;
+                        loadFormDropdowns();
+                    }
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    showError('Gagal memuat data dari server.');
+                }
+            }
+
+            function populateSelect(elementId, data, placeholder) {
+                const select = document.getElementById(elementId);
+                if (!select) return;
+                select.innerHTML = `<option value="">${placeholder}</option>`;
+                (data || []).forEach(item => {
+                    select.innerHTML += `<option value="${item}">${item}</option>`;
+                });
+            }
+
+            function loadFormDropdowns() {
+                populateSelect('agama', masterData.agama, 'Pilih Agama');
+                populateSelect('pangkat', masterData.pangkat, 'Pilih Pangkat');
+                populateSelect('gol_ruang', masterData.golongan, 'Pilih Gol/Ruang');
+                populateSelect('jabatan', masterData.jabatan, 'Pilih Jabatan');
+                populateSelect('eselon', masterData.eselon, 'Pilih Eselon');
+                populateSelect('pendidikan_terakhir', masterData.pendidikan, 'Pilih Pendidikan');
+            }
+
+            // Removed localStorage saving
+            const saveToLocalStorage = () => { };
+
+            const formatDate = (dateString) => {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+                const correctedDate = new Date(date.getTime() + (date.getTimezoneOffset() * 60000));
+                return correctedDate.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
+            };
+
+
+            const renderTable = () => {
+                const tableBody = document.getElementById('pegawaiTableBody');
+                tableBody.innerHTML = '';
+                pegawaiData.forEach((pegawai, index) => {
+                    const row = tableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${pegawai.nama || ''}<br>${formatDate(pegawai.tanggal_lahir)}</td>
+                        <td>${pegawai.nip || ''}</td>
+                        <td>${pegawai.jenis_kelamin || ''}</td>
+                        <td>${pegawai.agama || ''}</td>
+                        <td>${pegawai.status_pegawai || ''}</td>
+                        <td>${pegawai.gol_ruang || ''}</td>
+                        <td>${formatDate(pegawai.tmt_pangkat)}</td>
+                        <td>${pegawai.pangkat || ''}</td>
+                        <td>${pegawai.eselon || ''}</td>
+                        <td>${formatDate(pegawai.tmt_jabatan)}</td>
+                        <td>${pegawai.jabatan || ''}</td>
+                        <td>${pegawai.masa_kerja_tahun || ''}</td>
+                        <td>${pegawai.masa_kerja_bulan || ''}</td>
+                        <td>${pegawai.pendidikan_terakhir || ''}</td>
+                        <td>${pegawai.no_karpeg || ''}</td>
+                        <td>${formatDate(pegawai.tmt_cpns)}</td>
+                        <td>${formatDate(pegawai.tmt_pns)}</td>
+                        <td>${formatDate(pegawai.naik_pangkat_berikutnya)}</td>
+                        <td>${formatDate(pegawai.naik_gaji_berikutnya)}</td>
+                        <td class="action-buttons">
+                            <button class="action-btn view-btn" data-id="${pegawai.id}"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn edit-btn" data-id="${pegawai.id}"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete-btn" data-id="${pegawai.id}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                });
+                saveToLocalStorage();
+            };
+
+            const showNotification = (message) => {
+                const overlay = document.getElementById('notificationOverlay');
+                const messageEl = overlay.querySelector('.notification-message');
+
+                messageEl.textContent = message;
+                overlay.classList.add('show');
+
+                setTimeout(() => {
+                    overlay.classList.remove('show');
+                }, 2500);
+            };
+
+            const showError = (message) => {
+                document.getElementById('errorMessage').textContent = message;
+                document.getElementById('errorModal').style.display = 'flex';
+            };
+
+            const logoutLink = document.getElementById('logoutLink');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    sessionStorage.removeItem('isLoggedIn');
+                    showNotification('Anda telah berhasil keluar.');
+                    console.log("Logout berhasil. Pengalihan ke halaman login dinonaktifkan dalam mode pratinjau.");
+                });
+            }
+
+            const pegawaiModal = document.getElementById('pegawaiModal');
+            document.getElementById('addBtn').addEventListener('click', () => {
+                document.getElementById('pegawaiForm').reset();
+                document.getElementById('pegawaiId').value = '';
+                document.getElementById('modalTitle').textContent = 'Tambah Data Pegawai';
+                pegawaiModal.style.display = 'flex';
+            });
+
+            document.querySelectorAll('.close-modal, #cancelBtn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const modal = e.target.closest('.modal');
+                    if (modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+
+            document.getElementById('pegawaiForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const id = document.getElementById('pegawaiId').value;
+                const formElements = e.target.elements;
+                // Generate temporary ID if new (Backend should handle real ID generation, but we pass what we have)
+                // Actually, backend uses its own ID logic if not provided or empty.
+
+                const dataToSave = { id: id ? id : '' }; // Send empty ID for new
+
+                const formFields = ['nama', 'tanggal_lahir', 'nip', 'jenis_kelamin', 'agama', 'status_pegawai', 'pangkat', 'gol_ruang', 'tmt_pangkat', 'jabatan', 'eselon', 'tmt_jabatan', 'masa_kerja_tahun', 'masa_kerja_bulan', 'pendidikan_terakhir', 'no_karpeg', 'tmt_cpns', 'tmt_pns', 'naik_pangkat_berikutnya', 'naik_gaji_berikutnya'];
+                formFields.forEach(field => {
+                    dataToSave[field] = formElements[field].value;
+                });
+
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Menyimpan...';
+
+                try {
+                    const saveRes = await api.savePegawai(dataToSave);
+                    if (saveRes.status === 'success') {
+                        showNotification('Data berhasil disimpan!');
+                        pegawaiModal.style.display = 'none';
+                        loadInitialData(); // Reload data to get fresh IDs etc
+                    } else {
+                        showError('Gagal menyimpan: ' + saveRes.message);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showError('Terjadi kesalahan sistem.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            });
+
+            document.getElementById('pegawaiTableBody').addEventListener('click', async (e) => {
+                const button = e.target.closest('button');
+                if (!button) return;
+                const id = parseInt(button.dataset.id);
+                if (button.classList.contains('edit-btn')) {
+                    const pegawai = pegawaiData.find(p => p.id === id);
+                    if (pegawai) {
+                        Object.keys(pegawai).forEach(key => {
+                            const el = document.getElementById(key);
+                            if (el) el.value = pegawai[key];
+                        });
+                        document.getElementById('pegawaiId').value = id;
+                        document.getElementById('modalTitle').textContent = 'Edit Data Pegawai';
+                        pegawaiModal.style.display = 'flex';
+                    }
+                } else if (button.classList.contains('delete-btn')) {
+                    if (confirm('Yakin ingin menghapus data ini?')) {
+                        try {
+                            const delRes = await api.deletePegawai(id);
+                            if (delRes.status === 'success') {
+                                showNotification('Data berhasil dihapus!');
+                                loadInitialData();
+                            } else {
+                                showError('Gagal menghapus: ' + delRes.message);
+                            }
+                        } catch (e) {
+                            console.error(e);
+                            showError('Gagal menghapus data.');
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+            document.getElementById('exportBtn').addEventListener('click', function () {
+                const ws = XLSX.utils.json_to_sheet(pegawaiData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Bezeting Pegawai");
+                XLSX.writeFile(wb, "Bezeting_Pegawai_DPMD.xlsx");
+                showNotification('Data berhasil diekspor!');
+            });
+
+            const importBtn = document.getElementById('importBtn');
+            const importFile = document.getElementById('importFile');
+            importBtn.addEventListener('click', () => importFile.click());
+
+            importFile.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+
+                        const sheet_data_full = XLSX.utils.sheet_to_json(worksheet, {
+                            raw: false, header: 1, defval: ""
+                        });
+
+                        if (sheet_data_full.length < 3) {
+                            showError('Format file Excel tidak valid. Pastikan file memiliki 2 baris header dan setidaknya 1 baris data.');
+                            return;
+                        }
+
+                        const sheet_data = sheet_data_full.slice(2);
+
+                        if (sheet_data.length === 0) {
+                            showError('Tidak ada data yang ditemukan setelah baris header.');
+                            return;
+                        }
+
+                        const formatDateFromCell = (cell) => {
+                            if (!cell) return '';
+                            let date = cell;
+                            if (!(cell instanceof Date)) { date = new Date(cell); }
+                            if (isNaN(date.getTime())) { return String(cell); }
+                            const correctedDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+                            return correctedDate.toISOString().split('T')[0];
+                        };
+
+                        // --- PERUBAHAN LOGIKA IMPOR ---
+                        // Logika ini sekarang mengasumsikan file Excel memiliki kolom terpisah
+                        // untuk Nama dan Tanggal Lahir, lalu menggeser indeks kolom berikutnya.
+                        const newPegawaiData = sheet_data.map((row, index) => {
+                            return {
+                                id: (pegawaiData.length > 0 ? Math.max(...pegawaiData.map(p => p.id)) : 0) + index + 1,
+                                nama: row[1] || '', // Kolom B
+                                tanggal_lahir: formatDateFromCell(row[2]), // Kolom C
+                                nip: row[3], // Kolom D
+                                jenis_kelamin: row[4], // Kolom E
+                                agama: row[5], // Kolom F
+                                status_pegawai: row[6], // Kolom G
+                                gol_ruang: row[7], // Kolom H
+                                tmt_pangkat: formatDateFromCell(row[8]), // Kolom I
+                                pangkat: row[9], // Kolom J
+                                eselon: row[10], // Kolom K
+                                tmt_jabatan: formatDateFromCell(row[11]), // Kolom L
+                                jabatan: row[12], // Kolom M
+                                masa_kerja_tahun: row[13], // Kolom N
+                                masa_kerja_bulan: row[14], // Kolom O
+                                pendidikan_terakhir: row[15], // Kolom P
+                                no_karpeg: row[16], // Kolom Q
+                                tmt_cpns: formatDateFromCell(row[17]), // Kolom R
+                                tmt_pns: formatDateFromCell(row[18]), // Kolom S
+                                naik_pangkat_berikutnya: formatDateFromCell(row[19]), // Kolom T
+                                naik_gaji_berikutnya: formatDateFromCell(row[20]) // Kolom U
+                            };
+                        }).filter(p => p.nip && String(p.nip).trim() !== '');
+
+                        if (newPegawaiData.length === 0) {
+                            showError('Tidak ada data valid yang dapat diimpor. Pastikan kolom NIP terisi dan format file Excel sesuai.');
+                            return;
+                        }
+
+                        pegawaiData = pegawaiData.concat(newPegawaiData);
+                        renderTable();
+                        showNotification(`${newPegawaiData.length} data berhasil diimpor!`);
+                    } catch (error) {
+                        console.error("Error importing file:", error);
+                        showError("Terjadi kesalahan saat memproses file Excel. Pastikan format file benar. Detail: " + error.message);
+                    } finally {
+                        importFile.value = '';
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            });
+
+
+            window.hitungMasaKerja = () => {
+                const tmtCpns = document.getElementById('tmt_cpns').value;
+                if (!tmtCpns) return;
+
+                const cpnsDate = new Date(tmtCpns);
+                const today = new Date();
+                let diffMonths = (today.getFullYear() - cpnsDate.getFullYear()) * 12 + (today.getMonth() - cpnsDate.getMonth());
+                if (today.getDate() < cpnsDate.getDate()) diffMonths--;
+
+                document.getElementById('masa_kerja_tahun').value = Math.floor(diffMonths / 12);
+                document.getElementById('masa_kerja_bulan').value = diffMonths % 12;
+
+                const tmtPangkat = document.getElementById('tmt_pangkat').value;
+                if (tmtPangkat) {
+                    const pangkatDate = new Date(tmtPangkat);
+                    pangkatDate.setFullYear(pangkatDate.getFullYear() + 4);
+                    document.getElementById('naik_pangkat_berikutnya').value = pangkatDate.toISOString().split('T')[0];
+                }
+
+                const nextGaji = new Date(cpnsDate);
+                nextGaji.setFullYear(nextGaji.getFullYear() + (Math.floor((diffMonths / 12) / 2) * 2 + 2));
+                document.getElementById('naik_gaji_berikutnya').value = nextGaji.toISOString().split('T')[0];
+            };
+
+            // Start loading
+            loadInitialData();
+        });
+    </script>
+</body>
+
+</html>

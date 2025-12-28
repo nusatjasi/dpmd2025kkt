@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Aplikasi</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      height: 100vh;
+      background: linear-gradient(to right, #4a00e0, #8e2de2);
+      color: #fff;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+    }
+
+    .info-section {
+      flex: 1;
+      padding: 40px 60px;
+      background: url('latdalam.jpg') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-section::before {
+      content: "";
+      background: rgba(0, 0, 0, 0.5);
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .info-section h1,
+    .info-section p,
+    .info-section .marquee-container {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Marquee style */
+    .marquee-container {
+      margin-bottom: 40px;
+    }
+
+    .marquee {
+      font-size: 20px;
+      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marqueeScroll 20s linear infinite;
+    }
+
+    @keyframes marqueeScroll {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    .info-section h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      margin-top: -10px;
+      /* Naikkan teks */
+    }
+
+    .info-section p {
+      font-size: 18px;
+      line-height: 1.6;
+      max-width: 500px;
+    }
+
+    .login-section {
+      flex: 1;
+      background-color: #fff;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 400px;
+      padding: 30px;
+      background-color: #f9f9f9;
+      border-radius: 16px;
+      position: relative;
+      border: 3px solid;
+      animation: rainbowBorder 6s linear infinite;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-box img {
+      width: 80px;
+      display: block;
+      margin: 0 auto 20px;
+    }
+
+    .login-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #4a00e0;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .form-group input:focus {
+      border-color: #8e2de2;
+      outline: none;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #6a11cb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .login-btn:hover {
+      background-color: #4a00e0;
+    }
+
+    .form-footer {
+      margin-top: 16px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .form-footer a {
+      color: #6a11cb;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes rainbowBorder {
+      0% {
+        border-color: red;
+      }
+
+      16% {
+        border-color: orange;
+      }
+
+      33% {
+        border-color: yellow;
+      }
+
+      50% {
+        border-color: green;
+      }
+
+      66% {
+        border-color: blue;
+      }
+
+      83% {
+        border-color: indigo;
+      }
+
+      100% {
+        border-color: violet;
+      }
+    }
+
+    /* Popup Styles */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: popupAppear 0.3s ease-out;
+    }
+
+    @keyframes popupAppear {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .popup-content h3 {
+      color: #4a00e0;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .popup-content p {
+      color: #333;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .contact-info {
+      background-color: #f0f0f0;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 15px 0;
+    }
+
+    .contact-info p {
+      margin: 8px 0;
+      color: #555;
+    }
+
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background-color: #25D366;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s;
+      margin: 10px 0;
+    }
+
+    .whatsapp-btn:hover {
+      background-color: #1da851;
+    }
+
+    .close-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 15px;
+      transition: background-color 0.3s;
+    }
+
+    .close-btn:hover {
+      background-color: #5a6268;
+    }
+
+    @media (max-width: 768px) {
+
+      body,
+      .container {
+        flex-direction: column;
+      }
+
+      .info-section,
+      .login-section {
+        flex: unset;
+        width: 100%;
+      }
+
+      .info-section {
+        padding: 30px;
+        text-align: center;
+      }
+
+      .popup-content {
+        padding: 20px;
+        margin: 20px;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="container">
+    <!-- Informasi -->
+    <div class="info-section">
+      <!-- Teks Berjalan -->
+      <div class="marquee-container">
+        <div class="marquee"><span>Aplikasi ini masih dalam tahap pengembangan. Terima kasih atas kesabaran Anda.</span>
+        </div>
+      </div>
+
+      <!-- Judul dan Deskripsi -->
+      <h1>SELAMAT DATANG</h1>
+      <h2>
+        <p> APLIKASI DATA PEGAWAI DINAS PEMBERDAYAAN MASYARAKAT DAN DESA KABUPATEN KEPULAUAN TANIMBAR</p>
+      </h2>
+      <p>
+        Aplikasi ini digunakan untuk pengelolaan data pegawai DPMD Kabupaten Kepulauan Tanimbar secara efisien dan aman.
+      </p>
+      <p style="margin-top: 20px;">
+        Aplikasi ini masih dalam Pengembangan, Hormat Admin Sekretariat.
+      </p>
+    </div>
+
+    <!-- Login Form -->
+    <div class="login-section">
+      <div class="login-box">
+        <img src="logo.png" alt="Logo DPMD" class="logo-animated" />
+        <h2>Login Akun</h2>
+
+        <!-- Tambahan Tabel Email dan Password -->
+        <h3 style="text-align: center; margin-bottom: 10px; font-size: 16px; color: #444;">Masukkan username dan
+          password berikut ini:</h3>
+        <table
+          style="width: 100%; margin-bottom: 20px; border-collapse: collapse; font-size: 14px; background-color: #fff;">
+          <thead>
+            <tr style="background-color: #eee;">
+              <th style="padding: 8px; border: 1px solid #ccc;">Username</th>
+              <th style="padding: 8px; border: 1px solid #ccc;">Password</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">admin</td>
+              <td style="padding: 8px; border: 1px solid #ccc; text-align: center;">123456</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Masukkan username" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Masukkan password" required />
+          </div>
+          <button type="submit" class="login-btn">Masuk</button>
+          <div class="form-footer">
+            <p>Belum punya akun? <a href="#" id="contactAdminLink">Hubungi Admin</a></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup Hubungi Admin -->
+  <div class="popup-overlay" id="contactPopup">
+    <div class="popup-content">
+      <h3>Hubungi Admin DPMD</h3>
+      <p>Jika Anda mengalami masalah login atau membutuhkan akses ke sistem, segera hubungi admin DPMD:</p>
+
+      <div class="contact-info">
+        <p><strong>Kontak Person:</strong></p>
+        <p>Bpk. Andi / Ibu Ebi</p>
+        <p><strong>Nomor Telepon:</strong></p>
+        <p>6285349577060</p>
+      </div>
+
+      <p>Klik tombol di bawah ini untuk langsung menghubungi via WhatsApp:</p>
+
+      <a href="https://api.whatsapp.com/send?phone=6285349577060&text=Halo%20Admin%20DPMD%2C%20saya%20membutuhkan%20akun%20untuk%20login%20ke%20sistem.%20Terima%20kasih."
+        class="whatsapp-btn" target="_blank">
+        <i class="fab fa-whatsapp"></i> Hubungi via WhatsApp
+      </a>
+
+      <br>
+      <button class="close-btn" id="closePopup">Tutup</button>
+    </div>
+  </div>
+
+  <!-- Validasi Login -->
+  <script>
+    // Fungsi untuk menyimpan status login di sessionStorage
+    function setLoggedIn() {
+      sessionStorage.setItem('isLoggedIn', 'true');
+    }
+
+    // Fungsi untuk memeriksa status login
+    function checkLogin() {
+      return sessionStorage.getItem('isLoggedIn') === 'true';
+    }
+
+    // Fungsi untuk redirect ke halaman login jika belum login
+    function protectPages() {
+      if (!checkLogin() && !window.location.pathname.endsWith('login.html')) {
+        window.location.href = 'login.html';
+      }
+    }
+
+    // Fungsi untuk menampilkan popup
+    function showContactPopup() {
+      document.getElementById('contactPopup').style.display = 'flex';
+    }
+
+    // Fungsi untuk menyembunyikan popup
+    function hideContactPopup() {
+      document.getElementById('contactPopup').style.display = 'none';
+    }
+
+    // Panggil fungsi protectPages saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', function () {
+      protectPages();
+
+      // Event listener untuk link Hubungi Admin
+      document.getElementById('contactAdminLink').addEventListener('click', function (e) {
+        e.preventDefault();
+        showContactPopup();
+      });
+
+      // Event listener untuk tombol tutup popup
+      document.getElementById('closePopup').addEventListener('click', hideContactPopup);
+
+      // Tutup popup ketika klik di luar konten popup
+      document.getElementById('contactPopup').addEventListener('click', function (e) {
+        if (e.target === this) {
+          hideContactPopup();
+        }
+      });
+    });
+
+    // Validasi form login
+    document.getElementById('loginForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      if (username === 'admin' && password === '123456') {
+        setLoggedIn();
+        window.location.href = 'index.html';
+      } else {
+        alert('Username atau password salah. Silakan coba lagi.');
+        // Tampilkan popup hubungi admin setelah login gagal
+        setTimeout(showContactPopup, 500);
+      }
+    });
+
+    // Tambahkan event listener untuk logout di semua halaman
+    document.addEventListener('DOMContentLoaded', function () {
+      const logoutButtons = document.querySelectorAll('.logout-btn a');
+      logoutButtons.forEach(button => {
+        button.addEventListener('click', function (e) {
+          e.preventDefault();
+          sessionStorage.removeItem('isLoggedIn');
+          window.location.href = 'login.html';
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

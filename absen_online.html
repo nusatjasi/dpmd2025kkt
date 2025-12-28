@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absen Online Admin - DPMD</title>
+
+    <!-- Stylesheets and Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase Scripts -->
+    <!-- Removed global Firebase SDK loading as it's now imported as modules -->
+
+    <style>
+        :root {
+            --bg-primary: #f4f7fc;
+            --bg-secondary: #ffffff;
+            --primary-accent: #e3f2fd;
+            --secondary-accent: #007bff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+
+            --icon-color-1: #007bff;
+            --icon-color-2: #28a745;
+            --icon-color-3: #ffc107;
+            --icon-color-4: #dc3545;
+            --icon-color-5: #17a2b8;
+            --icon-color-6: #6f42c1;
+            --icon-color-7: #fd7e14;
+            --icon-color-8: #20c997;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: transform 0.4s ease, width 0.4s ease;
+            z-index: 1000;
+            box-shadow: 0 0 15px var(--shadow-color);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--secondary-accent);
+            font-weight: 700;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            height: calc(100% - 150px);
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            position: relative;
+            margin: 5px 15px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: var(--secondary-accent);
+            color: #ffffff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .sidebar-menu a:hover i,
+        .sidebar-menu a.active i {
+            color: #ffffff !important;
+        }
+
+        .sidebar-menu a i.menu-icon {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+        }
+
+        .dropdown-toggle {
+            justify-content: space-between;
+        }
+
+        .dropdown-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .menu-item-has-children.open>.dropdown-toggle .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            list-style: none;
+            padding-left: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+
+        .menu-item-has-children.open>.submenu {
+            max-height: 500px;
+        }
+
+        /* Re-added for JS to toggle it */
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+        }
+
+        .logout-btn a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-accent);
+            color: var(--secondary-accent);
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn a:hover {
+            background-color: #e53935;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(229, 57, 53, 0.4);
+        }
+
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 25px;
+            transition: all 0.4s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hamburger-menu {
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .hamburger-menu span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-primary);
+            margin: 5px 0;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+
+        .header h2 {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px var(--shadow-color);
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .form-field {
+            width: 100%;
+            text-align: left;
+        }
+
+        .form-field label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-field input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--secondary-accent);
+            color: #ffffff;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        #saveSettingsBtn {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            z-index: 1002;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        #toast.show {
+            opacity: 1;
+        }
+
+        /* Styles for Employee Device Management */
+        .employee-list-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .employee-list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            /* Allow wrapping on smaller screens */
+            gap: 10px;
+        }
+
+        .employee-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .employee-info {
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .employee-info strong {
+            display: block;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .employee-info span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .reset-btn {
+            background-color: #dc3545;
+            /* Red for danger/reset */
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .reset-btn:hover {
+            background-color: #c82333;
+        }
+
+        .reset-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .search-employee-field {
+            margin-bottom: 15px;
+        }
+
+        .search-employee-field input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+        }
+
+        /* New styles for attendance control buttons */
+        .attendance-control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .attendance-control-grid .btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+        }
+
+        .btn-start {
+            background-color: #28a745;
+        }
+
+        /* Green */
+        .btn-start:hover {
+            background-color: #218838;
+        }
+
+        .btn-stop {
+            background-color: #dc3545;
+        }
+
+        /* Red */
+        .btn-stop:hover {
+            background-color: #c82333;
+        }
+
+        .status-indicator {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: var(--primary-accent);
+            color: var(--text-primary);
+        }
+
+        .status-indicator.active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-indicator.inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 993px) {
+            .sidebar.collapsed {
+                width: 90px;
+            }
+
+            .sidebar.collapsed .sidebar-header h3,
+            .sidebar.collapsed .sidebar-header p,
+            .sidebar.collapsed .sidebar-menu a span,
+            .sidebar.collapsed .logout-btn span,
+            .sidebar.collapsed .dropdown-icon {
+                display: none;
+            }
+
+            .sidebar.collapsed .sidebar-menu a {
+                justify-content: center;
+                padding: 15px 0;
+            }
+
+            .sidebar.collapsed .logout-btn a {
+                justify-content: center;
+            }
+
+            .sidebar.collapsed .submenu {
+                display: none !important;
+            }
+
+            .main-content.expanded {
+                margin-left: 90px;
+                width: calc(100% - 90px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>DPMD</h3>
+            <p>Kab. Kepulauan Tanimbar</p>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home menu-icon" style="color: var(--icon-color-1);"></i>
+                        <span>Beranda</span></a></li>
+                <li><a href="datapegawai.html"><i class="fas fa-users menu-icon"
+                            style="color: var(--icon-color-2);"></i> <span>Data Pegawai</span></a></li>
+                <li class="menu-item-has-children">
+                    <a href="#" class="dropdown-toggle">
+                        <div><i class="fas fa-envelope-open-text menu-icon" style="color: var(--icon-color-3);"></i>
+                            <span>Surat</span></div>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="suratmasuk.html">Surat Masuk</a></li>
+                        <li><a href="suratkeluar.html">Surat Keluar</a></li>
+                    </ul>
+                </li>
+                <li><a href="bezeting.html"><i class="fas fa-file-invoice menu-icon"
+                            style="color: var(--icon-color-4);"></i> <span>Bezeting Pegawai</span></a></li>
+                <li><a href="#"><i class="fas fa-map-marked-alt menu-icon" style="color: var(--icon-color-5);"></i>
+                        <span>Data Desa</span></a></li>
+                <li class="menu-item-has-children open"> <!-- Added 'open' class for active menu -->
+                    <a href="#" class="dropdown-toggle">
+                        <div><i class="fas fa-camera-retro menu-icon" style="color: var(--icon-color-6);"></i>
+                            <span>Absen Online</span></div>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="absen_online.html" class="active">Ambil Absen</a></li>
+                        <li><a href="rekapan_absen.html">Rekapan Absen</a></li>
+                    </ul>
+                </li>
+                <li><a href="master.html"><i class="fas fa-database menu-icon" style="color: var(--icon-color-7);"></i>
+                        <span>Data Master</span></a></li>
+                <li class="menu-item-has-children">
+                    <a href="#" class="dropdown-toggle">
+                        <div><i class="fas fa-clipboard-user menu-icon" style="color: var(--icon-color-8);"></i>
+                            <span>Daftar Hadir</span></div>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="daftarhadir.html">Apel Senin</a></li>
+                        <li><a href="daftar_hadir_mingguan.html">Apel Setiap Hari</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="logout-btn">
+            <a href="#" id="logoutButton"><i class="fas fa-sign-out-alt"></i> <span>Keluar</span></a>
+        </div>
+    </div>
+
+    <!-- Konten Utama -->
+    <div class="main-content" id="mainContent">
+        <header class="header">
+            <div class="header-left">
+                <div class="hamburger-menu" id="hamburgerMenu">
+                    <span></span><span></span><span></span>
+                </div>
+                <h2>Pengaturan Absensi & Manajemen Perangkat</h2>
+            </div>
+        </header>
+
+        <div class="card">
+            <h3 style="margin-bottom: 20px; text-align: center;">Kontrol Absensi Harian</h3>
+            <div class="attendance-control-grid">
+                <button id="startMorningBtn" class="btn btn-start"><i class="fas fa-play"></i> Mulai Absen Pagi</button>
+                <button id="stopMorningBtn" class="btn btn-stop"><i class="fas fa-stop"></i> Stop Absen Pagi</button>
+                <button id="startEveningBtn" class="btn btn-start"><i class="fas fa-play"></i> Mulai Absen Sore</button>
+                <button id="stopEveningBtn" class="btn btn-stop"><i class="fas fa-stop"></i> Stop Absen Sore</button>
+            </div>
+            <div id="morningStatus" class="status-indicator">Absen Pagi: Tidak Aktif</div>
+            <div id="eveningStatus" class="status-indicator">Absen Sore: Tidak Aktif</div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 20px; text-align: center;">Atur Waktu, Lokasi Absensi</h3>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label for="jamMasukMulai">Jam Masuk Mulai</label>
+                    <input type="time" id="jamMasukMulai">
+                </div>
+                <div class="form-field">
+                    <label for="jamMasukSelesai">Jam Masuk Selesai</label>
+                    <input type="time" id="jamMasukSelesai">
+                </div>
+                <div class="form-field">
+                    <label for="jamPulangMulai">Jam Pulang Mulai</label>
+                    <input type="time" id="jamPulangMulai">
+                </div>
+                <div class="form-field">
+                    <label for="jamPulangSelesai">Jam Pulang Selesai</label>
+                    <input type="time" id="jamPulangSelesai">
+                </div>
+                <div class="form-field">
+                    <label for="jarakRadius">Jarak Radius Absen (meter)</label>
+                    <input type="number" id="jarakRadius" placeholder="Contoh: 30">
+                </div>
+                <div class="form-field">
+                    <label for="officeLatitude">Lintang Kantor (Latitude)</label>
+                    <input type="text" id="officeLatitude" placeholder="Contoh: -7.969324">
+                </div>
+                <div class="form-field">
+                    <label for="officeLongitude">Bujur Kantor (Longitude)</label>
+                    <input type="text" id="officeLongitude" placeholder="Contoh: 131.315562">
+                </div>
+            </div>
+            <button id="saveSettingsBtn" class="btn"><i class="fas fa-save"></i> Simpan Pengaturan</button>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 20px; text-align: center;">Manajemen Perangkat Pegawai</h3>
+            <div class="search-employee-field">
+                <input type="text" id="searchEmployeeInput" placeholder="Cari nama pegawai atau NIP...">
+            </div>
+            <div class="employee-list-container" id="employeeListContainer">
+                <!-- Employee list will be loaded here -->
+                <p style="text-align:center; padding: 20px; color: var(--text-secondary);">Memuat data pegawai...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">Pengaturan berhasil disimpan!</div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            // --- UI & LAYOUT ---
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const logoutButton = document.getElementById('logoutButton');
+
+            // Event listener for hamburger menu (toggle sidebar)
+            hamburgerMenu.addEventListener('click', () => {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.toggle('active');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    mainContent.classList.toggle('expanded');
+                }
+            });
+
+            // Event listener for dropdown menu in sidebar
+            document.querySelectorAll('.dropdown-toggle').forEach(item => {
+                item.addEventListener('click', event => {
+                    event.preventDefault();
+                    if (sidebar.classList.contains('collapsed') && window.innerWidth > 992) {
+                        return;
+                    }
+                    item.parentElement.classList.toggle('open');
+                });
+            });
+
+            // Event listener for logout button
+            logoutButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                sessionStorage.clear(); // Clear login session
+                window.location.replace('login.html');
+            });
+
+            // --- Attendance Control Elements ---
+            const startMorningBtn = document.getElementById('startMorningBtn');
+            const stopMorningBtn = document.getElementById('stopMorningBtn');
+            const startEveningBtn = document.getElementById('startEveningBtn');
+            const stopEveningBtn = document.getElementById('stopEveningBtn');
+            const morningStatusDiv = document.getElementById('morningStatus');
+            const eveningStatusDiv = document.getElementById('eveningStatus');
+
+            // --- Fungsionalitas Pengaturan Waktu & Lokasi ---
+            const jamMasukMulai = document.getElementById('jamMasukMulai');
+            const jamMasukSelesai = document.getElementById('jamMasukSelesai');
+            const jamPulangMulai = document.getElementById('jamPulangMulai');
+            const jamPulangSelesai = document.getElementById('jamPulangSelesai');
+            const jarakRadius = document.getElementById('jarakRadius');
+            const officeLatitude = document.getElementById('officeLatitude');
+            const officeLongitude = document.getElementById('officeLongitude');
+            const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+            const toast = document.getElementById('toast');
+
+            let currentSettings = {
+                waktuMasukMulai: '',
+                waktuMasukSelesai: '',
+                waktuPulangMulai: '',
+                waktuPulangSelesai: '',
+                jarakMaksimal: 30,
+                officeLat: 0,
+                officeLon: 0,
+                morning_active: false,
+                evening_active: false
+            };
+
+            function getCurrentTimeHHMM() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
+            }
+
+            async function loadSettings() {
+                try {
+                    const response = await api.getAppSettings();
+                    if (response.status === 'success') {
+                        currentSettings = { ...currentSettings, ...response.data };
+
+                        jamMasukMulai.value = currentSettings.waktuMasukMulai || '';
+                        jamMasukSelesai.value = currentSettings.waktuMasukSelesai || '';
+                        jamPulangMulai.value = currentSettings.waktuPulangMulai || '';
+                        jamPulangSelesai.value = currentSettings.waktuPulangSelesai || '';
+                        jarakRadius.value = currentSettings.jarakMaksimal || '';
+                        officeLatitude.value = currentSettings.officeLat || '';
+                        officeLongitude.value = currentSettings.officeLon || '';
+
+                        updateControlUI();
+                    } else {
+                        console.error("Gagal load settings:", response.message);
+                        showToast("Gagal memuat pengaturan.", 'error');
+                    }
+                } catch (error) {
+                    console.error("Error loading settings:", error);
+                }
+            }
+
+            function updateControlUI() {
+                // Update UI for Morning Attendance
+                if (currentSettings.morning_active === true || currentSettings.morning_active === 'true') {
+                    morningStatusDiv.textContent = 'Absen Pagi: Aktif';
+                    morningStatusDiv.classList.remove('inactive');
+                    morningStatusDiv.classList.add('active');
+                    startMorningBtn.disabled = true;
+                    stopMorningBtn.disabled = false;
+                } else {
+                    morningStatusDiv.textContent = 'Absen Pagi: Tidak Aktif';
+                    morningStatusDiv.classList.remove('active');
+                    morningStatusDiv.classList.add('inactive');
+                    startMorningBtn.disabled = false;
+                    stopMorningBtn.disabled = true;
+                }
+
+                // Update UI for Evening Attendance
+                if (currentSettings.evening_active === true || currentSettings.evening_active === 'true') {
+                    eveningStatusDiv.textContent = 'Absen Sore: Aktif';
+                    eveningStatusDiv.classList.remove('inactive');
+                    eveningStatusDiv.classList.add('active');
+                    startEveningBtn.disabled = true;
+                    stopEveningBtn.disabled = false;
+                } else {
+                    eveningStatusDiv.textContent = 'Absen Sore: Tidak Aktif';
+                    eveningStatusDiv.classList.remove('active');
+                    eveningStatusDiv.classList.add('inactive');
+                    startEveningBtn.disabled = false;
+                    stopEveningBtn.disabled = true;
+                }
+            }
+
+            async function saveCurrentSettings() {
+                try {
+                    // Update currentSettings from inputs
+                    currentSettings.waktuMasukMulai = jamMasukMulai.value;
+                    currentSettings.waktuMasukSelesai = jamMasukSelesai.value;
+                    currentSettings.waktuPulangMulai = jamPulangMulai.value;
+                    currentSettings.waktuPulangSelesai = jamPulangSelesai.value;
+                    currentSettings.jarakMaksimal = parseInt(jarakRadius.value, 10);
+                    currentSettings.officeLat = parseFloat(officeLatitude.value);
+                    currentSettings.officeLon = parseFloat(officeLongitude.value);
+
+                    const response = await api.saveAppSettings(currentSettings); // Assuming API exists for this
+                    // Note: If saveAppSettings not in API, we must rely on generic save or add it. 
+                    // Let's assume user followed instructions to add saveAppSettings logic in Code.js and we use api.request to call it 
+                    // or updated api.js to have it. Wait, I updated Code.js with 'saveAppSettings' logic inside it?
+                    // Yes, I added 'saveAppSettings' logic in Code.js.
+                    // But wait, did I add 'saveAppSettings' to api.js? 
+                    // I checked `api.js` in previous step, I only added `getAppSettings` and `saveAbsensi`.
+                    // I MISSED adding `saveAppSettings` to `api.js`.
+                    // Quick fix: use api.request directly if wrapper missing: api.request('saveAppSettings', 'POST', currentSettings)
+
+                    if (response.status === 'success') {
+                        showToast("Pengaturan berhasil disimpan!");
+                    } else {
+                        showToast("Gagal menyimpan: " + response.message, 'error');
+                    }
+                } catch (error) {
+                    console.error("Save error:", error);
+                    showToast("Terjadi kesalahan saat menyimpan.", 'error');
+                }
+            }
+
+            // Helper wrapper since I might have missed adding saveAppSettings to api.js explicitly
+            if (!api.saveAppSettings) {
+                api.saveAppSettings = function (settings) {
+                    return this.request('saveAppSettings', 'POST', settings); // Helper provided in api.js
+                }
+            }
+
+            saveSettingsBtn.addEventListener('click', saveCurrentSettings);
+
+            function showToast(message, type = 'success') {
+                toast.textContent = message;
+                toast.style.backgroundColor = type === 'success' ? '#28a745' : '#dc3545';
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            // --- Control Buttons Logic ---
+            startMorningBtn.addEventListener('click', async () => {
+                currentSettings.morning_active = true;
+                currentSettings.waktuMasukMulai = getCurrentTimeHHMM();
+                jamMasukMulai.value = currentSettings.waktuMasukMulai;
+                updateControlUI();
+                await saveCurrentSettings();
+            });
+
+            stopMorningBtn.addEventListener('click', async () => {
+                currentSettings.morning_active = false;
+                currentSettings.waktuMasukSelesai = getCurrentTimeHHMM();
+                jamMasukSelesai.value = currentSettings.waktuMasukSelesai;
+                updateControlUI();
+                await saveCurrentSettings();
+            });
+
+            startEveningBtn.addEventListener('click', async () => {
+                currentSettings.evening_active = true;
+                currentSettings.waktuPulangMulai = getCurrentTimeHHMM();
+                jamPulangMulai.value = currentSettings.waktuPulangMulai;
+                updateControlUI();
+                await saveCurrentSettings();
+            });
+
+            stopEveningBtn.addEventListener('click', async () => {
+                currentSettings.evening_active = false;
+                currentSettings.waktuPulangSelesai = getCurrentTimeHHMM();
+                jamPulangSelesai.value = currentSettings.waktuPulangSelesai;
+                updateControlUI();
+                await saveCurrentSettings();
+            });
+
+            // --- Employee Device Management ---
+            const searchEmployeeInput = document.getElementById('searchEmployeeInput');
+            const employeeListContainer = document.getElementById('employeeListContainer');
+            let allEmployees = [];
+
+            async function loadAndRenderEmployees(filter = '') {
+                try {
+                    const response = await api.getPegawai();
+                    if (response.status === 'success') {
+                        allEmployees = response.data;
+                        renderEmployeeList(filter);
+                    } else {
+                        employeeListContainer.innerHTML = '<p style="text-align:center;">Gagal memuat data pegawai.</p>';
+                    }
+                } catch (error) {
+                    console.error("Error loading employees:", error);
+                }
+            }
+
+            function renderEmployeeList(filter = '') {
+                employeeListContainer.innerHTML = '';
+                const lowerCaseFilter = filter.toLowerCase();
+
+                const filteredEmployees = allEmployees.filter(employee =>
+                    (employee.nama || '').toLowerCase().includes(lowerCaseFilter) ||
+                    (employee.nip && employee.nip.toLowerCase().includes(lowerCaseFilter))
+                );
+
+                if (filteredEmployees.length === 0) {
+                    employeeListContainer.innerHTML = '<p style="text-align:center; padding: 20px; color: var(--text-secondary);">Pegawai tidak ditemukan.</p>';
+                    return;
+                }
+
+                filteredEmployees.forEach(employee => {
+                    const listItem = document.createElement('div');
+                    listItem.classList.add('employee-list-item');
+
+                    const employeeInfo = document.createElement('div');
+                    employeeInfo.classList.add('employee-info');
+                    employeeInfo.innerHTML = `
+                        <strong>${employee.nama}</strong>
+                        <span>NIP: ${employee.nip || '-'}</span>
+                        <span>Device ID: ${employee.registeredDeviceId || 'Belum Terdaftar'}</span>
+                    `;
+
+                    const resetButton = document.createElement('button');
+                    resetButton.classList.add('reset-btn');
+                    resetButton.textContent = 'Reset Perangkat';
+                    resetButton.disabled = !employee.registeredDeviceId;
+                    resetButton.addEventListener('click', () => resetEmployeeDevice(employee));
+
+                    listItem.appendChild(employeeInfo);
+                    listItem.appendChild(resetButton);
+                    employeeListContainer.appendChild(listItem);
+                });
+            }
+
+            async function resetEmployeeDevice(employee) {
+                if (confirm(`Apakah Anda yakin ingin mereset perangkat untuk ${employee.nama}? Ini akan memungkinkan dia mendaftarkan perangkat baru.`)) {
+                    try {
+                        // Create a copy of the employee object and set registeredDeviceId to null
+                        // We need to send the full employee object to savePegawai as per current implementation
+                        const updatedEmployee = { ...employee, registeredDeviceId: '' }; // Send empty string or null
+
+                        const response = await api.savePegawai(updatedEmployee);
+
+                        if (response.status === 'success') {
+                            showToast(`Perangkat untuk ${employee.nama} berhasil direset!`);
+                            // Update local list
+                            employee.registeredDeviceId = '';
+                            renderEmployeeList(searchEmployeeInput.value);
+                        } else {
+                            showToast(`Gagal mereset: ${response.message}`, 'error');
+                        }
+                    } catch (error) {
+                        console.error("Gagal mereset perangkat:", error);
+                        showToast(`Gagal mereset perangkat.`, 'error');
+                    }
+                }
+            }
+
+            searchEmployeeInput.addEventListener('input', () => {
+                renderEmployeeList(searchEmployeeInput.value);
+            });
+
+            // Initial Load
+            loadSettings();
+            loadAndRenderEmployees();
+        });
+    </script>
+</body>
+
+</html>

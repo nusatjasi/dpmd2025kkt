@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absen Online Publik - DPMD</title>
+
+    <!-- Stylesheets and Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase Scripts -->
+    <!-- Removed global Firebase SDK loading as it's now imported as modules -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script> -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js"></script> -->
+
+    <style>
+        :root {
+            --bg-primary: #f4f7fc;
+            --bg-secondary: #ffffff;
+            --primary-accent: #e3f2fd;
+            --secondary-accent: #007bff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .main-content {
+            width: 100%;
+            padding: 15px;
+            max-width: 600px;
+            /* Batas lebar maksimum untuk tampilan desktop */
+            margin: 0 auto;
+            /* Pusatkan konten */
+        }
+
+        .public-header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .public-header img {
+            max-width: 80px;
+            margin-bottom: 15px;
+        }
+
+        .public-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .public-header p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .attendance-card {
+            width: 100%;
+            background-color: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px var(--shadow-color);
+            text-align: center;
+        }
+
+        .attendance-card .icon {
+            font-size: 4rem;
+            color: var(--secondary-accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .attendance-card h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .attendance-card .instruction {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .form-field {
+            width: 100%;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .form-field label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-field input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+        }
+
+        #nip-display {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .search-container {
+            position: relative;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-container input {
+            flex-grow: 1;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--secondary-accent);
+            color: #ffffff;
+        }
+
+        #attendance-button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 1rem;
+        }
+
+        #attendance-button:hover {
+            background-color: #218838;
+        }
+
+        #attendance-button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        #status-display {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .status-info {
+            background-color: #e3f2fd;
+            color: #007bff;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        /* Green for active */
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Red for inactive */
+
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .modal-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            line-height: 1;
+        }
+
+        .modal-body {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .modal-body input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .pegawai-list-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .pegawai-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .pegawai-list-item:hover {
+            background-color: var(--primary-accent);
+        }
+
+        .pegawai-list-item span {
+            display: block;
+        }
+
+        .pegawai-list-item .nama {
+            font-weight: 600;
+        }
+
+        .pegawai-list-item .nip {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .modal-loader {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .modal-loader i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: block;
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* New styles for morning/evening attendance buttons */
+        .attendance-time-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .attendance-time-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-morning {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-morning:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-evening {
+            background-color: #6f42c1;
+            color: white;
+        }
+
+        .btn-evening:hover {
+            background-color: #563d7c;
+        }
+
+        .attendance-time-buttons button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .session-status-text {
+            font-weight: 600;
+            margin-top: 10px;
+            text-align: center;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content" id="mainContent">
+        <div class="public-header">
+            <img src="logo copy.png" alt="Logo DPMD">
+            <h1>Absensi Online</h1>
+            <p>Dinas Pemberdayaan Masyarakat dan Desa</p>
+        </div>
+
+        <div class="attendance-card">
+            <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+            <h2>Absensi Kehadiran</h2>
+            <p class="instruction">Klik "Lihat Nama", pilih nama Anda, lalu klik tombol absen. Pastikan GPS pada
+                perangkat Anda sudah aktif.</p>
+
+            <div class="form-field">
+                <label for="search-name-input">Nama Pegawai</label>
+                <div class="search-container">
+                    <input type="text" id="search-name-input" placeholder="Pilih nama dari daftar" readonly>
+                    <button class="btn" id="showNameListBtn">Lihat Nama</button>
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label for="nip-display">NIP</label>
+                <input type="text" id="nip-display" placeholder="NIP akan muncul di sini" readonly>
+            </div>
+
+            <div class="attendance-time-buttons">
+                <button id="morningAttendanceBtn" class="btn-morning" disabled>Absen Pagi</button>
+                <button id="eveningAttendanceBtn" class="btn-evening" disabled>Absen Sore</button>
+            </div>
+
+            <!-- New elements for displaying session status -->
+            <div id="morningSessionStatus" class="session-status-text">Absen Pagi: Memuat...</div>
+            <div id="eveningSessionStatus" class="session-status-text">Absen Sore: Memuat...</div>
+
+            <div id="status-display" class="status-info">
+                Silakan pilih nama Anda untuk memulai.
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Daftar Nama Pegawai -->
+    <div class="modal-overlay" id="pegawaiModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Pilih Pegawai</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="modalSearchInput" placeholder="Ketik untuk mencari nama...">
+                <div id="pegawaiListContainer">
+                    <!-- Daftar nama atau loader akan dimuat di sini -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- GAS & Client Logic ---
+            // Replaces Firebase references
+
+            // --- UI Elements ---
+            const searchNameInput = document.getElementById('search-name-input');
+            const nipDisplay = document.getElementById('nip-display');
+            const morningAttendanceBtn = document.getElementById('morningAttendanceBtn');
+            const eveningAttendanceBtn = document.getElementById('eveningAttendanceBtn');
+            const statusDisplay = document.getElementById('status-display');
+            const showNameListBtn = document.getElementById('showNameListBtn');
+            const pegawaiModal = document.getElementById('pegawaiModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const modalSearchInput = document.getElementById('modalSearchInput');
+            const pegawaiListContainer = document.getElementById('pegawaiListContainer');
+            const morningSessionStatusDiv = document.getElementById('morningSessionStatus');
+            const eveningSessionStatusDiv = document.getElementById('eveningSessionStatus');
+
+            let allPegawai = [];
+            let selectedPegawai = null;
+            let officeLat = null;
+            let officeLon = null;
+            let maxDistanceMeters = null;
+            let isMorningAttendanceActive = false;
+            let isEveningAttendanceActive = false;
+
+            // Generate/Get Device ID
+            function getDeviceId() {
+                let deviceId = localStorage.getItem('dpmd_deviceId');
+                if (!deviceId) {
+                    deviceId = 'device-' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    localStorage.setItem('dpmd_deviceId', deviceId);
+                }
+                return deviceId;
+            }
+
+            const currentDeviceId = getDeviceId();
+
+            // Load settings and pegawai data
+            async function loadInitialData() {
+                updateStatus('Memuat pengaturan dan data pegawai...', 'info');
+                try {
+                    // 1. Get Settings
+                    const settingsRes = await api.getAppSettings();
+                    if (settingsRes.status === 'success') {
+                        const s = settingsRes.data;
+                        officeLat = s.officeLat;
+                        officeLon = s.officeLon;
+                        maxDistanceMeters = s.jarakMaksimal;
+                        isMorningAttendanceActive = s.morning_active;
+                        isEveningAttendanceActive = s.evening_active;
+
+                        updateSessionStatusDisplay();
+                    } else {
+                        updateStatus('Gagal memuat pengaturan: ' + settingsRes.message, 'error');
+                        disableAllAttendanceButtons();
+                        return; // Stop if settings fail
+                    }
+
+                    // 2. Get Pegawai
+                    const pegawaiRes = await api.getPegawai();
+                    if (pegawaiRes.status === 'success') {
+                        allPegawai = pegawaiRes.data;
+                        updateStatus('Silakan pilih nama Anda untuk memulai.', 'info');
+                    } else {
+                        updateStatus('Gagal memuat data pegawai.', 'error');
+                        disableAllAttendanceButtons();
+                    }
+
+                    updateAttendanceButtonStates();
+
+                } catch (error) {
+                    console.error("Gagal memuat data awal:", error);
+                    updateStatus('Gagal memuat data awal dari server.', 'error');
+                    disableAllAttendanceButtons();
+                }
+            }
+
+            function disableAllAttendanceButtons() {
+                morningAttendanceBtn.disabled = true;
+                eveningAttendanceBtn.disabled = true;
+                morningAttendanceBtn.textContent = 'Absen Pagi (Nonaktif)';
+                eveningAttendanceBtn.textContent = 'Absen Sore (Nonaktif)';
+            }
+
+            function updateAttendanceButtonStates() {
+                if (officeLat === null || officeLon === null || maxDistanceMeters === null || allPegawai.length === 0) {
+                    // Still loading or failed
+                    return;
+                }
+
+                if (selectedPegawai) {
+                    const isDeviceAllowed = !selectedPegawai.registeredDeviceId || String(selectedPegawai.registeredDeviceId) === String(currentDeviceId);
+
+                    if (isDeviceAllowed) {
+                        morningAttendanceBtn.disabled = !isMorningAttendanceActive;
+                        eveningAttendanceBtn.disabled = !isEveningAttendanceActive;
+
+                        morningAttendanceBtn.textContent = isMorningAttendanceActive ? 'Absen Pagi' : 'Absen Pagi (Ditutup)';
+                        eveningAttendanceBtn.textContent = isEveningAttendanceActive ? 'Absen Sore' : 'Absen Sore (Ditutup)';
+
+                        if (!isMorningAttendanceActive && !isEveningAttendanceActive) {
+                            updateStatus('Absensi pagi dan sore saat ini ditutup.', 'info');
+                        } else {
+                            updateStatus(`Pegawai ${selectedPegawai.nama} dipilih. Silakan lakukan absensi.`, 'info');
+                        }
+
+                    } else {
+                        updateStatus('Absen ditolak. Pegawai ini sudah terdaftar pada perangkat lain.', 'error');
+                        disableAllAttendanceButtons();
+                    }
+                } else {
+                    disableAllAttendanceButtons();
+                    // Initial status set by loadInitialData or retained
+                }
+            }
+
+            function updateSessionStatusDisplay() {
+                if (isMorningAttendanceActive) {
+                    morningSessionStatusDiv.textContent = 'Absen Pagi: Aktif';
+                    morningSessionStatusDiv.className = 'session-status-text status-active';
+                } else {
+                    morningSessionStatusDiv.textContent = 'Absen Pagi: Nonaktif';
+                    morningSessionStatusDiv.className = 'session-status-text status-inactive';
+                }
+
+                if (isEveningAttendanceActive) {
+                    eveningSessionStatusDiv.textContent = 'Absen Sore: Aktif';
+                    eveningSessionStatusDiv.className = 'session-status-text status-active';
+                } else {
+                    eveningSessionStatusDiv.textContent = 'Absen Sore: Nonaktif';
+                    eveningSessionStatusDiv.className = 'session-status-text status-inactive';
+                }
+            }
+
+            // Render pegawai list in modal
+            function renderPegawaiList(filter = '') {
+                pegawaiListContainer.innerHTML = '';
+                const filteredList = allPegawai.filter(p => (p.nama || '').toLowerCase().includes(filter.toLowerCase()));
+
+                if (filteredList.length === 0) {
+                    pegawaiListContainer.innerHTML = '<p style="text-align:center; color: var(--text-secondary);">Nama tidak ditemukan.</p>';
+                    return;
+                }
+
+                filteredList.forEach(pegawai => {
+                    const item = document.createElement('div');
+                    item.classList.add('pegawai-list-item');
+                    item.innerHTML = `<span class="nama">${pegawai.nama}</span><span class="nip">${pegawai.nip}</span>`;
+                    item.addEventListener('click', () => selectPegawai(pegawai));
+                    pegawaiListContainer.appendChild(item);
+                });
+            }
+
+            // Select a pegawai from the list
+            function selectPegawai(pegawai) {
+                selectedPegawai = pegawai;
+                searchNameInput.value = pegawai.nama;
+                nipDisplay.value = pegawai.nip;
+
+                pegawaiModal.style.display = 'none';
+                updateAttendanceButtonStates();
+            }
+
+            // Show pegawai list modal
+            showNameListBtn.addEventListener('click', () => {
+                pegawaiModal.style.display = 'flex';
+                pegawaiListContainer.innerHTML = `
+                    <div class="modal-loader">
+                        <i class="fas fa-spinner"></i>
+                        <p>Mohon menunggu...</p>
+                    </div>`;
+                modalSearchInput.value = '';
+                modalSearchInput.style.display = 'none';
+
+                setTimeout(() => {
+                    modalSearchInput.style.display = 'block';
+                    renderPegawaiList();
+                    modalSearchInput.focus();
+                }, 500); // Faster than Firebase 2000
+            });
+
+            // Close pegawai list modal
+            closeModalBtn.addEventListener('click', () => {
+                pegawaiModal.style.display = 'none';
+            });
+
+            // Filter pegawai list based on search input
+            modalSearchInput.addEventListener('input', () => {
+                renderPegawaiList(modalSearchInput.value);
+            });
+
+            // Handle attendance button click
+            morningAttendanceBtn.addEventListener('click', () => handleAttendance('Pagi'));
+            eveningAttendanceBtn.addEventListener('click', () => handleAttendance('Sore'));
+
+            async function handleAttendance(sessionType) {
+                if (!selectedPegawai) {
+                    updateStatus('Silakan pilih nama pegawai terlebih dahulu.', 'error');
+                    return;
+                }
+
+                if (officeLat === null || officeLon === null) {
+                    updateStatus('Pengaturan lokasi kantor belum dimuat.', 'error');
+                    return;
+                }
+
+                // Device Check (Frontend)
+                if (selectedPegawai.registeredDeviceId && String(selectedPegawai.registeredDeviceId) !== String(currentDeviceId)) {
+                    updateStatus('Absen ditolak. Perangkat tidak sesuai.', 'error');
+                    return;
+                }
+
+                if ((sessionType === 'Pagi' && !isMorningAttendanceActive) || (sessionType === 'Sore' && !isEveningAttendanceActive)) {
+                    updateStatus(`Absensi ${sessionType} saat ini tidak aktif.`, 'error');
+                    return;
+                }
+
+                updateStatus(`Mendapatkan lokasi Anda untuk absen ${sessionType}, mohon tunggu...`, 'info');
+                morningAttendanceBtn.disabled = true;
+                eveningAttendanceBtn.disabled = true;
+                morningAttendanceBtn.textContent = 'Memproses...';
+                eveningAttendanceBtn.textContent = 'Memproses...';
+
+                if (!navigator.geolocation) {
+                    updateStatus('Geolocation tidak didukung oleh browser ini.', 'error');
+                    updateAttendanceButtonStates();
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => positionSuccess(position, sessionType),
+                    positionError,
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                );
+            }
+
+            async function positionSuccess(position, sessionType) {
+                const userLat = position.coords.latitude;
+                const userLon = position.coords.longitude;
+                const distance = calculateDistance(userLat, userLon, officeLat, officeLon);
+
+                if (distance <= maxDistanceMeters) {
+                    updateStatus(`Lokasi valid! Jarak ${distance.toFixed(0)}m. Menyimpan data...`, 'info');
+                    await saveAttendance(selectedPegawai, userLat, userLon, sessionType);
+                } else {
+                    updateStatus(`Absen Ditolak. Jarak Anda ${distance.toFixed(0)}m (Max ${maxDistanceMeters}m).`, 'error');
+                    updateAttendanceButtonStates();
+                }
+            }
+
+            function positionError(error) {
+                let errorMessage = 'Gagal mendapatkan lokasi. ';
+                switch (error.code) {
+                    case error.PERMISSION_DENIED: errorMessage += "Izin lokasi ditolak."; break;
+                    case error.POSITION_UNAVAILABLE: errorMessage += "Lokasi tidak tersedia."; break;
+                    case error.TIMEOUT: errorMessage += "Waktu habis."; break;
+                    default: errorMessage += "Kesalahan tidak diketahui."; break;
+                }
+                updateStatus(errorMessage, 'error');
+                updateAttendanceButtonStates();
+            }
+
+            function calculateDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371e3; // metres
+                const phi1 = lat1 * Math.PI / 180;
+                const phi2 = lat2 * Math.PI / 180;
+                const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+                const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+                const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+                    Math.cos(phi1) * Math.cos(phi2) *
+                    Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+                return R * c; // in meters
+            }
+
+            async function saveAttendance(pegawai, lat, lon, sessionType) {
+                const now = new Date();
+                const timeStr = now.toTimeString().split(' ')[0]; // HH:MM:SS
+
+                const payload = {
+                    pegawaiId: pegawai.id, // For backend search
+                    nama: pegawai.nama,
+                    nip: pegawai.nip,
+                    waktu: timeStr,
+                    status: 'Hadir',
+                    keterangan: `Absen Lokasi GPS (${sessionType})`,
+                    lokasi: { latitude: lat, longitude: lon },
+                    deviceId: currentDeviceId,
+                    session: sessionType
+                };
+
+                try {
+                    const result = await api.saveAbsensi(payload);
+                    if (result.status === 'success') {
+                        updateStatus(`Selamat datang, ${pegawai.nama}! Absen ${sessionType} berhasil.`, 'success');
+
+                        // Update local registeredDeviceId if it was empty, to reflect immediate state
+                        if (!pegawai.registeredDeviceId) {
+                            pegawai.registeredDeviceId = currentDeviceId;
+                            // Optionally refresh allPegawai here or just update usage logic
+                        }
+
+                        searchNameInput.value = '';
+                        nipDisplay.value = '';
+                        selectedPegawai = null;
+
+                        setTimeout(() => {
+                            updateAttendanceButtonStates();
+                            updateStatus('Silakan pilih nama Anda untuk memulai.', 'info');
+                        }, 4000);
+                    } else {
+                        updateStatus('Gagal: ' + result.message, 'error');
+                        updateAttendanceButtonStates();
+                    }
+                } catch (error) {
+                    updateStatus('Gagal menyimpan ke server.', 'error');
+                    console.error("API error:", error);
+                    updateAttendanceButtonStates();
+                }
+            }
+
+            function updateStatus(message, type) {
+                statusDisplay.textContent = message;
+                statusDisplay.className = 'status-display';
+                statusDisplay.classList.add(type === 'info' ? 'status-info' : type === 'success' ? 'status-success' : 'status-error');
+            }
+
+            window.addEventListener('click', (e) => {
+                if (e.target === pegawaiModal) {
+                    pegawaiModal.style.display = 'none';
+                }
+            });
+
+            // Initial Load
+            loadInitialData();
+        });
+    </script>
+</body>
+
+</html>

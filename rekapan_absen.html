@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekapan Absen Harian - DPMD</title>
+
+    <script>
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            const loginUrl = window.location.href.replace(/[^/]*$/, 'login.html');
+            window.location.replace(loginUrl);
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            document.body.style.visibility = 'visible';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const dateFilter = document.getElementById('dateFilter');
+            const tableBody = document.getElementById('rekapTableBody');
+            const summaryContainer = document.getElementById('summaryContainer');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const imageUpload = document.getElementById('imageUpload');
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            const sendWaBtn = document.getElementById('sendWaBtn');
+            const savePdfBtn = document.getElementById('savePdfBtn');
+            const saveInfo = document.getElementById('saveInfo');
+            const copyLinkBtn = document.getElementById('copyLinkBtn');
+            const copySuccessMsg = document.getElementById('copy-success-msg');
+
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const sidebar = document.getElementById('sidebar');
+
+            hamburgerMenu.addEventListener('click', () => {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.toggle('active');
+                } else {
+                    sidebar.classList.toggle('collapsed');
+                    document.getElementById('mainContent').classList.toggle('expanded');
+                }
+            });
+
+            document.querySelectorAll('.dropdown-toggle').forEach(item => {
+                item.addEventListener('click', event => {
+                    event.preventDefault();
+                    if (sidebar.classList.contains('collapsed') && window.innerWidth > 992) {
+                        return;
+                    }
+                    item.parentElement.classList.toggle('open');
+                });
+            });
+
+            const today = new Date().toISOString().split('T')[0];
+            dateFilter.value = today;
+
+            let allPegawai = [];
+            let dailyAttendance = []; // Changed to array
+
+            async function initializePage() {
+                try {
+                    const response = await api.getPegawai();
+                    if (response.status === 'success') {
+                        allPegawai = response.data;
+                        fetchAndRenderData(dateFilter.value);
+                    } else {
+                        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Gagal memuat data pegawai.</td></tr>`;
+                    }
+                } catch (error) {
+                    console.error("Error init:", error);
+                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Gagal menghubungkan ke server.</td></tr>`;
+                }
+            }
+
+            async function fetchAndRenderData(date) {
+                tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Memuat data untuk tanggal ${date}...</td></tr>`;
+
+                try {
+                    const response = await api.getAbsensi(date);
+                    if (response.status === 'success') {
+                        dailyAttendance = response.data;
+                        renderTable();
+                        updateSummary();
+                    } else {
+                        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Gagal memuat absensi.</td></tr>`;
+                    }
+                } catch (error) {
+                    console.error("Error fetching absensi:", error);
+                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Terjadi kesalahan saat memuat data.</td></tr>`;
+                }
+            }
+
+            function renderTable() {
+                tableBody.innerHTML = '';
+                if (allPegawai.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Data pegawai belum ada.</td></tr>`;
+                    return;
+                }
+
+                allPegawai.forEach((pegawai, index) => {
+                    // Find attendance record for this pegawai
+                    // Can have multiple records (e.g. Pagi, Sore).
+                    // Logic: If any record is 'Hadir', show Hadir. Else show the status of the first record found.
+                    const records = dailyAttendance.filter(a => String(a.nip) === String(pegawai.nip));
+
+                    let status = 'Tanpa Keterangan';
+                    let waktu = '-';
+
+                    if (records.length > 0) {
+                        // Check for 'Hadir' first
+                        const hadirRecord = records.find(r => r.status === 'Hadir');
+                        if (hadirRecord) {
+                            status = 'Hadir';
+                            waktu = records.filter(r => r.status === 'Hadir').map(r => r.waktu).join(', '); // Show all times? e.g. "08:00, 17:00"
+                        } else {
+                            // Use status from first record
+                            status = records[0].status;
+                            waktu = '-';
+                        }
+                    }
+
+                    const row = tableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${pegawai.nama}</td>
+                        <td>${pegawai.nip}</td>
+                        <td>${waktu}</td>
+                        <td>
+                            <select class="status-select" data-pegawai-id="${pegawai.id}" data-nip="${pegawai.nip}" data-nama="${pegawai.nama}" data-selected-text="${status}">
+                                <option value="Hadir" ${status === 'Hadir' ? 'selected' : ''} disabled>Hadir</option>
+                                <option value="Dinas Luar" ${status === 'Dinas Luar' ? 'selected' : ''}>Dinas Luar</option>
+                                <option value="Tugas Belajar" ${status === 'Tugas Belajar' ? 'selected' : ''}>Tugas Belajar</option>
+                                <option value="Sakit" ${status === 'Sakit' ? 'selected' : ''}>Sakit</option>
+                                <option value="Izin" ${status === 'Izin' ? 'selected' : ''}>Izin</option>
+                                <option value="Tanpa Keterangan" ${status === 'Tanpa Keterangan' ? 'selected' : ''}>Tanpa Keterangan</option>
+                            </select>
+                        </td>
+                    `;
+                });
+            }
+
+            function updateSummary() {
+                const summary = {
+                    total: allPegawai.length,
+                    hadir: 0,
+                    dinasLuar: 0,
+                    tugasBelajar: 0,
+                    sakit: 0,
+                    izin: 0,
+                    tanpaKeterangan: 0,
+                };
+
+                allPegawai.forEach(pegawai => {
+                    const records = dailyAttendance.filter(a => String(a.nip) === String(pegawai.nip));
+                    let status = 'Tanpa Keterangan';
+
+                    if (records.length > 0) {
+                        if (records.some(r => r.status === 'Hadir')) status = 'Hadir';
+                        else status = records[0].status;
+                    }
+
+                    switch (status) {
+                        case 'Hadir': summary.hadir++; break;
+                        case 'Dinas Luar': summary.dinasLuar++; break;
+                        case 'Tugas Belajar': summary.tugasBelajar++; break;
+                        case 'Sakit': summary.sakit++; break;
+                        case 'Izin': summary.izin++; break;
+                        default: summary.tanpaKeterangan++; break;
+                    }
+                });
+
+                summaryContainer.innerHTML = `
+                    <div class="summary-card" style="border-color: var(--secondary-accent);"><div class="icon" style="color: var(--secondary-accent);"><i class="fas fa-users"></i></div><div class="info"><h4>${summary.total}</h4><p>Total Pegawai</p></div></div>
+                    <div class="summary-card" style="border-color: var(--hadir);"><div class="icon" style="color: var(--hadir);"><i class="fas fa-user-check"></i></div><div class="info"><h4>${summary.hadir}</h4><p>Hadir</p></div></div>
+                    <div class="summary-card" style="border-color: var(--dl);"><div class="icon" style="color: var(--dl);"><i class="fas fa-plane-departure"></i></div><div class="info"><h4>${summary.dinasLuar}</h4><p>Dinas Luar</p></div></div>
+                    <div class="summary-card" style="border-color: var(--tb);"><div class="icon" style="color: var(--tb);"><i class="fas fa-book-open"></i></div><div class="info"><h4>${summary.tugasBelajar}</h4><p>Tugas Belajar</p></div></div>
+                    <div class="summary-card" style="border-color: var(--sakit);"><div class="icon" style="color: var(--sakit);"><i class="fas fa-head-side-cough"></i></div><div class="info"><h4>${summary.sakit}</h4><p>Sakit</p></div></div>
+                    <div class="summary-card" style="border-color: var(--izin);"><div class="icon" style="color: var(--izin);"><i class="fas fa-envelope-open-text"></i></div><div class="info"><h4>${summary.izin}</h4><p>Izin</p></div></div>
+                    <div class="summary-card" style="border-color: var(--alpha);"><div class="icon" style="color: var(--alpha);"><i class="fas fa-user-times"></i></div><div class="info"><h4>${summary.tanpaKeterangan}</h4><p>Tanpa Ket.</p></div></div>
+                `;
+
+                updateWhatsAppLink(summary);
+            }
+
+            function updateWhatsAppLink(summary) {
+                const date = new Date(dateFilter.value);
+                const formattedDate = date.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+                const message = `*LAPORAN APEL*
+*DINAS PEMBERDAYAAN MASYARAKAT DAN DESA*
+Tanggal: ${formattedDate}
+
+*Rekapitulasi Kehadiran:*
+✅ Hadir: ${summary.hadir}
+✈️ Dinas Luar: ${summary.dinasLuar}
+📚 Tugas Belajar: ${summary.tugasBelajar}
+🤒 Sakit: ${summary.sakit}
+✉️ Izin: ${summary.izin}
+❌ Tanpa Keterangan: ${summary.tanpaKeterangan}
+----------------------
+👥 *Total Pegawai: ${summary.total}*
+
+Demikian laporan apel hari ini.`;
+
+                const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+                sendWaBtn.href = whatsappUrl;
+            }
+
+            tableBody.addEventListener('change', async (e) => {
+                if (e.target.classList.contains('status-select')) {
+                    const select = e.target;
+                    const nip = select.dataset.nip;
+                    const nama = select.dataset.nama;
+                    const newStatus = select.value;
+                    const date = dateFilter.value;
+
+                    const payload = {
+                        date: date,
+                        nip: nip,
+                        nama: nama,
+                        status: newStatus
+                    };
+
+                    select.disabled = true; // Disable while saving
+                    try {
+                        const response = await api.updateAbsensiStatus(payload);
+                        if (response.status === 'success') {
+                            select.dataset.selectedText = newStatus;
+                            // Refresh data to reflect changes (in case backend created a new row)
+                            await fetchAndRenderData(date);
+                        } else {
+                            alert('Gagal update status: ' + response.message);
+                            // Revert?
+                        }
+                    } catch (error) {
+                        console.error('Update failed:', error);
+                        alert('Gagal menghubungi server.');
+                    } finally {
+                        select.disabled = false;
+                    }
+                }
+            });
+
+            dateFilter.addEventListener('change', () => {
+                fetchAndRenderData(dateFilter.value);
+            });
+
+            uploadBtn.addEventListener('click', () => imageUpload.click());
+            imageUpload.addEventListener('change', (event) => {
+                imagePreviewContainer.innerHTML = ''; // Kosongkan pratinjau sebelumnya
+                const files = event.target.files;
+                if (files) {
+                    for (const file of files) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const previewWrapper = document.createElement('div');
+                            previewWrapper.classList.add('preview-item');
+
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+
+                            const removeBtn = document.createElement('button');
+                            removeBtn.classList.add('remove-img-btn');
+                            removeBtn.innerHTML = '&times;';
+                            removeBtn.onclick = () => {
+                                previewWrapper.remove();
+                            };
+
+                            previewWrapper.appendChild(img);
+                            previewWrapper.appendChild(removeBtn);
+                            imagePreviewContainer.appendChild(previewWrapper);
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+
+            savePdfBtn.addEventListener('click', () => {
+                saveInfo.style.display = 'block';
+                const date = dateFilter.value;
+                document.title = `Rekapan Absen DPMD - ${date}`;
+                window.print();
+                document.title = 'Rekapan Absen Harian - DPMD';
+            });
+
+            copyLinkBtn.addEventListener('click', () => {
+                const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+                const publicLink = `${baseUrl}/absen-publik.html`;
+
+                const tempInput = document.createElement('input');
+                document.body.appendChild(tempInput);
+                tempInput.value = publicLink;
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+
+                copySuccessMsg.style.display = 'inline';
+                setTimeout(() => {
+                    copySuccessMsg.style.display = 'none';
+                }, 3000);
+            });
+
+            document.getElementById('logoutButton').addEventListener('click', (e) => {
+                e.preventDefault();
+                sessionStorage.clear();
+                window.location.replace('login.html');
+            });
+
+            initializePage();
+        });
+    </script>
+    </body>
+
+</html>
