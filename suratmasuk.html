@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <script>
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.replace('<?= getScriptUrl(); ?>?p=login');
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surat Masuk - DPMD Kab. Kepulauan Tanimbar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Times+New+Roman&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f4f7fc;
+            --bg-secondary: #ffffff;
+            --primary-accent: #e3f2fd;
+            --secondary-accent: #007bff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: transform 0.4s ease, width 0.4s ease;
+            z-index: 1000;
+            box-shadow: 0 0 15px var(--shadow-color);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--secondary-accent);
+            font-weight: 700;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            height: calc(100% - 150px);
+            overflow-y: auto;
+        }
+
+        .sidebar-menu ul {
+            list-style: none;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            margin: 5px 15px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: var(--secondary-accent);
+            color: #ffffff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .sidebar-menu a i.menu-icon {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+        }
+
+        .logout-btn a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-accent);
+            color: var(--secondary-accent);
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 25px;
+            transition: all 0.4s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--secondary-accent);
+            color: #ffffff;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--bg-primary);
+            color: var(--text-secondary);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-top: 15px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        /* Disposisi Styling */
+        .print-header {
+            display: flex;
+            align-items: center;
+            border-bottom: 3px solid black;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        #disposisi-sheet {
+            border: 2px solid #000;
+            padding: 15px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .disposisi-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+        }
+
+        .disposisi-table td {
+            border: 1px solid #000;
+            padding: 8px;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body,
+            .main-content {
+                padding: 0;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar no-print">
+        <div class="sidebar-header">
+            <h3>DPMD</h3>
+            <p>Kab. Kepulauan Tanimbar</p>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li><a href="<?= getScriptUrl(); ?>?p=index"><i class="fas fa-home menu-icon"></i>
+                        <span>Dashboard</span></a></li>
+                <li><a href="<?= getScriptUrl(); ?>?p=datapegawai"><i class="fas fa-users menu-icon"></i> <span>Data
+                            Pegawai</span></a></li>
+                <li><a href="<?= getScriptUrl(); ?>?p=suratmasuk" class="active"><i
+                            class="fas fa-envelope-open-text menu-icon"></i>
+                        <span>Surat Masuk</span></a></li>
+                <li><a href="<?= getScriptUrl(); ?>?p=bezeting"><i class="fas fa-file-invoice menu-icon"></i>
+                        <span>Bezeting
+                            Pegawai</span></a></li>
+                <li><a href="<?= getScriptUrl(); ?>?p=master"><i class="fas fa-database menu-icon"></i> <span>Data
+                            Master</span></a></li>
+                <li class="menu-item-has-children">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="fas fa-camera-retro menu-icon"></i> <span>Absen Online</span>
+                        <i class="fas fa-chevron-down dropdown-icon" style="margin-left:auto"></i>
+                    </a>
+                    <ul class="submenu">
+                        <li><a href="<?= getScriptUrl(); ?>?p=absen_online">Setting Absen</a></li>
+                        <li><a href="<?= getScriptUrl(); ?>?p=rekapan_absen">Rekap Absen</a></li>
+                    </ul>
+                </li>
+                <li><a href="<?= getScriptUrl(); ?>?p=daftarhadir"><i class="fas fa-clipboard-user menu-icon"></i>
+                        <span>Daftar
+                            Hadir</span></a></li>
+                <li><a href="<?= getScriptUrl(); ?>?p=daftar_hadir_mingguan"><i
+                            class="fas fa-calendar-check menu-icon"></i> <span>Absen
+                            Harian</span></a></li>
+            </ul>
+        </div>
+        <div class="logout-btn">
+            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span>Keluar</span></a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header class="header no-print">
+            <h2>Surat Masuk</h2>
+            <button class="btn" onclick="openModal()"><i class="fas fa-plus"></i> Tambah Surat Masuk</button>
+        </header>
+
+        <div class="card no-print">
+            <table id="suratTable">
+                <thead>
+                    <tr>
+                        <th>Agenda</th>
+                        <th>Tujuan</th>
+                        <th>Nomor Surat</th>
+                        <th>Pengirim</th>
+                        <th>Perihal</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="suratTableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Add Modal -->
+        <div id="suratModal" class="modal no-print">
+            <div class="modal-content">
+                <h3 id="modalTitle">Tambah Surat Masuk</h3>
+                <form id="suratForm">
+                    <input type="hidden" id="suratId">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>No Agenda</label>
+                            <input type="number" id="noAgenda" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Tgl Diterima</label>
+                            <input type="date" id="tglTerima" required>
+                        </div>
+                        <div class="form-group">
+                            <label>No. Surat</label>
+                            <input type="text" id="noSurat" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Sifat Surat</label>
+                            <select id="sifatSurat">
+                                <option value="Biasa">Biasa</option>
+                                <option value="Penting">Penting</option>
+                                <option value="Segera">Segera</option>
+                                <option value="Sangat Segera">Sangat Segera</option>
+                                <option value="Rahasia">Rahasia</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Pengirim</label>
+                            <input type="text" id="pengirim" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Perihal</label>
+                        <textarea id="perihal" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Surat (PDF/Foto)</label>
+                        <input type="file" id="fileSurat">
+                    </div>
+                    <div class="form-group">
+                        <label>Link File</label>
+                        <input type="text" id="linkSurat" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>WA Tujuan</label>
+                        <input type="text" id="nomorWa">
+                    </div>
+                    <div style="margin-top:20px; text-align:right;">
+                        <button type="button" class="btn btn-danger" onclick="closeModal()">Batal</button>
+                        <button type="submit" class="btn">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Disposisi Modal -->
+        <div id="disposisiModal" class="modal">
+            <div class="modal-content">
+                <div id="disposisiContent"></div>
+                <div class="no-print" style="margin-top:20px; text-align:right;">
+                    <button class="btn btn-danger"
+                        onclick="document.getElementById('disposisiModal').style.display='none'">Tutup</button>
+                    <button class="btn" onclick="window.print()">Cetak</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <?!= include('config_js'); ?>
+    <?!= include('api_js'); ?>
+    <script>
+        let allSurat = [];
+        let currentId = null;
+
+        async function loadData() {
+            const res = await api.getSuratMasuk();
+            if (res.status === 'success') {
+                allSurat = res.data;
+                renderTable();
+            }
+        }
+
+        function renderTable() {
+            const body = document.getElementById('suratTableBody');
+            body.innerHTML = '';
+            allSurat.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${s.noAgenda}</td>
+                    <td>${s.tujuanSurat || '-'}</td>
+                    <td>${s.noSurat}</td>
+                    <td>${s.pengirim}</td>
+                    <td>${s.perihal}</td>
+                    <td id="status-${s.id}">${s.disposisi ? 'Sudah' : 'Belum'}</td>
+                    <td>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn btn-sm" onclick="openModal('${s.id}')" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-sm" style="background:#6f42c1" onclick="viewDisposisi('${s.id}')" title="Lihat Disposisi"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-sm" style="background:#28a745" onclick="sendToLeader('${s.id}')" title="Kirim ke Pimpinan"><i class="fab fa-whatsapp"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteSurat('${s.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function openModal(id = null) {
+            currentId = id;
+            document.getElementById('suratForm').reset();
+            if (id) {
+                const s = allSurat.find(x => String(x.id) === String(id));
+                document.getElementById('noAgenda').value = s.noAgenda;
+                document.getElementById('tglTerima').value = s.tglTerima;
+                document.getElementById('noSurat').value = s.noSurat;
+                document.getElementById('sifatSurat').value = s.sifatSurat || 'Biasa';
+                document.getElementById('pengirim').value = s.pengirim;
+                document.getElementById('perihal').value = s.perihal;
+                document.getElementById('linkSurat').value = s.linkSurat;
+                document.getElementById('nomorWa').value = s.nomorWa;
+            } else {
+                const max = allSurat.reduce((m, x) => Math.max(m, parseInt(x.noAgenda) || 0), 0);
+                document.getElementById('noAgenda').value = max + 1;
+            }
+            document.getElementById('suratModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('suratModal').style.display = 'none';
+        }
+
+        document.getElementById('suratForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                id: currentId,
+                noAgenda: document.getElementById('noAgenda').value,
+                tglTerima: document.getElementById('tglTerima').value,
+                noSurat: document.getElementById('noSurat').value,
+                sifatSurat: document.getElementById('sifatSurat').value,
+                pengirim: document.getElementById('pengirim').value,
+                perihal: document.getElementById('perihal').value,
+                linkSurat: document.getElementById('linkSurat').value,
+                nomorWa: document.getElementById('nomorWa').value
+            };
+
+            const fileInput = document.getElementById('fileSurat');
+            if (fileInput.files.length > 0) {
+                const up = await api.uploadFile(fileInput.files[0]);
+                if (up.status === 'success') payload.linkSurat = up.webViewLink;
+            }
+
+            await api.saveSuratMasuk(payload);
+            closeModal();
+            loadData();
+        };
+
+        function viewDisposisi(id) {
+            const s = allSurat.find(x => String(x.id) === String(id));
+            const content = document.getElementById('disposisiContent');
+
+            let disposisiHtml = '<p style="text-align:center; color:red">Belum ada disposisi dari pimpinan.</p>';
+
+            if (s.disposisi) {
+                try {
+                    const d = typeof s.disposisi === 'string' ? JSON.parse(s.disposisi) : s.disposisi;
+                    disposisiHtml = `
+                        <div style="margin-top:20px; border-top: 2px solid #000; padding-top:10px;">
+                            <p><strong>Catatan:</strong> ${d.catatan || '-'}</p>
+                            <p><strong>Diteruskan Ke:</strong> ${d.diteruskan ? d.diteruskan.join(', ') : '-'}</p>
+                            <p><strong>Instruksi:</strong> ${d.instruksi ? d.instruksi.join(', ') : '-'}</p>
+                            <p style="font-size:0.8rem; color:gray; margin-top:10px;">Diproses pada: ${new Date(d.timestamp).toLocaleString()}</p>
+                        </div>
+                    `;
+                } catch (e) {
+                    disposisiHtml = `<p>Error parsing disposisi data: ${e.message}</p>`;
+                }
+            }
+
+            content.innerHTML = `
+                <div class="print-header">
+                    <div style="text-align:center; width:100%">
+                        <h3>PEMERINTAH KABUPATEN KEPULAUAN TANIMBAR</h3>
+                        <h2>DINAS PEMBERDAYAAN MASYARAKAT DAN DESA</h2>
+                    </div>
+                </div>
+                <div id="disposisi-sheet">
+                    <h4 style="text-align:center">LEMBAR DISPOSISI</h4>
+                    <table class="disposisi-table">
+                        <tr><td>Pengirim: ${s.pengirim}</td><td>Agenda: ${s.noAgenda}</td></tr>
+                        <tr><td>No Surat: ${s.noSurat}</td><td>Terima: ${s.tglTerima}</td></tr>
+                        <tr><td colspan="2">Perihal: ${s.perihal}</td></tr>
+                    </table>
+                    ${disposisiHtml}
+                </div>
+            `;
+            document.getElementById('disposisiModal').style.display = 'flex';
+        }
+
+        async function sendToLeader(id) {
+            const s = allSurat.find(x => String(x.id) === String(id));
+            if (!s.nomorWa) return alert('Nomor WA Pimpinan belum diisi!');
+
+            // Build the URL for lembar-disposisi.html
+            const baseUrl = window.location.href.split('/').slice(0, -1).join('/') + '/lembar-disposisi.html';
+            const params = new URLSearchParams({
+                id: s.id,
+                noAgenda: s.noAgenda,
+                tglTerima: s.tglTerima,
+                noSurat: s.noSurat,
+                tglSurat: s.tglSurat || '',
+                pengirim: s.pengirim,
+                perihal: s.perihal,
+                sifatSurat: s.sifatSurat || 'Penting'
+            });
+
+            const fullUrl = `${baseUrl}?${params.toString()}`;
+            const message = `*NOTIFIKASI SURAT MASUK* 📬\n\nYth. Bapak/Ibu Pimpinan,\nMohon kesediaan untuk mengisi Lembar Disposisi surat berikut:\n\n*No. Agenda:* ${s.noAgenda}\n*Pengirim:* ${s.pengirim}\n*Perihal:* ${s.perihal}\n\nKlik tautan berikut untuk mengisi disposisi:\n${fullUrl}`;
+
+            const waUrl = `https://api.whatsapp.com/send?phone=${s.nomorWa}&text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        async function deleteSurat(id) {
+            if (confirm('Hapus data surat ini?')) {
+                const res = await api.deleteSuratMasuk(id);
+                if (res.status === 'success') {
+                    loadData();
+                } else {
+                    alert('Gagal menghapus: ' + res.message);
+                }
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('isLoggedIn');
+            window.location.replace('<?= getScriptUrl(); ?>?p=login');
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+
+</html>

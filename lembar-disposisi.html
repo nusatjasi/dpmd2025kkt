@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lembar Disposisi - DPMD Kab. Kepulauan Tanimbar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Times+New+Roman&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f4f7fc;
+            --bg-secondary: #ffffff;
+            --secondary-accent: #007bff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--secondary-accent);
+            color: #ffffff;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .disposisi-container {
+            max-width: 800px;
+            margin: auto;
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group input {
+            flex-grow: 1;
+        }
+
+        .input-group .btn {
+            padding: 10px 15px;
+        }
+
+        .print-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            border-bottom: 3px solid black;
+            padding-bottom: 10px;
+            gap: 20px;
+        }
+
+        .print-header .logo {
+            width: 70px;
+            height: auto;
+        }
+
+        .print-header .header-text {
+            text-align: center;
+            font-family: 'Times New Roman', Times, serif;
+            flex-grow: 1;
+        }
+
+        .print-header h3,
+        .print-header h2,
+        .print-header p {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .print-header h3 {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .print-header h2 {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .print-header p {
+            font-size: 12px;
+        }
+
+        #disposisi-sheet {
+            border: 2px solid #000;
+            padding: 15px;
+            font-family: 'Times New Roman', Times, serif;
+            color: #000;
+        }
+
+        #disposisi-sheet h4 {
+            text-align: center;
+            text-decoration: underline;
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .disposisi-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            border: 1px solid #000;
+        }
+
+        .disposisi-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+
+        .disposisi-table .value {
+            font-weight: normal;
+        }
+
+        .disposisi-table .full-width {
+            height: 80px;
+        }
+
+        .disposisi-table .hal-value {
+            height: 60px;
+        }
+
+        .disposisi-table .catatan-value {
+            height: 120px;
+        }
+
+        .disposisi-table input[type="checkbox"] {
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .disposisi-table label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: normal;
+        }
+
+        .disposisi-table textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12px;
+            resize: none;
+            padding: 0;
+            background: transparent;
+        }
+
+        .signature-block {
+            float: right;
+            text-align: center;
+            width: 300px;
+            margin-top: 20px;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12px;
+        }
+
+        .signature-block p {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .signature-block .name {
+            margin-top: 50px;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        /* --- Custom Notification/Alert --- */
+        .custom-alert-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .custom-alert-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .custom-alert-box {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        .custom-alert-overlay.show .custom-alert-box {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .custom-alert-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .custom-alert-icon .fa-check-circle {
+            color: var(--success-color);
+        }
+
+        .custom-alert-icon .fa-exclamation-triangle {
+            color: var(--warning-color);
+        }
+
+        .custom-alert-message {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .custom-alert-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .error-box {
+            padding: 20px;
+            border: 2px solid var(--danger-color);
+            background: #fbebeb;
+            color: #58151c;
+            border-radius: 8px;
+        }
+
+        .error-box h2 {
+            color: #58151c;
+        }
+
+        .error-box pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        /* Print Styles */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            .disposisi-container {
+                box-shadow: none;
+                border: none;
+                max-width: 100%;
+            }
+        }
+    </style>
+    <?!= include('config_js'); ?>
+    <?!= include('api_js'); ?>
+</head>
+
+<body>
+    <div class="no-print"
+        style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <a href="<?= getScriptUrl(); ?>?p=suratmasuk" class="btn" style="background: #6c757d;">
+            <i class="fas fa-arrow-left"></i> Kembali ke Surat Masuk
+        </a>
+        <button class="btn" onclick="window.print()">
+            <i class="fas fa-print"></i> Cetak Lembar Disposisi
+        </button>
+    </div>
+    <div class="disposisi-container">
+        <div id="disposisiContent">
+            <!-- Konten akan dimuat di sini oleh JavaScript -->
+        </div>
+        <div class="form-group" id="tujuan-group">
+            <label for="teruskanKe">Kirim Balasan Disposisi Ke:</label>
+            <select id="teruskanKe">
+                <option value="" disabled selected>Pilih Tujuan</option>
+            </select>
+        </div>
+        <div class="form-group" id="nomor-wa-group">
+            <label for="nomorWaTujuan">Nomor WhatsApp Tujuan:</label>
+            <div class="input-group">
+                <input type="tel" id="nomorWaTujuan"
+                    placeholder="Pilih tujuan untuk mengisi nomor otomatis atau isi manual">
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button class="btn no-print" onclick="window.print()"><i class="fas fa-print"></i> Cetak</button>
+            <button class="btn" id="saveDisposisiBtn" style="background-color: var(--success-color);"><i
+                    class="fab fa-whatsapp"></i> Simpan & Kirim Balasan</button>
+        </div>
+    </div>
+
+    <!-- Custom Notification Alert -->
+    <div id="customAlert" class="custom-alert-overlay">
+        <div class="custom-alert-box">
+            <div class="custom-alert-icon"><i class="fas"></i></div>
+            <p class="custom-alert-message"></p>
+            <div class="custom-alert-buttons">
+                <button id="alertConfirmBtn" class="btn"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const disposisiContent = document.getElementById('disposisiContent');
+            const saveBtn = document.getElementById('saveDisposisiBtn');
+            const teruskanSelect = document.getElementById('teruskanKe');
+            const nomorWaInput = document.getElementById('nomorWaTujuan');
+
+            const customAlert = document.getElementById('customAlert');
+            const alertMessage = customAlert.querySelector('.custom-alert-message');
+            const alertIcon = customAlert.querySelector('.custom-alert-icon i');
+            const alertConfirmBtn = document.getElementById('alertConfirmBtn');
+
+            function showAlert(message, type = 'success', onConfirm = null) {
+                alertMessage.textContent = message;
+                alertIcon.className = 'fas';
+                alertConfirmBtn.onclick = () => {
+                    hideAlert();
+                    if (onConfirm) onConfirm();
+                };
+                if (type === 'warning') {
+                    alertIcon.classList.add('fa-exclamation-triangle');
+                    alertConfirmBtn.textContent = 'OK';
+                    alertConfirmBtn.style.backgroundColor = 'var(--warning-color)';
+                } else if (type === 'error') {
+                    alertIcon.classList.add('fa-times-circle');
+                    alertConfirmBtn.textContent = 'Tutup';
+                    alertConfirmBtn.style.backgroundColor = 'var(--danger-color)';
+                } else {
+                    alertIcon.classList.add('fa-check-circle');
+                    alertConfirmBtn.textContent = 'Lanjutkan';
+                    alertConfirmBtn.style.backgroundColor = 'var(--success-color)';
+                }
+                customAlert.classList.add('show');
+            }
+
+            function hideAlert() {
+                customAlert.classList.remove('show');
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const surat = {};
+            for (let [key, value] of urlParams.entries()) {
+                surat[key] = decodeURIComponent(value);
+            }
+
+            if (!surat.id) {
+                disposisiContent.innerHTML = `
+                    <div class="error-box">
+                        <h2>Tautan Tidak Valid</h2>
+                        <p>ID surat tidak ditemukan. Pastikan tautan lengkap.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const daftarKontak = [
+                { nama: 'Sekretaris', no_wa: '' },
+                { nama: 'Kabid. Kelembagaan & PMD', no_wa: '' },
+                { nama: 'Kabid. Pemberdayaan Ekonomi & TTG', no_wa: '' },
+            ];
+            daftarKontak.forEach(kontak => {
+                const option = document.createElement('option');
+                option.value = kontak.nama;
+                option.dataset.no_wa = kontak.no_wa;
+                option.textContent = kontak.nama;
+                teruskanSelect.appendChild(option);
+            });
+
+            teruskanSelect.addEventListener('change', function () {
+                const selectedOption = this.options[this.selectedIndex];
+                nomorWaInput.value = selectedOption.dataset.no_wa || '';
+            });
+
+            const pejabatStruktural = ["Sekretaris", "Kabid. Kelembagaan & PMD", "Kabid. Pemberdayaan Ekonomi & TTG", "Analis Kebijakan", "Pranata Komputer"];
+            const instruksiList = ["Tanggapan dan saran", "Untuk diketahui", "Proses lebih lanjut", "Selesaikan", "Koordinasikan", "Wakili / Hadiri", "Agendakan", "Arsip"];
+
+            function formatDate(dateString) {
+                if (!dateString) return '-';
+                try {
+                    return new Date(dateString).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+                } catch (e) { return dateString; }
+            }
+
+            disposisiContent.innerHTML = `
+                <div class="print-header">
+                    <img src="logo.png" alt="Logo" class="logo" onerror="this.src='https://placehold.co/80x80?text=Logo'">
+                    <div class="header-text">
+                        <h3>PEMERINTAH KABUPATEN KEPULAUAN TANIMBAR</h3>
+                        <h2>DINAS PEMBERDAYAAN MASYARAKAT DAN DESA</h2>
+                        <p>Jl. Ir. Soekarno, Kompleks Perkantoran Bupati Kepulauan Tanimbar, Maluku</p>
+                    </div>
+                </div>
+                <div id="disposisi-sheet">
+                    <h4>LEMBAR DISPOSISI</h4>
+                    <table class="disposisi-table">
+                        <tr><td style="width: 50%;">Surat dari : <span class="value">${surat.pengirim || ''}</span></td><td>Diterima Tgl : <span class="value">${formatDate(surat.tglTerima)}</span></td></tr>
+                        <tr><td>No. Surat : <span class="value">${surat.noSurat || ''}</span></td><td>No. Agenda : <span class="value">${surat.noAgenda || ''}</span></td></tr>
+                        <tr><td>Tgl. Surat : <span class="value">${formatDate(surat.tglSurat)}</span></td>
+                            <td>Sifat : ${surat.sifatSurat || '-'}</td>
+                        </tr>
+                        <tr class="hal-value"><td colspan="2">Hal : <span class="value">${surat.perihal || ''}</span></td></tr>
+                        <tr>
+                            <td class="full-width">
+                                <strong>Diteruskan kepada Sdr:</strong>
+                                <div id="disp_diteruskan" style="padding-left: 10px; margin-top: 5px;">
+                                    ${pejabatStruktural.map(j => `<label><input type="checkbox" name="diteruskan" value="${j}"> ${j}</label>`).join('')}
+                                </div>
+                            </td>
+                            <td class="full-width">
+                                <strong>Dengan hormat harap:</strong>
+                                <div id="disp_instruksi" style="padding-left: 10px; margin-top: 5px;">
+                                    ${instruksiList.map(i => `<label><input type="checkbox" name="instruksi" value="${i}"> ${i}</label>`).join('')}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr><td colspan="2" class="catatan-value"><strong>Catatan:</strong><textarea id="disp_catatan" placeholder="Isi catatan disposisi..."></textarea></td></tr>
+                    </table>
+                    <div class="signature-block">
+                        <p>Kepala Dinas,</p>
+                        <p class="name">..................................</p>
+                        <p>NIP. ..........................</p>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>`;
+
+            saveBtn.addEventListener('click', async function () {
+                const catatan = document.getElementById('disp_catatan').value;
+                const diteruskan = Array.from(document.querySelectorAll('input[name="diteruskan"]:checked')).map(el => el.value);
+                const instruksi = Array.from(document.querySelectorAll('input[name="instruksi"]:checked')).map(el => el.value);
+                const nomorTujuan = nomorWaInput.value;
+
+                const disposisiContentObj = {
+                    catatan: catatan,
+                    diteruskan: diteruskan,
+                    instruksi: instruksi,
+                    timestamp: new Date().toISOString()
+                };
+
+                const payload = {
+                    id: surat.id,
+                    disposisi: disposisiContentObj
+                };
+
+                saveBtn.disabled = true;
+                const originalText = saveBtn.innerHTML;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+                try {
+                    const result = await api.saveSuratMasuk(payload);
+                    if (result.status === 'success') {
+                        if (nomorTujuan) {
+                            const msg = `*DISPOSISI SURAT*\nNo. Agenda: ${surat.noAgenda}\nPerihal: ${surat.perihal}\n\n*Catatan:* ${catatan}\n*Diteruskan ke:* ${diteruskan.join(', ')}\n*Instruksi:* ${instruksi.join(', ')}`;
+                            const waUrl = `https://api.whatsapp.com/send?phone=${nomorTujuan}&text=${encodeURIComponent(msg)}`;
+                            showAlert('Disposisi berhasil disimpan! Klik Lanjutkan untuk kirim WhatsApp.', 'success', () => {
+                                window.open(waUrl, '_blank');
+                            });
+                        } else {
+                            showAlert('Disposisi berhasil disimpan tanpa pengiriman WhatsApp.', 'success');
+                        }
+                    } else {
+                        showAlert('Gagal menyimpan: ' + result.message, 'error');
+                    }
+                } catch (error) {
+                    showAlert('Terjadi kesalahan: ' + error.message, 'error');
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalText;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

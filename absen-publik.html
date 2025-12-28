@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Online - DPMD Kab. Kepulauan Tanimbar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f4f7fc;
+            --bg-secondary: #ffffff;
+            --primary-accent: #e3f2fd;
+            --secondary-accent: #007bff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header i {
+            font-size: 3rem;
+            color: var(--secondary-accent);
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            margin-bottom: 20px;
+        }
+
+        .instruction {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: var(--secondary-accent);
+            color: white;
+        }
+
+        .btn-morning {
+            background: #28a745;
+            color: white;
+            display: none;
+        }
+
+        .btn-evening {
+            background: #6f42c1;
+            color: white;
+            display: none;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #status-display {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none;
+        }
+
+        .status-info {
+            background: #e3f2fd;
+            color: #007bff;
+            display: block !important;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            display: block !important;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block !important;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .pegawai-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .pegawai-item:hover {
+            background: #f0f7ff;
+        }
+
+        .pegawai-item b {
+            display: block;
+        }
+
+        .pegawai-item small {
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <i class="fas fa-camera-retro"></i>
+            <h1>Absensi Online DPMD</h1>
+            <p>Kab. Kepulauan Tanimbar</p>
+        </div>
+
+        <div class="card">
+            <p class="instruction">Pilih nama Anda, aktifkan GPS, dan tekan tombol absen sesuai sesi yang aktif.</p>
+
+            <div class="form-group">
+                <label>Nama Pegawai</label>
+                <input type="text" id="employeeName" placeholder="Ketuk untuk memilih nama" readonly
+                    onclick="showModal()">
+            </div>
+
+            <div class="form-group">
+                <label>NIP</label>
+                <input type="text" id="employeeNIP" placeholder="NIP otomatis muncul" readonly>
+            </div>
+
+            <div id="sessionButtons">
+                <button id="btnMorning" class="btn btn-morning" onclick="takeAttendance('Pagi')">Absen Pagi</button>
+                <button id="btnEvening" class="btn btn-evening" onclick="takeAttendance('Sore')">Absen Sore</button>
+            </div>
+
+            <div id="status-display">Silakan pilih nama Anda</div>
+        </div>
+    </div>
+
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                Pilih Pegawai
+                <i class="fas fa-times" onclick="closeModal()" style="cursor:pointer"></i>
+            </h3>
+            <input type="text" id="searchBox" placeholder="Cari nama..."
+                style="width:100%; padding:10px; margin-bottom:10px; border-radius:6px; border:1px solid #ddd;"
+                onkeyup="filterPegawai()">
+            <div id="employeeList">Memuat data...</div>
+        </div>
+    </div>
+
+    <?!= include('config_js'); ?>
+    <?!= include('api_js'); ?>
+    <script>
+        let pegawaiList = [];
+        let selectedPegawai = null;
+        let settings = {};
+
+        async function init() {
+            const resS = await api.getAppSettings();
+            if (resS.status === 'success') {
+                settings = resS.data;
+                updateButtons();
+            }
+
+            const resP = await api.getPegawai();
+            if (resP.status === 'success') {
+                pegawaiList = resP.data;
+                renderList();
+            }
+        }
+
+        function updateButtons() {
+            const morning = settings.morning_active === true || settings.morning_active === 'true';
+            const evening = settings.evening_active === true || settings.evening_active === 'true';
+
+            document.getElementById('btnMorning').style.display = morning ? 'block' : 'none';
+            document.getElementById('btnEvening').style.display = evening ? 'block' : 'none';
+
+            if (!morning && !evening) {
+                showStatus('Maaf, tidak ada sesi absen yang aktif saat ini.', 'error');
+            }
+        }
+
+        function renderList() {
+            const container = document.getElementById('employeeList');
+            container.innerHTML = '';
+            pegawaiList.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'pegawai-item';
+                div.innerHTML = `<b>${p.nama}</b><small>${p.nip}</small>`;
+                div.onclick = () => selectPegawai(p);
+                container.appendChild(div);
+            });
+        }
+
+        function selectPegawai(p) {
+            selectedPegawai = p;
+            document.getElementById('employeeName').value = p.nama;
+            document.getElementById('employeeNIP').value = p.nip;
+            closeModal();
+
+            const deviceId = getDeviceId();
+            if (p.deviceId && p.deviceId !== deviceId) {
+                showStatus('Perangkat tidak terdaftar. Perangkat Anda berbeda dengan yang terdaftar di sistem.', 'error');
+                disableButtons(true);
+            } else {
+                showStatus('Pilih sesi absen untuk melanjutkan.', 'info');
+                disableButtons(false);
+            }
+        }
+
+        function getDeviceId() {
+            let id = localStorage.getItem('dpmd_device_id');
+            if (!id) {
+                id = 'DEV-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                localStorage.setItem('dpmd_device_id', id);
+            }
+            return id;
+        }
+
+        function disableButtons(disabled) {
+            document.getElementById('btnMorning').disabled = disabled;
+            document.getElementById('btnEvening').disabled = disabled;
+        }
+
+        function takeAttendance(session) {
+            if (!selectedPegawai) return showStatus('Pilih nama terlebih dahulu', 'error');
+
+            showStatus(`Sedang mendapatkan lokasi...`, 'info');
+
+            if (!navigator.geolocation) return showStatus('GPS tidak didukung oleh browser Anda', 'error');
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => processAttendance(pos, session),
+                (err) => showStatus('Gagal mendapatkan lokasi. Pastikan GPS aktif.', 'error'),
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        async function processAttendance(pos, session) {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            const officeLat = settings.officeLat;
+            const officeLon = settings.officeLon;
+            const radius = settings.jarakMaksimal || 30;
+
+            if (!officeLat || !officeLon) return showStatus('Lokasi kantor belum diatur oleh Admin.', 'error');
+
+            const dist = calculateDistance(lat, lon, officeLat, officeLon);
+
+            if (dist > radius) {
+                return showStatus(`Gagal! Anda berada di luar radius (${dist.toFixed(0)}m dari kantor). Jarak maks: ${radius}m`, 'error');
+            }
+
+            showStatus('Mengirim data absensi...', 'info');
+
+            const res = await api.saveAbsensi({
+                pegawaiId: selectedPegawai.id,
+                nama: selectedPegawai.nama,
+                nip: selectedPegawai.nip,
+                session: session,
+                latitude: lat,
+                longitude: lon,
+                deviceId: getDeviceId()
+            });
+
+            if (res.status === 'success') {
+                showStatus(`Berhasil! Absen ${session} tersimpan. Terima kasih.`, 'success');
+                setTimeout(() => location.reload(), 3000);
+            } else {
+                showStatus('Gagal: ' + res.message, 'error');
+            }
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371e3;
+            const p1 = lat1 * Math.PI / 180;
+            const p2 = lat2 * Math.PI / 180;
+            const dP = (lat2 - lat1) * Math.PI / 180;
+            const dL = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dP / 2) * Math.sin(dP / 2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dL / 2) * Math.sin(dL / 2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('status-display');
+            el.textContent = msg;
+            el.className = 'status-' + type;
+            el.style.display = 'block';
+        }
+
+        function showModal() { document.getElementById('employeeModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('employeeModal').style.display = 'none'; }
+        function filterPegawai() {
+            const q = document.getElementById('searchBox').value.toLowerCase();
+            document.querySelectorAll('.pegawai-item').forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>
